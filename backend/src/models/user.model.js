@@ -1,9 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
+import { ROLES } from "../constants/roles.constants.js";
 // Defines the valid roles in your system.
-const ROLES = ['USER', 'STAFF', 'ADMIN'];
+
 
 const userSchema = new Schema(
   {
@@ -28,8 +28,8 @@ const userSchema = new Schema(
     // The role is now a simple string, as requested.
     role: {
       type: String,
-      enum: ROLES,
-      default: 'USER'
+      enum: Object.values(ROLES),
+      default: ROLES.USER
     },
     profilePicture: {
       type: String,
