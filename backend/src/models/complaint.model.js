@@ -7,17 +7,17 @@ import { COMPLAINT_URGENCY,COMPLAINT_URGENCY_ENUM } from "../Enums/ComplaintUrge
 const complaintSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true,
+        required: [true,"Title is Required"],
         trim: true
     },
     description: {
         type: String,
-        required: true
+        required: [true,"Description is Required"]
     },
     type: {
         type: String,
         enum: COMPLAINT_TYPE_ENUM,
-        required: true
+        required: [true,"Complaint Type is Reuired"]
     },
     location: {
         type: {
@@ -27,7 +27,7 @@ const complaintSchema = new mongoose.Schema({
         },
         coordinates: {
             type: [Number], // [longitude, latitude]
-            required: true
+            required: [true,"Location is Required"]
         }
     },
     photoUrl: {
