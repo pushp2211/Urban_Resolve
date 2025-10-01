@@ -1,8 +1,8 @@
 
 import mongoose from "mongoose";
-import { COMPLAINT_STATUS,COMPLAINT_STATUS_ENUM } from "../Enums/ComplaintStatus";
-import { COMPLAINT_TYPE,COMPLAINT_TYPE_ENUM } from "../Enums/ComplaintType";
-import { COMPLAINT_URGENCY,COMPLAINT_URGENCY_ENUM } from "../Enums/ComplaintUrgency";
+import { COMPLAINT_STATUS,COMPLAINT_STATUS_ENUM } from "../enum/ComplaintStatus";
+import { COMPLAINT_TYPE,COMPLAINT_TYPE_ENUM } from "../enum/ComplaintType";
+import { COMPLAINT_URGENCY,COMPLAINT_URGENCY_ENUM } from "../enum/ComplaintUrgency";
 
 const complaintSchema = new mongoose.Schema({
     title: {
