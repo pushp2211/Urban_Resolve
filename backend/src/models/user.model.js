@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { ROLES } from "../enums/roles.js";
+import { ROLES } from "../enum/roles.js";
 import { ROLES_ENUM } from "../enum/roles.js";
 // Defines the valid roles in your system.
 
