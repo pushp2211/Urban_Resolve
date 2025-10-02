@@ -46,7 +46,7 @@ export const updateStatus = asyncHandler(async(req, res)=>{
 
 });
 //assign complaint
-const assignComplaint = asyncHandler(async(req, res)=>{
+export const assignComplaint = asyncHandler(async(req, res)=>{
     const {id: complaintId} = req.params;
     const {staffId} = req.body;
 

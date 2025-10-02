@@ -5,12 +5,14 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Complaint } from "../models/complaint.model.js";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import { verifyRole } from "../middlewares/role.middleware.js";
 import { COMPLAINT_STATUS,COMPLAINT_STATUS_ENUM } from "../enum/ComplaintStatus.js";
-import { ROLES } from "../enum/roles.js";
+import { ROLES, ROLES_ENUM } from "../enum/roles.js";
+import { use } from "react";
 
 //update compaint status
+
 export const updateStatus = asyncHandler(async(req, res)=>{
     const {id: complaintId} = req.params //we are expecting id from the url here
     const {status} = req.body;
@@ -65,7 +67,7 @@ export const updateStatus = asyncHandler(async(req, res)=>{
 
 });
 //assign complaint
-const assignComplaint = asyncHandler(async(req, res)=>{
+export const assignComplaint = asyncHandler(async(req, res)=>{
     const {id: complaintId} = req.params;
     const {staffId} = req.body;
 
@@ -103,3 +105,47 @@ const assignComplaint = asyncHandler(async(req, res)=>{
     .status(200)
     .json(new apiResponse(200, updatedComplaint, "Complaint assigned successfully"));
 });
+
+export const updateUserRole = asyncHandler(async(req, res)=>{
+    const {id: userId} = req.params;
+    const {role: newRole} = req.body;
+    const admin = req.user;
+
+    if(!mongoose.isValidObjectId(userId)){
+        throw new apiError(400, "Invalid user Id");
+    }
+
+    if(!mongoose.isValidObjectId(admin._id)){
+        throw new apiError(400, "invalid admin id");
+    }
+
+    if(!newRole || !ROLES_ENUM.includes(newRole)){
+        throw new apiError(400, `Invalid role, must be one of ${ROLES_ENUM.join(", ")}`);
+    }
+
+    //if admin is the same user id that is being updated
+    if(admin._id.toString() === userId){
+        throw new apiError(400, "Admin can not change their own role")
+    }
+
+    //database operation
+    const user = await User.findById(userId);
+
+    if(!user){
+        throw new apiError(404, "User not found");
+    }
+
+    user.role = newRole;
+
+    await userId.save({validateBeforeSave: false});
+
+    const updatedUser = await User.findById(userId).select(
+        "-password -refreshToken" 
+    )
+
+
+    return res
+    .status(200)
+    .json(new apiResponse(200, updatedUser, "User role updated successfully"));
+})
+
