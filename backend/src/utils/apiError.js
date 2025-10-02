@@ -1,6 +1,6 @@
 
 //node provides you a class error--- read docs
-class ApiError extends Error {
+class apiError extends Error {
     constructor(
         statusCode, 
         message= "Something went wrong",
@@ -24,4 +24,4 @@ class ApiError extends Error {
     }
 }
 
-export {ApiError} 
+export {apiError} 
