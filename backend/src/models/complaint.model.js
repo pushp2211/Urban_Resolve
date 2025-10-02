@@ -57,5 +57,4 @@ const complaintSchema = new mongoose.Schema({
     }
 }, { timestamps: true }); // automatically adds createdAt and updatedAt
 
-const Complaint = mongoose.model("Complaint", complaintSchema);
-export default Complaint;
+export const Complaint = mongoose.model("Complaint", complaintSchema);

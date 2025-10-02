@@ -1,4 +1,4 @@
-import Complaint from "../models/complaint.model.js";
+import {Complaint} from "../models/complaint.model.js";
 import { COMPLAINT_STATUS ,COMPLAINT_STATUS_ENUM} from "../enum/ComplaintStatus.js";
 export const getAssignedComplaints=async(req,res)=>{
     try{
