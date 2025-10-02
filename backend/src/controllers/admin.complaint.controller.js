@@ -9,7 +9,6 @@ import mongoose, { mongo } from "mongoose";
 import { verifyRole } from "../middlewares/role.middleware.js";
 import { COMPLAINT_STATUS,COMPLAINT_STATUS_ENUM } from "../enum/ComplaintStatus.js";
 import { ROLES, ROLES_ENUM } from "../enum/roles.js";
-import { use } from "react";
 
 //update compaint status
 
@@ -69,7 +68,7 @@ export const updateStatus = asyncHandler(async(req, res)=>{
 //assign complaint
 export const assignComplaint = asyncHandler(async(req, res)=>{
     const {id: complaintId} = req.params;
-    const {staffId} = req.body;
+    const {Staff: staffId} = req.body;
 
     //validating
     if(!mongoose.isValidObjectId(complaintId)){
@@ -137,7 +136,7 @@ export const updateUserRole = asyncHandler(async(req, res)=>{
 
     user.role = newRole;
 
-    await userId.save({validateBeforeSave: false});
+    await user.save({validateBeforeSave: false});
 
     const updatedUser = await User.findById(userId).select(
         "-password -refreshToken" 

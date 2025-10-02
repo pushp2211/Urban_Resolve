@@ -3,6 +3,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/user.routes.js'
 import complaintRouter from './routes/complaint.routes.js'
+import adminRouter from './routes/admin.routes.js'
 
 const app = express();
 
@@ -28,5 +29,9 @@ app.use(cookieParser())
 //routes declaration
 app.use("/api/v1/", userRouter) //middleware use kr rhe get nhi krr rhe kyunki ab hum router use kr rhe hain jo alag jagah pe hai
 app.use("/api/v1/complaint/", complaintRouter)
+
+
+//admin routes
+app.use("/api/v1/admin/", adminRouter)
 
 export {app};
