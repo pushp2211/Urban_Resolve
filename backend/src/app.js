@@ -2,6 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/user.routes.js'
+import staffRouter from './routes/staff.complaint.route.js';
+
 const app = express();
 
 app.use(cors({
@@ -25,4 +27,5 @@ app.use(cookieParser())
 
 //routes declaration
 app.use("/api/v1/", userRouter) //middleware use kr rhe get nhi krr rhe kyunki ab hum router use kr rhe hain jo alag jagah pe hai
+app.use("/api/v1/staff/complaints", staffRouter);
 export {app};
