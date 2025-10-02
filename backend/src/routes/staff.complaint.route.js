@@ -7,13 +7,13 @@ const router=Router();
 
 router.route('/').get(
     verifyJWT,
-    verifyRole('staff'),
+    verifyRole('Staff'),
     getAssignedComplaints
 );
 
 router.route('/:id/status').put(
     verifyJWT,
-    verifyRole('staff', 'admin'),
+    verifyRole('Staff', 'Admin'),
     updateComplaintStatus
 );
 

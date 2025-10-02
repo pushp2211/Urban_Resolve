@@ -26,7 +26,9 @@ export const updateComplaintStatus=async(req,res)=>{
         });
     }
     try{
-        const complaint=Complaint.find({_id:complaintId});
+        
+        const complaint = await Complaint.findById(complaintId);
+
         if(!complaint){
             return res.status(404).json({
                 message:"Complaint Not Found"
@@ -46,7 +48,8 @@ export const updateComplaintStatus=async(req,res)=>{
             case COMPLAINT_STATUS.PENDING:
                 if (
                     newStatus === COMPLAINT_STATUS.IN_PROGRESS ||
-                    newStatus === COMPLAINT_STATUS.REJECTED
+                    newStatus === COMPLAINT_STATUS.REJECTED ||
+                    newStatus === COMPLAINT_STATUS.RESOLVED
                 ) isTransitionAllowed = true;
                 break;
 
@@ -64,7 +67,7 @@ export const updateComplaintStatus=async(req,res)=>{
         complaint.status = newStatus;
         await complaint.save();
 
-        res.status(200).json(complaint);
+         res.status(200).json(complaint);
     }
     catch(error){
         console.error(error.message);
