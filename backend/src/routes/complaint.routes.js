@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { createUserComplaint, deleteUserComplaint, getUserComplaintsDashboard } from "../controllers/user.complaint.controller.js";
+import { createUserComplaint, deleteUserComplaint, getUserComplaintsDashboard } from "../controllers/complaint.controller.js";
 
 const router = Router();
 router.route("/uploadComplaint").post(
