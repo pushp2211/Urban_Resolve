@@ -1,43 +1,38 @@
 import {Complaint} from "../models/complaint.model.js";
 import { COMPLAINT_STATUS ,COMPLAINT_STATUS_ENUM} from "../enum/ComplaintStatus.js";
-export const getAssignedComplaints=async(req,res)=>{
-    try{
-        const staffId=req.user.id;
-        const complaints=await Complaint.find({assignedTo:staffId})
-            .sort({createdAt:-1});
-        if(!complaints.length){
-            return res.status(404).json({message:"NO Complaints are assigned to you"});
-        }
-        res.status(200).json(complaints);
+import { apiError } from "../utils/apiError.js";
+import { apiResponse } from "../utils/apiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+
+export const getAssignedComplaints=asyncHandler(async(req,res)=>{
+    const staffId=req.user.id;
+    const complaints=await Complaint.find({assignedTo:staffId})
+        .sort({createdAt:-1});
+            
+    if (!complaints.length) {
+        throw new apiError(404, "No complaints are assigned to you");
     }
-    catch(error){
-        console.error(error.message);
-        res.status(500).send('Server Error');
-    }
-};
-export const updateComplaintStatus=async(req,res)=>{
+
+    return res
+        .status(200)
+        .json(new apiResponse(200, complaints, "Complaints fetched successfully"));
+    
+});
+export const updateComplaintStatus=asyncHandler(async(req,res)=>{
     const newStatus=req.body.status;
     const complaintId=req.params.id;
     const staffId=req.user.id;
 
     if(!newStatus||!COMPLAINT_STATUS_ENUM.includes(newStatus)){
-        return res.status(400).json({ 
-            message: `Invalid or missing status. Must be one of: ${COMPLAINT_STATUS_ENUM.join(', ')}` 
-        });
+        throw new apiError(400,`Invalid or missing status. Must be one of: ${COMPLAINT_STATUS_ENUM.join(', ')}` );
     }
-    try{
-        
         const complaint = await Complaint.findById(complaintId);
 
         if(!complaint){
-            return res.status(404).json({
-                message:"Complaint Not Found"
-            });
+            throw new apiError(404, "Complaint Not Found");
         }
         if(complaint.assignedTo.toString() !== staffId){
-            return res.status(403).json({
-                message:"You are not authorised to change status of this Complaint"
-            });
+            throw new apiError(403, "You are not authorised to change status of this Complaint");
         }
 
         // 4. State Transition Logic using the status object
@@ -61,16 +56,12 @@ export const updateComplaintStatus=async(req,res)=>{
         }
 
         if (!isTransitionAllowed) {
-            return res.status(400).json({ message: `Invalid status transition from '${currentStatus}' to '${newStatus}'.` });
+            throw new apiError(400,`Invalid status transition from '${currentStatus}' to '${newStatus}'.`);
         }
         
         complaint.status = newStatus;
         await complaint.save();
 
-         res.status(200).json(complaint);
-    }
-    catch(error){
-        console.error(error.message);
-        res.status(500).send('Server Error');
-    }
-};
+         res.status(200).json(new apiResponse(200,complaint,"Status Updated Succesfully"));
+    
+});

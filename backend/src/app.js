@@ -29,5 +29,7 @@
     //routes declaration
     app.use("/api/v1/", userRouter) //middleware use kr rhe get nhi krr rhe kyunki ab hum router use kr rhe hain jo
     app.use("/api/v1/staff/complaints", staffRouter);
-    app.use("/api/v1/complaint/", complaintRouter)
+    app.use("/api/v1/complaint/", complaintRouter);
+    
+
     export {app};
