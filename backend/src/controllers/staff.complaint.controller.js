@@ -5,13 +5,14 @@ import { apiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getAssignedComplaints=asyncHandler(async(req,res)=>{
-    const staffId=req.user.id;
+    const staffId = req.user._id;
+
     const complaints=await Complaint.find({assignedTo:staffId})
         .sort({createdAt:-1});
             
-    if (!complaints.length) {
-        throw new apiError(404, "No complaints are assigned to you");
-    }
+    // if (!complaints.length) {
+    //     throw new apiError(404, "No complaints are assigned to you");
+    // }
 
     return res
         .status(200)
@@ -19,9 +20,9 @@ export const getAssignedComplaints=asyncHandler(async(req,res)=>{
     
 });
 export const updateComplaintStatus=asyncHandler(async(req,res)=>{
-    const newStatus=req.body.status;
-    const complaintId=req.params.id;
-    const staffId=req.user.id;
+    const {status:newStatus}=req.body;
+    const {id:complaintId}=req.params;
+    const staffId=req.user._id;
 
     if(!newStatus||!COMPLAINT_STATUS_ENUM.includes(newStatus)){
         throw new apiError(400,`Invalid or missing status. Must be one of: ${COMPLAINT_STATUS_ENUM.join(', ')}` );
@@ -31,7 +32,10 @@ export const updateComplaintStatus=asyncHandler(async(req,res)=>{
         if(!complaint){
             throw new apiError(404, "Complaint Not Found");
         }
-        if(complaint.assignedTo.toString() !== staffId){
+        if(!complaint.assignedTo){
+            throw new apiError(403, "This complaint has not been assigned to any staff member yet.");
+        }
+        if(complaint.assignedTo.toString() !== staffId.toString()){
             throw new apiError(403, "You are not authorised to change status of this Complaint");
         }
 
