@@ -31,6 +31,7 @@ const seedAdmin = async () => {
             email: 'admin@gmail.com',
             password: process.env.ADMIN_PASSWORD,
             role: ROLES.ADMIN,
+            
         });
 
         console.log('✅ Default admin user created successfully!');

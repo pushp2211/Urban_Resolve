@@ -17,7 +17,6 @@ export const updateStatus = asyncHandler(async(req, res)=>{
     const {status} = req.body;
     const {user} = req;
 
-
     //validation
     const isValid = mongoose.isValidObjectId(complaintId);
     if(!isValid){
@@ -68,7 +67,7 @@ export const updateStatus = asyncHandler(async(req, res)=>{
 //assign complaint
 export const assignComplaint = asyncHandler(async(req, res)=>{
     const {id: complaintId} = req.params;
-    const {Staff: staffId} = req.body;
+    const {staffId} = req.body;
 
     //validating
     if(!mongoose.isValidObjectId(complaintId)){
@@ -79,6 +78,7 @@ export const assignComplaint = asyncHandler(async(req, res)=>{
     }
     //verify is the user being assigned is actually a staff member
     const staffMember  = await User.findById(staffId);
+    
     if(!staffMember){
         throw new apiError(400, "Staff member not found");
     }
@@ -89,8 +89,16 @@ export const assignComplaint = asyncHandler(async(req, res)=>{
     //database operation
     const complaint = await Complaint.findById(complaintId);
 
+
     if(!complaint){
         throw new apiError(404, "Complaint not found");
+    }
+
+
+    const staffDistrict = staffMember.address?.district;
+    const complaintDistrict = complaint.address?.district;
+    if(staffDistrict !== complaintDistrict){
+        throw new apiError(400, `can not assign this complaint to ${staffMember.fullName} as he is not from the same district as complaint`)
     }
 
     complaint.assignedTo = staffId;

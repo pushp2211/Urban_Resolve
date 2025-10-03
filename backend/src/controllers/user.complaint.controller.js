@@ -12,12 +12,12 @@ import { COMPLAINT_STATUS } from "../enum/ComplaintStatus.js";
  * @access Private (Requires user to be logged in)
  */
 const createUserComplaint = asyncHandler(async (req, res) => {
-  const { title, description, type, latitude, longitude, urgency } = req.body;
+  const { title, description, type, locality, district, city, pinCode, state,  urgency } = req.body;
   const submittedBy = req.user._id;
 
-  const requiredFields = { title, description, type, latitude, longitude };
+  const requiredFields = { title, description, type, locality, district, city, pinCode, state  };
   if (Object.values(requiredFields).some((field) => !field || field.trim() === "")) {
-    throw new apiError(400, "Title, description, type, and location are required fields.");
+    throw new apiError(400, "Title, description, type, and address details are required fields.");
   }
 
   const photoLocalPath = req.files?.photo?.[0]?.path;
@@ -34,9 +34,12 @@ const createUserComplaint = asyncHandler(async (req, res) => {
     title,
     description,
     type,
-    location: {
-      type: "Point",
-      coordinates: [parseFloat(longitude), parseFloat(latitude)],
+    address:{
+      locality: locality,
+      pinCode:pinCode,
+      district:district,
+      city: city,
+      state:state
     },
     photoUrl: photo.url,
     submittedBy,

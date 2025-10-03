@@ -19,7 +19,7 @@ const complaintSchema = new mongoose.Schema({
         enum: COMPLAINT_TYPE_ENUM,
         required: true
     },
-    location: {
+    location: { //we will use this later, for now we are using the address only
         type: {
             type: String,
             enum: ["Point"],
@@ -27,8 +27,14 @@ const complaintSchema = new mongoose.Schema({
         },
         coordinates: {
             type: [Number], // [longitude, latitude]
-            required: true
         }
+    },
+    address: {
+      locality: { type: String, required: true, trim: true },
+      city: { type: String, required: true, trim: true },
+      district: { type: String, required: true, trim: true },
+      pinCode: { type: String, required: true, trim: true, match: [/^\d{6}$/, 'Please fill a valid 6-digit pin code']},
+      state: { type: String, required: true, trim: true },
     },
     photoUrl: {
         type: String // URL of the complaint photo
