@@ -7,19 +7,19 @@ import { COMPLAINT_URGENCY,COMPLAINT_URGENCY_ENUM } from "../enum/ComplaintUrgen
 const complaintSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true,
+        required: [true,"Title is Required"],
         trim: true
     },
     description: {
         type: String,
-        required: true
+        required: [true,"Description is Required"]
     },
     type: {
         type: String,
         enum: COMPLAINT_TYPE_ENUM,
-        required: true
+        required: [true,"Complaint Type is Reuired"]
     },
-    location: {
+    location: { //we will use this later, for now we are using the address only
         type: {
             type: String,
             enum: ["Point"],
@@ -27,8 +27,14 @@ const complaintSchema = new mongoose.Schema({
         },
         coordinates: {
             type: [Number], // [longitude, latitude]
-            required: true
         }
+    },
+    address: {
+      locality: { type: String, required: true, trim: true },
+      city: { type: String, required: true, trim: true },
+      district: { type: String, required: true, trim: true },
+      pinCode: { type: String, required: true, trim: true, match: [/^\d{6}$/, 'Please fill a valid 6-digit pin code']},
+      state: { type: String, required: true, trim: true },
     },
     photoUrl: {
         type: String // URL of the complaint photo
