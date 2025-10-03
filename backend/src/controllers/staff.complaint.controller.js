@@ -99,5 +99,4 @@ export const updateComplaintStatus=asyncHandler(async(req,res)=>{
         await complaint.save();
 
         res.status(200).json(new apiResponse(200,complaint,"Status Updated Succesfully"));
-    
 });
