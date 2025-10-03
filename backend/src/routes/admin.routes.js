@@ -5,7 +5,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { verifyRole } from "../middlewares/role.middleware.js";
 import { ROLES } from "../enum/roles.js";
-import { assignComplaint, updateStatus, updateUserRole } from "../controllers/admin.complaint.controller.js";
+import { assignComplaint, getStaffList, updateStatus, updateUserRole } from "../controllers/admin.complaint.controller.js";
 
 const router = Router();
 
@@ -25,5 +25,11 @@ router.route("/updateStatus/:id").put(
     verifyJWT,
     verifyRole(ROLES.ADMIN, ROLES.STAFF),
     updateStatus
+)
+
+router.route("/staffList/:id").get(
+    verifyJWT,
+    verifyRole(ROLES.ADMIN),
+    getStaffList
 )
 export default router;

@@ -156,3 +156,37 @@ export const updateUserRole = asyncHandler(async(req, res)=>{
     .json(new apiResponse(200, updatedUser, "User role updated successfully"));
 })
 
+export const getStaffList = asyncHandler(async(req, res)=>{
+    const {id:complaintId} = req.params;
+
+    if(!mongoose.isValidObjectId(complaintId)){
+        throw new apiError(400, "Invalid complaint Id");
+    }
+
+    const complaint = await Complaint.findById(complaintId);
+
+    if(!complaint){
+        throw new apiError(404, "Complaint not found");
+    }
+
+
+    if(!complaint.address?.district){
+        throw new apiError(400, "Invalid complaint district");
+    }
+
+    const district = complaint.address.district.toString();
+
+    const eligibleStaff = await User.find(
+        {
+            role:ROLES.STAFF,
+            'address.district':district
+        }
+    ).select(
+        "-password -refreshToken"
+    )
+
+    return res
+    .status(200)
+    .json(new apiResponse(200, eligibleStaff, "Eligible staff list fetched successfully"));
+    
+})
