@@ -4,7 +4,7 @@
     import userRouter from './routes/user.routes.js';
     import staffRouter from './routes/staff.complaint.route.js';
     import complaintRouter from './routes/complaint.routes.js'
-
+    import adminRouter from './routes/admin.routes.js'
     const app = express();
 
     app.use(cors({
