@@ -7,17 +7,17 @@ import { COMPLAINT_URGENCY,COMPLAINT_URGENCY_ENUM } from "../enum/ComplaintUrgen
 const complaintSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true,
+        required: [true,"Title is Required"],
         trim: true
     },
     description: {
         type: String,
-        required: true
+        required: [true,"Description is Required"]
     },
     type: {
         type: String,
         enum: COMPLAINT_TYPE_ENUM,
-        required: true
+        required: [true,"Complaint Type is Reuired"]
     },
     location: { //we will use this later, for now we are using the address only
         type: {
