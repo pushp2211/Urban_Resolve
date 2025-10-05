@@ -6,6 +6,8 @@
     import complaintRouter from './routes/complaint.routes.js'
     import adminRouter from './routes/admin.routes.js'
     import commonDashboardRouter from './routes/service.routes.js'
+    import reportRouter from './routes/report.routes.js'
+import { verifyJWT } from './middlewares/auth.middleware.js';
     const app = express();
 
     app.use(cors({
@@ -40,5 +42,5 @@ app.use("/api/v1/admin/", adminRouter)
 
 //servics routes
 app.use("/api/v1/home/", commonDashboardRouter);
-
+app.use("/api/v1/user/", reportRouter);
 export {app};
