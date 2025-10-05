@@ -8,12 +8,13 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getAssignedComplaints = asyncHandler(async (req, res) => {
     const staffId = req.user._id;
-    const { status, urgency } = req.query;
+    // 1. Destructure page and limit from query with default values
+    const { status, urgency, page = 1, limit = 10 } = req.query;
 
     // Base query to find complaints assigned to the logged-in staff
-    const query = { assignedTo: staffId };
+    const filter = { assignedTo: staffId };
+    // Dynamically add status to the query if provided
 
-    // Dynamically add status to the query if provided and valid
     if (status) {
         if (!COMPLAINT_STATUS_ENUM.includes(status)) {
             throw new apiError(
@@ -21,10 +22,10 @@ export const getAssignedComplaints = asyncHandler(async (req, res) => {
                 `Invalid status value. Allowed values: ${COMPLAINT_STATUS_ENUM.join(", ")}`
             );
         }
-        query.status = status;
+        filter.status = status;
     }
 
-    // Dynamically add urgency to the query if provided and valid
+    // Dynamically add urgency to the query if provided
     if (urgency) {
         if (!COMPLAINT_URGENCY_ENUM.includes(urgency)) {
             throw new apiError(
@@ -32,22 +33,45 @@ export const getAssignedComplaints = asyncHandler(async (req, res) => {
                 `Invalid urgency value. Allowed values: ${COMPLAINT_URGENCY_ENUM.join(", ")}`
             );
         }
-        query.urgency = urgency;
+        filter.urgency = urgency;
     }
 
-    // Fetch all complaints matching the query, sorted by newest first
-    const complaints = await Complaint.find(query)
-        .sort({ createdAt: -1 });
+    // 2. Define options for the query
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        sort: { createdAt: -1 },
+        // Populating the user who submitted the complaint
+        populate: [{ path: 'submittedBy', select: 'fullName email' }]
+    };
+
+    
+     // 3. Fetch the paginated list of complaints
+    const complaints = await Complaint.find(filter)
+        .sort(options.sort)
+        .populate(options.populate)
+        .skip((options.page - 1) * options.limit)
+        .limit(options.limit);
+
+    // 4. Get the total count of documents matching the filter
+    const totalComplaints = await Complaint.countDocuments(filter);
+
     
    // if (!complaints.length) {
     //     throw new apiError(404, "No complaints are assigned to you");
     // }
 
+    const responsePayload = {
+            complaints,
+            totalPages: Math.ceil(totalComplaints / options.limit),
+            currentPage: options.page,
+            totalCount: totalComplaints
+        };
 
-    // As per best practices, return 200 OK with an empty array if no complaints are found
-    return res
-        .status(200)
-        .json(new apiResponse(200, complaints, "Assigned complaints fetched successfully"));
+        // 6. Return the structured response
+        return res
+            .status(200)
+            .json(new apiResponse(200, responsePayload, "Assigned complaints fetched successfully"));
 });
 
 
