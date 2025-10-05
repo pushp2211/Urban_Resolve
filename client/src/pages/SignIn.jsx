@@ -25,7 +25,7 @@ function SignIn() {
 
   useEffect(()=>{
     if(user){
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [navigate])
 
@@ -44,7 +44,7 @@ function SignIn() {
 
       if(response.data?.data?.user){
         login(response.data.data.user);
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (error) {
       setError(error.response?.data?.message || "Login failed please check your credentials")

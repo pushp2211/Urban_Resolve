@@ -39,6 +39,6 @@ app.use("/api/v1/admin/", adminRouter)
 
 
 //servics routes
-app.use("/api/v1/home/", commonDashboardRouter);
+app.use("/api/v1/dashboard/", commonDashboardRouter);
 
 export {app};

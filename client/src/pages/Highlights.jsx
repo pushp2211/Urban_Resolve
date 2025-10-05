@@ -9,10 +9,8 @@ function Highlights() {
         <Typography
             variant='h3'
         >
-            Dashboard
+            Highlights
         </Typography>
-
-
     </Box>
   )
 }

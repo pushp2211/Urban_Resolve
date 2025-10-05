@@ -15,18 +15,33 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 
 // Update pages to be an array of objects with paths
-const pages = [
-  { label: 'Home', path: '/' },
+const userPages = [
+  { label: 'Home', path: '/dashboard' },
   { label: 'Highlights', path: '/highlights' },
   { label: 'My Complaints', path: '/my-complaints' }
 ];
 const settings = ['Profile', 'Logout'];
+const staffPages = [
+  { label: 'Home', path: '/dashboard' },
+  { label: 'Highlights', path: '/highlights' },
+  { label: 'My Complaints', path: '/my-complaints' },
+  { label: 'Assigned Complaints', path: '/assigned-complaints' }
+]
+
+const adminPages = [
+  { label: 'Home', path: '/dashboard' },
+  { label: 'Highlights', path: '/highlights' },
+  { label: 'My Complaints', path: '/my-complaints' },
+  { label: 'Staff List', path: '/manageStaffs' }
+]
 
 function NavBar() {
-  const { logout } = useAuth(); // <-- Get logout function from context
+  const {user, logout } = useAuth(); // <-- Get logout function from context
   const navigate = useNavigate();
-  
 
+  const [pages, setPages] = React.useState(userPages);
+
+  console.log(user);
 
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -89,7 +104,7 @@ function NavBar() {
           
             variant="h6"
             component={routerLink}
-            to='/'
+            to='/dashboard'
             sx={{
                 
               display: 'flex',
