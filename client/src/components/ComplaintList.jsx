@@ -1,0 +1,152 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import ComplaintCard from './ComplaintCard';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import apiClient from '../api/axios';
+
+// {pinCode :"", locality : "", city : "", dateRange : "", status : "", page: 1, limit : 14}
+
+function ComplaintList({ filter = {} }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [complaints, setComplaints] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const observerRef = useRef(null);
+  const location = useLocation();
+
+  const page = parseInt(searchParams.get('page')) || 1;
+  const city = searchParams.get('city') || '';
+  const locality = searchParams.get('locality') || '';
+  const pinCode = searchParams.get('pinCode') || '';
+  const status = searchParams.get('status') || '';
+  const dateRange = searchParams.get('dateRange') || '';
+  const limit = searchParams.get('limit') || 12;
+
+  useEffect(() => {
+    const query = new URLSearchParams();
+
+    query.append('page', page);
+
+    if (city) query.append('city', city);
+    if (locality) query.append('locality', locality);
+    if (pinCode) query.append('pinCode', pinCode);
+    if (status) query.append('status', status);
+    if (dateRange) query.append('dateRange', dateRange);
+    if (limit) query.append('limit', limit);
+
+    const fetchComplaints = async () => {
+      try {
+        setLoading(true);
+        setError('');
+
+        const response = await apiClient(
+          `${location.pathname}?${query.toString()}`
+        );
+        setComplaints(response.data.data.complaints);
+
+        if (response.data.data.currentPage < response.data.data.totalPages) {
+          setHasNextPage(true);
+        } else {
+          setHasNextPage(false);
+        }
+      } catch (error) {
+        setError('Error while fetching complaints, Try again later');
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchComplaints();
+  }, [page, city, locality, pinCode, status, dateRange, limit]);
+
+  const handleNextPage = () => {
+    const newParams = {
+      page: page + 1,
+    };
+    if (city) newParams.city = city;
+    if (locality) (newParams.locality = locality);
+    if (dateRange) newParams.dateRange = dateRange;
+    if (status) newParams.status = status;
+    if (pinCode) newParams.pinCode = pinCode;
+    if (limit) newParams.limit = limit;
+  };
+  const lastComplaintElementRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observerRef.current) observerRef.current.disconnect();
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          setPage((prev) => prev + 1);
+        }
+      });
+      if (node) observerRef.current.observe(node);
+    },
+    [loading, hasNextPage]
+  );
+
+  return (
+    <Box
+      sx={{
+        width:'100%',
+        display:'flex',
+        flexDirection:'column',
+        justifyContent:'center'
+      }}
+    >
+      <Grid container spacing={3} columns={2}
+        sx={{
+          display:"flex",
+          justifyContent:"center",
+
+        }}
+      >
+        {complaints.map((complaint, index) => {
+          // Attach the ref to the last element to trigger infinite scroll
+          if (complaints.length === index + 1) {
+            return (
+              <Grid
+                key={complaint._id}
+                ref={lastComplaintElementRef}
+              >
+                <ComplaintCard complaint={complaint} />
+              </Grid>
+            );
+          } else {
+            return (
+              <Grid  key={complaint._id}>
+                <ComplaintCard complaint={complaint} />
+              </Grid>
+            );
+          }
+        })}
+      </Grid>
+
+      {/* The parent decides if we are loading the *next* page */}
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {!hasNextPage && complaints.length > 0 && (
+        <Typography
+          sx={{ textAlign: 'center', my: 4, color: 'text.secondary' }}
+        >
+          You've reached the end of the list.
+        </Typography>
+      )}
+
+      {error && (
+        <Typography color="error" sx={{ textAlign: 'center', my: 4 }}>
+          {error}
+        </Typography>
+      )}
+    </Box>
+  );
+}
+
+export default ComplaintList;
