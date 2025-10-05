@@ -5,6 +5,8 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { ROLES, ROLES_ENUM } from "../enum/roles.js";
+import { Complaint } from "../models/complaint.model.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -31,7 +33,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!fullName || !email || !password || !locality || !district || !city || !pinCode || !state) {
         throw new apiError(400, "fullname, email and password and address fields are necessary")
     }
-    
+
     const existingUser = await User.findOne({
         email
     });
@@ -149,9 +151,68 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new apiResponse(200, {}, "user logged out"))
 })
 
+const userProfile = asyncHandler(async (req, res) => {
+    const userId = req.user?._id;
+
+    if (!userId) {
+        throw new apiError(401, 'Not authorized, no user ID provided');
+    }
+
+    // Find the user in the database by their ID
+    const user = await User.findById(userId).select('-password'); // Exclude password from result
+
+    if (!user) {
+        throw new apiError(404, 'User Not Found');
+    }
+
+    const userRole = user.role;
+    let matchQuery = {};
+
+    // Determine the match criteria based on the user's role
+    if (userRole === ROLES.STAFF) {
+        matchQuery = { assignedTo: userId };
+    } else if (userRole === ROLES.USER) {
+        matchQuery = { submittedBy: userId };
+    } else {
+        // Handle cases where user might not have a role that sees complaints
+        matchQuery = { _id: null }; // An impossible query to return no results
+    }
+
+    // Use an aggregation pipeline to efficiently count complaints by status
+    const complaintStatusCounts = await Complaint.aggregate([
+        {
+            $match: matchQuery,
+        },
+        {
+            $group: {
+                _id: '$status', // Group documents by their status
+                count: { $sum: 1 }, // Count the documents in each group
+            },
+        },
+    ]);
+
+    // Convert the aggregation result array into a more convenient object
+    // e.g., from [{ _id: 'PENDING', count: 5 }] to { PENDING: 5 }
+    const complaintStats = complaintStatusCounts.reduce((acc, status) => {
+        acc[status._id] = status.count;//status curreent value ko denote krta hai aur acc result array hai
+        return acc;
+    }, {});
+
+    const data = {
+        role: userRole,
+        complaintStats,
+        user,
+    };
+
+    // Return a standardized success response
+    return res
+        .status(200)
+        .json(new apiResponse(200, data, 'User profile fetched successfully.'));
+});
 
 export {
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    userProfile
 }
