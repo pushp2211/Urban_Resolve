@@ -107,7 +107,7 @@ export const assignComplaint = asyncHandler(async(req, res)=>{
         complaint.status = COMPLAINT_STATUS.IN_PROGRESS;
     }
     const updatedComplaint = await complaint.save();
-
+    // console.log(updatedComplaint);
     return res
     .status(200)
     .json(new apiResponse(200, updatedComplaint, "Complaint assigned successfully"));

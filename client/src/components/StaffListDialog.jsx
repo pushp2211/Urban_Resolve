@@ -5,7 +5,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import VirtualList from 'rc-virtual-list';
 import Avatar from '@mui/material/Avatar';
-export default function StaffListDialog({ staffList, onSelectStaff }) {
+export default function StaffListDialog({ staffList, onSelectStaff, assignComplaint }) {
 
 
   return (
@@ -34,7 +34,7 @@ export default function StaffListDialog({ staffList, onSelectStaff }) {
         */}
         {(staff) => (
           <ListItem key={staff._id} component="div" disablePadding>
-            <ListItemButton onClick={() => onSelectStaff(staff)}>
+            <ListItemButton onClick={() => assignComplaint(staff)}>
               {/* Now you can safely access staff.fullName */}
               <Box
                 sx={{

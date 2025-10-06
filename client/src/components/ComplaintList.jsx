@@ -65,10 +65,16 @@ function ComplaintList({ filter = {} }) {
         setLoading(true);
         setError('');
 
-        const response = await apiClient(
+        const response = await apiClient.get(
           `${location.pathname}?${query.toString()}`
         );
-        setComplaints(response.data.data.complaints);
+        const newComplaints = response.data.data.complaints || [];
+        if (page > 1) {
+          setComplaints((prev) => [...prev, ...newComplaints]);
+        } else {
+          setComplaints(newComplaints);
+        }
+
 
         if (response.data.data.currentPage < response.data.data.totalPages) {
           setHasNextPage(true);
@@ -82,8 +88,12 @@ function ComplaintList({ filter = {} }) {
         setLoading(false);
       }
     };
-    fetchComplaints();
+    if(hasNextPage || page==1){
+      fetchComplaints();
+    }
   }, [page, city, locality, pinCode, status, dateRange, limit]);
+
+  
 
   const handleNextPage = () => {
     const newParams = {
@@ -102,18 +112,34 @@ function ComplaintList({ filter = {} }) {
       if (observerRef.current) observerRef.current.disconnect();
       observerRef.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasNextPage) {
-          setPage((prev) => prev + 1);
+          // FIX: Use setSearchParams to trigger the next page fetch
+          setSearchParams(prevParams => {
+            const currentPage = parseInt(prevParams.get('page')) || 1;
+            prevParams.set('page', String(currentPage + 1));
+            return prevParams;
+          });
         }
       });
       if (node) observerRef.current.observe(node);
     },
-    [loading, hasNextPage]
+    [loading, hasNextPage, setSearchParams]
   );
 
   const handleOnClick = (complaint)=>{
     setSelectedComplaint(complaint);
     setOpenDetailedDialogue(true)
   }
+
+
+  const onAssign = (updatedComplaint)=>{
+    console.log(updatedComplaint);
+    setComplaints((prevComplaints)=>
+      prevComplaints.map((complaint)=>
+        complaint?._id === updatedComplaint?._id ? updatedComplaint : complaint
+      )
+    )
+  };
+  
   return (
     <>
     <Box
@@ -124,7 +150,7 @@ function ComplaintList({ filter = {} }) {
         justifyContent:'center'
       }}
     >
-      {!loading && <Grid container spacing={3} columns={2}
+      {<Grid container spacing={3} columns={2}
         sx={{
           display:"flex",
           justifyContent:"center",
@@ -185,7 +211,7 @@ function ComplaintList({ filter = {} }) {
       onClose={()=>setOpenDetailedDialogue(false)}
     />} */}
     <ComplaintDetailedDialog complaint={selectedComplaint} open={openDetailedDialogue} 
-      onClose={()=>setOpenDetailedDialogue(false)}
+      onClose={()=>setOpenDetailedDialogue(false)} onAssign={onAssign}
     />
 
     </>

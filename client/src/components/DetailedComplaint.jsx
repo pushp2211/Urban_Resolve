@@ -15,8 +15,6 @@ import StaffListDialog from './StaffListDialog.jsx';
 import theme from '../theme.js';
 
 const getStatusColor = (status) => {
-
-
   switch (status) {
     case COMPLAINT_STATUS.PENDING:
       return 'warning';
@@ -30,57 +28,86 @@ const getStatusColor = (status) => {
       return 'default';
   }
 };
-function DetailedComplaint({ complaint }) {
-
+function DetailedComplaint({ complaint, onAssign }) {
   console.log(theme);
-
 
   const { user } = useAuth();
   const [listOpen, setListOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [staffList, setStaffList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [eligibleListError, setEligibleError] = useState(false);
+
+  const [staffAssignError, setStaffAssignError] = useState('');
+  const [staffAssignLoading, setStaffAssignLoading] = useState(false);
+
   const getEligibleStaffList = async (event) => {
     setListOpen(true);
     event.stopPropagation();
     event.preventDefault();
     const adminId = user._id;
-    setError('');
+    setEligibleError('');
     setLoading(true);
 
     try {
       const response = await apiClient.get(`/admin/staffList/${complaint._id}`);
       if (response.status != 200) {
-        setError('error while fetching try again', response.status);
+        setEligibleError('error while fetching try again', response.status);
         return;
       }
       let simplifiedArray = [];
       console.log(response.data.data);
       if (response.data.data.length === 0) {
-        setError('no staff found in the district of the complaint address');
+        setEligibleError(
+          'no staff found in the district of the complaint address'
+        );
       } else {
         simplifiedArray = response.data.data.map((item) => ({
           _id: item._id,
           fullName: item.fullName,
           profilePicture: item.profilePicture,
         }));
-        console.log('simplified array');
-        console.log(simplifiedArray);
         setStaffList(simplifiedArray);
       }
     } catch (error) {
-      setError('error while retrieving the list, try again later');
+      setEligibleError('error while retrieving the list, try again later');
       console.log(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSelectStaff = (staffId) => {};
-  useEffect(() => {
-    console.log(staffList);
-  }, [staffList]);
+  const handleSelectStaff = async (staff) => {
+    const id = complaint._id;
+    const staffId = staff._id;
+    if (!id || !staffId) {
+      setStaffAssignError('staff id not found');
+      return;
+    }
+    setStaffAssignError('');
+    setLoading(true);
+    try {
+      const response = await apiClient.put(`/admin/assignComplaint/${id}`, {
+        staffId,
+      });
+      console.log(Response);
+      if (response.status != 200) {
+        setStaffAssignError('unable to assign, try again');
+        return;
+      }
+      console.log(response);
+      const updatedComplaint = response.data.data;
+      complaint.status = updatedComplaint.status;
+      onAssign(updatedComplaint);
+      setListOpen(false);
+      setLoading(false);
+    } catch (error) {
+      setStaffAssignError('Unable to assign, please try again.');
+      console.error('Error assigning staff:', error);
+    } finally {
+      setStaffAssignLoading(false);
+    }
+  };
 
   return (
     <Box
@@ -103,8 +130,9 @@ function DetailedComplaint({ complaint }) {
           lg: '60rem',
         },
         backgroundColor: 'background.paper',
-        borderRadius:"2rem",
-        paddingX:"1rem"
+        borderRadius: '2rem',
+        paddingX: '1rem',
+        paddingY:'1rem'
       }}
     >
       <Box
@@ -135,32 +163,36 @@ function DetailedComplaint({ complaint }) {
               display: 'flex',
               flexDirection: 'column',
               gap: '0.1rem',
+              width:"100%"
             }}
           >
-            
-            <Typography variant='h4'>{complaint.title}
-
-            </Typography>
+            <Typography variant="h4">{complaint.title}</Typography>
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: "space-between",
                 alignItems: 'center',
                 gap: 2,
+                marginY: '0.2rem',
+                minWidth:"100%"
               }}
             >
-              <Avatar
+              <Box>
+                <Avatar
                 alt={complaint.submittedBy.fullName}
                 src={complaint.submittedBy.profilePicture}
               />
-              <Typography variant='button'>{complaint.submittedBy.fullName}</Typography>
+              <Typography variant="button">
+                {complaint.submittedBy.fullName}
+              </Typography>
+              </Box>
+              <Chip
+                label={complaint.status}
+                color={getStatusColor(complaint.status)}
+                size="small"
+              />
             </Box>
           </Box>
-          <Chip
-            label={complaint.status}
-            color={getStatusColor(complaint.status)}
-            size="small"
-          />
         </Container>
         <Container>
           <Box
@@ -187,21 +219,18 @@ function DetailedComplaint({ complaint }) {
               }}
             />
           </Box>
-          <Typography 
+          <Typography
             sx={{
-              display:"flex",
-              justifyContent:"space-between"
+              display: 'flex',
+              justifyContent: 'space-between',
             }}
           >
             {new Date(complaint.createdAt).toLocaleDateString()}
-            <Typography
-              variant='h6'
-          >Type: {complaint.type}</Typography>
+            <Typography variant="h6">Type: {complaint.type}</Typography>
           </Typography>
         </Container>
-        <Container >
+        <Container>
           <Typography>{complaint.description}</Typography>
-          
         </Container>
       </Box>
       {/* */}
@@ -222,7 +251,7 @@ function DetailedComplaint({ complaint }) {
             // alignItems:"center",
             width: '100%',
             flexDirection: 'column',
-            gap:2
+            gap: 2,
           }}
         >
           <Box
@@ -230,13 +259,14 @@ function DetailedComplaint({ complaint }) {
               display: 'flex',
               gap: 1,
               flexDirection: 'row',
-              backgroundColor: theme.palette.mode === "dark" ? "#3c4042" : "#f1f0fa",
-              paddingX:"1rem",
-              paddingY:"1rem",
-              borderRadius:"1rem"
+              backgroundColor:
+                theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+              paddingX: '1rem',
+              paddingY: '1rem',
+              borderRadius: '1rem',
             }}
           >
-            <Typography >Submitted By :</Typography>
+            <Typography>Submitted By :</Typography>
             <Typography>{complaint.submittedBy.fullName}</Typography>
           </Box>
           <Box
@@ -244,13 +274,14 @@ function DetailedComplaint({ complaint }) {
               display: 'flex',
               gap: 1,
               flexDirection: 'row',
-              backgroundColor: theme.palette.mode === "dark" ? "#3c4042" : "#f1f0fa",
-              paddingX:"1rem",
-              paddingY:"1rem",
-              borderRadius:"1rem"
+              backgroundColor:
+                theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+              paddingX: '1rem',
+              paddingY: '1rem',
+              borderRadius: '1rem',
             }}
           >
-            <Typography>Submitted By :</Typography>
+            <Typography>Assigned To :</Typography>
             {complaint.assignedTo && (
               <Typography>{complaint.assignedTo?.fullName}</Typography>
             )}
@@ -258,34 +289,34 @@ function DetailedComplaint({ complaint }) {
           </Box>
         </Box>
         {user.role === ROLES.ADMIN && !complaint.assignedTo && (
-          <Box
-            
-          >
-            Assign this Complaint 
+          <Box>
+            Assign this Complaint
             <Button
               onClick={getEligibleStaffList}
               variant="contained"
               loading={loading}
               disabled={listOpen}
               sx={{
-                marginLeft:"0.4rem",
+                marginLeft: '0.4rem',
                 textTransform: 'none',
               }}
             >
               Click here ..
             </Button>
-            {!loading && <Dialog
-              open={listOpen}
-              onClose={() => setListOpen(false)}
-              maxWidth="lg"
-              
-            >
-              <DialogTitle>Select a Staff Member</DialogTitle>
-              <StaffListDialog
-                staffList={staffList}
-                onSelectStaff={setSelectedStaff}
-              />
-            </Dialog>}
+            {!loading && (
+              <Dialog
+                open={listOpen}
+                onClose={() => setListOpen(false)}
+                maxWidth="lg"
+              >
+                <DialogTitle>Select a Staff Member</DialogTitle>
+                <StaffListDialog
+                  staffList={staffList}
+                  onSelectStaff={setSelectedStaff}
+                  assignComplaint={handleSelectStaff}
+                />
+              </Dialog>
+            )}
           </Box>
         )}
       </Box>

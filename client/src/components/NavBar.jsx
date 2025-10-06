@@ -38,6 +38,7 @@ const adminPages = [
 
 function NavBar() {
   const {user, logout } = useAuth();
+
   const navigate = useNavigate();
   console.log(user);
   useEffect(()=>{
@@ -149,12 +150,11 @@ function NavBar() {
             </Button>
             <Tooltip title="Open settings">
               <IconButton 
-
               key='profile'
               component={routerLink}
               to='/profile'
               sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={user.fullName} src={user.profilePicture} />
               </IconButton>
             </Tooltip>
             {/* You will need to add the <Menu> component here for the settings dropdown */}

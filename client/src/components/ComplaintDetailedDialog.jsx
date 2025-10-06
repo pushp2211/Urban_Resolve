@@ -2,7 +2,7 @@ import React from 'react'
 import Dialog from '@mui/material/Dialog'
 import DetailedComplaint from './DetailedComplaint'
 import Modal from '@mui/material/Modal'
-function AdminComplaintDetailedDialog({open, onClose, complaint}) {
+function AdminComplaintDetailedDialog({open, onClose, complaint, onAssign}) {
 
   return (
     <Modal
@@ -18,7 +18,7 @@ function AdminComplaintDetailedDialog({open, onClose, complaint}) {
               alignItems:"center"
             }}
         >
-          <DetailedComplaint complaint={complaint}/>
+          <DetailedComplaint complaint={complaint} onAssign={onAssign}/>
     </Modal>
   )
 }
