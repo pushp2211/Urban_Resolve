@@ -72,7 +72,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new apiError(500, "Encountered an error while registering the user");
     }
     return res.status(201).json(
-        new apiResponse(200, createdUser, "User registered Successfully")
+        new apiResponse(201, createdUser, "User registered Successfully")
     )
 });
 
@@ -148,8 +148,6 @@ const logoutUser = asyncHandler(async (req, res) => {
         .clearCookie("refreshToken")
         .json(new apiResponse(200, {}, "user logged out"))
 })
-
-
 export {
     registerUser,
     loginUser,

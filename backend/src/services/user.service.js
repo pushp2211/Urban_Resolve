@@ -20,14 +20,24 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
     }
 
     if(pinCode){
-        filter['address.pinCode'] = pinCode
+        if(pinCode === "myPinCode"){
+            filter['address.pinCode'] = user.address.pinCode;
+        }
+        else{
+            filter['address.pinCode'] = pinCode
+        }
     }
 
     if(locality){
         filter['address.locality'] = locality
     }
     if(city){
-        filter['address.city'] = city
+        if(city === "myCity"){
+            filter['address.city'] = user.address.city;
+        }
+        else{
+            filter['address.city'] = city
+        }
     }
     
     if(status){
@@ -57,7 +67,8 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
     .sort(options.sort)
     .skip((options.page-1)*options.limit)
     .limit(options.limit)
-
+    
+    console.log(complaints);
     const totalComplaints = await Complaint.countDocuments(filter);
 
     const responsePayload = {
