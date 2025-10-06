@@ -57,8 +57,8 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
         limit: parseInt(limit, 10),
         sort: {createdAt:-1},
         populate:[
-            {path: 'submittedBy', select: 'fullName email'},
-            {path:'assignedTo', select: 'fullName email'}
+            {path: 'submittedBy', select: 'fullName email profilePicture'},
+            {path:'assignedTo', select: 'fullName email profilePicture'}
         ]
     }
 
@@ -68,7 +68,7 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
     .skip((options.page-1)*options.limit)
     .limit(options.limit)
     
-    console.log(complaints);
+    // console.log(complaints);
     const totalComplaints = await Complaint.countDocuments(filter);
 
     const responsePayload = {

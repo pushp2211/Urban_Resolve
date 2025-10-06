@@ -6,10 +6,24 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ComplaintCard from './ComplaintCard';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import apiClient from '../api/axios';
-
+import { useAuth } from '../context/AuthContext';
+import { ROLES } from '../../enum/roles';
+import ComplaintDetailedDialog from './ComplaintDetailedDialog';
 // {pinCode :"", locality : "", city : "", dateRange : "", status : "", page: 1, limit : 14}
 
+
+  
 function ComplaintList({ filter = {} }) {
+  const {user} = useAuth();
+
+  const [parsedUser, setParsedUser] = useState(null);
+
+  
+  useEffect(()=>{
+    if(user){
+      setParsedUser((user))
+    }
+  }, [user])
   const [searchParams, setSearchParams] = useSearchParams();
   const [complaints, setComplaints] = useState([]);
   const [error, setError] = useState('');
@@ -18,6 +32,9 @@ function ComplaintList({ filter = {} }) {
   const observerRef = useRef(null);
   const location = useLocation();
 
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [openDetailedDialogue, setOpenDetailedDialogue] = useState(false);
+
   const page = parseInt(searchParams.get('page')) || 1;
   const city = searchParams.get('city') || '';
   const locality = searchParams.get('locality') || '';
@@ -25,6 +42,11 @@ function ComplaintList({ filter = {} }) {
   const status = searchParams.get('status') || '';
   const dateRange = searchParams.get('dateRange') || '';
   const limit = searchParams.get('limit') || 12;
+
+  
+
+
+  
 
   useEffect(() => {
     const query = new URLSearchParams();
@@ -88,7 +110,12 @@ function ComplaintList({ filter = {} }) {
     [loading, hasNextPage]
   );
 
+  const handleOnClick = (complaint)=>{
+    setSelectedComplaint(complaint);
+    setOpenDetailedDialogue(true)
+  }
   return (
+    <>
     <Box
       sx={{
         width:'100%',
@@ -97,7 +124,7 @@ function ComplaintList({ filter = {} }) {
         justifyContent:'center'
       }}
     >
-      <Grid container spacing={3} columns={2}
+      {!loading && <Grid container spacing={3} columns={2}
         sx={{
           display:"flex",
           justifyContent:"center",
@@ -111,19 +138,22 @@ function ComplaintList({ filter = {} }) {
               <Grid
                 key={complaint._id}
                 ref={lastComplaintElementRef}
+                onClick= {()=>{handleOnClick(complaint)}}
               >
                 <ComplaintCard complaint={complaint} />
               </Grid>
             );
           } else {
             return (
-              <Grid  key={complaint._id}>
+              <Grid  key={complaint._id}
+                onClick= {()=>{handleOnClick(complaint)}}
+              >
                 <ComplaintCard complaint={complaint} />
               </Grid>
             );
           }
         })}
-      </Grid>
+      </Grid>}
 
       {/* The parent decides if we are loading the *next* page */}
       {loading && (
@@ -132,7 +162,7 @@ function ComplaintList({ filter = {} }) {
         </Box>
       )}
 
-      {!hasNextPage && complaints.length > 0 && (
+      {!loading && !hasNextPage && complaints.length > 0 && (
         <Typography
           sx={{ textAlign: 'center', my: 4, color: 'text.secondary' }}
         >
@@ -146,6 +176,19 @@ function ComplaintList({ filter = {} }) {
         </Typography>
       )}
     </Box>
+
+    {/* {parsedUser?.role ==="User" && <UserComplaintDetailedDialog complaint={selectedComplaint} open={openDetailedDialogue} 
+      onClose={()=>setOpenDetailedDialogue(false)}
+    />}
+    {parsedUser?.role === ROLES.ADMIN && }
+    {parsedUser?.role ===ROLES.STAFF && <StaffComplaintDetailedDialog complaint={selectedComplaint} open={openDetailedDialogue} 
+      onClose={()=>setOpenDetailedDialogue(false)}
+    />} */}
+    <ComplaintDetailedDialog complaint={selectedComplaint} open={openDetailedDialogue} 
+      onClose={()=>setOpenDetailedDialogue(false)}
+    />
+
+    </>
   );
 }
 

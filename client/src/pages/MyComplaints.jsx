@@ -79,7 +79,7 @@ function MyComplaints() {
             ) : (
               <Grid item xs={12}>
                 <Typography sx={{ mt: 4 }}>
-                  No complaints found in your area.
+                  No complaints found.
                 </Typography>
               </Grid>
             )}
