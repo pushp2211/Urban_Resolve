@@ -124,7 +124,7 @@ function DetailedComplaint({ complaint, onAssign }) {
         },
         // backdropFilter:"blur(20px)",
         width: {
-          xs: '19rem',
+          xs: '24rem',
           sm: '24rem',
           md: '30rem',
           lg: '60rem',
@@ -177,7 +177,14 @@ function DetailedComplaint({ complaint, onAssign }) {
                 minWidth:"100%"
               }}
             >
-              <Box>
+              <Box
+                sx={{
+                  display:"flex",
+                  gap:2,
+                  justifyContent:"center",
+                  alignItems:"center"
+                }}
+              >
                 <Avatar
                 alt={complaint.submittedBy.fullName}
                 src={complaint.submittedBy.profilePicture}
@@ -266,7 +273,7 @@ function DetailedComplaint({ complaint, onAssign }) {
               borderRadius: '1rem',
             }}
           >
-            <Typography>Submitted By :</Typography>
+            <Typography>Reported by :</Typography>
             <Typography>{complaint.submittedBy.fullName}</Typography>
           </Box>
           <Box

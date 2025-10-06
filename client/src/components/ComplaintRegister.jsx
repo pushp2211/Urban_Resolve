@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link as routerLink, useNavigate } from 'react-router-dom';
 import apiClient from '../api/axios';
+import Step1Complaint from './Step1Complaint';
+import Step2Complaint from './Step2Complaint';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -12,19 +14,21 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Link from '@mui/material/Link';
 
-import Step1Register from '../components/Step1Register';
-import Step2Register from '../components/Step2Register';
+import { COMPLAINT_URGENCY_ENUM } from '../../enum/ComplaintUrgency';
+import { COMPLAINT_TYPE_ENUM } from '../../enum/ComplaintType';
 
 const steps = ['Your Credentials', 'Address Details'];
 
-function Register() {
-  const navigate = useNavigate();
+function ComplaintRegister({ handleClose }) {
   const [activeStep, setActiveStep] = useState(0);
 
+  // title, description, type, locality, district, city, pinCode, state,  urgency
+
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
+    title: '',
+    description: '',
+    type: '',
+    urgency: '',
     locality: '',
     city: '',
     district: '',
@@ -32,7 +36,7 @@ function Register() {
     state: '',
   });
 
-  const [profilePicture, setProfilePicture] = useState(null);
+  const [complaintPicture, setComplaintPicture] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -41,7 +45,7 @@ function Register() {
       ...formData,
       [e.target.name]: e.target.value,
     });
-  const handleFileChange = (e) => setProfilePicture(e.target.files[0]);
+  const handleFileChange = (e) => setComplaintPicture(e.target.files[0]);
 
   const handleNext = () => {
     if (activeStep != 1) {
@@ -57,16 +61,16 @@ function Register() {
     switch (step) {
       case 0:
         return (
-          <Step1Register
+          <Step1Complaint
             formData={formData}
             handleChange={handleChange}
             handleFileChange={handleFileChange}
-            profilePicture={profilePicture}
+            complaintPicture={complaintPicture}
           />
         );
       case 1:
         return (
-          <Step2Register formData={formData} handleChange={handleChange} />
+          <Step2Complaint formData={formData} handleChange={handleChange} />
         );
       default:
         throw new Error('unknown step');
@@ -77,35 +81,47 @@ function Register() {
     // event.preventDefault();
 
     setError('');
-    
-    const isEmptyField = Object.values(formData).some(value=>value.trim()==='');
-    if(isEmptyField || !profilePicture){
-        setError('All fields, including a profile picture, are required.');
-        return;
+
+    const isEmptyField = Object.values(formData).some(
+      (value) => value.trim() === ''
+    );
+    if (isEmptyField || !complaintPicture) {
+      setError('All fields, including a complaint picture, are required.');
+      return;
+    }
+    if (!COMPLAINT_TYPE_ENUM.includes(formData.type)) {
+      setError('Complaint type must be of ' + COMPLAINT_TYPE_ENUM.join(', '));
+    }
+    if (!COMPLAINT_URGENCY_ENUM.includes(formData.urgency)) {
+      setError(
+        'Complaint type must be of ' + COMPLAINT_URGENCY_ENUM.join(', ')
+      );
     }
     setError('');
     setLoading(true);
     const dataToSubmit = new FormData();
 
-    for(const key in formData){
-        dataToSubmit.append(key, formData[key]);
+    for (const key in formData) {
+      dataToSubmit.append(key, formData[key]);
     }
-    dataToSubmit.append('profilePicture', profilePicture);
-
+    dataToSubmit.append('photo', complaintPicture);
 
     try {
-      const response = await apiClient.post('/register', dataToSubmit);
+      const response = await apiClient.post(
+        '/complaint/uploadComplaint',
+        dataToSubmit
+      );
 
       if (response.status === 201) {
-        alert('Registration Successful, you can now log in');
-        navigate('/login');
+        alert('Complaint uploaded successfully');
+        handleClose();
       }
     } catch (error) {
       setError(
         error.response?.data?.message ||
-          'Registration failed please try again after some time'
+          'Upload failed please try again after some time'
       );
-      console.error('Registration error', error);
+      console.error('Complaint upload error', error);
     } finally {
       setLoading(false);
     }
@@ -113,11 +129,10 @@ function Register() {
   return (
     <Box
       sx={{
-        height: '100dvh',
+        // height: '100dvh',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-
       }}
     >
       <Paper
@@ -126,14 +141,12 @@ function Register() {
           borderRadius: '1rem',
           padding: '3rem',
           width: {
-            lg:"30rem",
-            sm:"27rem"
+            lg: '30rem',
+            sm: '25rem',
           },
+
           margin: '1rem',
-          minHeight: {
-            lg:"38rem",
-            sm:"34rem"
-          }
+          minHeight: '38rem',
         }}
       >
         <Typography
@@ -145,7 +158,7 @@ function Register() {
             textAlign: 'center',
           }}
         >
-          Create an Account
+          Register Complaint
         </Typography>
 
         <Stepper
@@ -176,47 +189,56 @@ function Register() {
               display: 'flex',
               flexDirection: 'row',
               gap: '0.5rem',
+              justifyContent:"space-between",
             }}
           >
-            <Button
-              color="inherit"
-              disabled={activeStep == 0}
-              onClick={handleBack}
-              sx={{
-                mr: 1,
-              }}
+            <Box
+                sx={{
+                    display:"flex",
+                    flexDirection:"row",
+                    
+                }}
             >
-              Back
-            </Button>
+              <Button
+                color="inherit"
+                disabled={activeStep == 0}
+                onClick={handleBack}
+                sx={{
+                  mr: 1,
+                  
+                }}
+              >
+                Back
+              </Button>
 
-            <Box sx={{ flex: '1 1 auto' }}>
-              {activeStep === steps.length - 1 ? (
-                <Button type="submit" variant="contained" disabled={loading} loading={loading} loadingPosition='end' >
-                  {loading ? 'Registering...' : 'Finish'}
-                </Button>
-              ) : (
-                <Button onClick={handleNext} variant="contained">
-                  Next
-                </Button>
-              )}
+              <Box sx={{ flex: '1 1 1' }}>
+                {activeStep === steps.length - 1 ? (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={loading}
+                    loading={loading}
+                    loadingPosition="end"
+                  >
+                    {loading ? 'Registering...' : 'Finish'}
+                  </Button>
+                ) : (
+                  <Button onClick={handleNext} variant="contained">
+                    Next
+                  </Button>
+                )}
+              </Box>
             </Box>
+            <Button
+                onClick={handleClose}
+            >
+                close
+            </Button>
           </Box>
         </form>
-
-        <Typography
-          variant="caption"
-          sx={{
-            fontSize: '0.85rem',
-          }}
-        >
-          Already have an account?{' '}
-          <Link component={routerLink} to="/login">
-            Sign in here
-          </Link>
-        </Typography>
       </Paper>
     </Box>
   );
 }
 
-export default Register;
+export default ComplaintRegister;

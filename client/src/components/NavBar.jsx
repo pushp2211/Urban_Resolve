@@ -18,22 +18,19 @@ import { ROLES } from '../../enum/roles';
 // Update pages to be an array of objects with paths
 const userPages = [
   { label: 'Home', path: '/dashboard' },
-  { label: 'Register Complaint', path: '/highlights' },
   { label: 'My Complaints', path: '/my-complaints' }
 ];
 const settings = ['Profile', 'Logout'];
 const staffPages = [
   { label: 'Home', path: '/dashboard' },
-  { label: 'Register Complaint', path: '/highlights' },
   { label: 'My Complaints', path: '/my-complaints' },
   { label: 'Assigned Complaints', path: '/assigned-complaints' }
 ]
 
 const adminPages = [
   { label: 'Home', path: '/dashboard' },
-  // { label: 'Register Complaint', path: '/highlights' },
   { label: 'My Complaints', path: '/my-complaints' },
-  { label: 'Staff List', path: '/manageStaffs' }
+  { label: 'Manage', path: '/manageStaffs' }
 ]
 
 function NavBar() {

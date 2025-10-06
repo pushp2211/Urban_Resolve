@@ -4,16 +4,17 @@ import { useAuth } from '../context/AuthContext'; // <-- Import useAuth
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
-
-
+import { Tooltip } from '@mui/material';
+import {Avatar} from '@mui/material';
+import {IconButton} from '@mui/material';
 const pages = [
   { label: 'Home', path: '/' },
   { label: 'Highlights', path: '/highlights' },
   { label: 'My Complaints', path: '/my-complaints' },
-  {label:'Profile', path:'/profile'}
 ];
 
 function NavBarBottom() {
+    const {user} = useAuth();
   return (
     <Box
         sx={{
@@ -54,7 +55,15 @@ function NavBarBottom() {
                     </Button>
                 ))
             }
-            
+            <Tooltip title="Open settings">
+              <IconButton 
+              key='profile'
+              component={routerLink}
+              to='/profile'
+              sx={{ p: 1 }}>
+                <Avatar alt={user.fullName} src={user.profilePicture} />
+              </IconButton>
+            </Tooltip>
         </Container>
 
 

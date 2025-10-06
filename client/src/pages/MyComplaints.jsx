@@ -68,16 +68,22 @@ function MyComplaints() {
         >
           Stay updated with problems and developments in your city.
         </Typography>
-        <Container>
+        <Container  
+          sx={{
+            display:"flex",
+            flexDirection:"column",
+            alignItems:"center"
+          }}
+        >
           <Grid container spacing={3}>
             {complaintss.length > 0 ? (
               complaintss.map((complaint) => (
-                <Grid item xs={12} sm={6} md={4} key={complaint._id}>
+                <Grid  key={complaint._id}>
                   <ComplaintCard complaint={complaint} />
                 </Grid>
               ))
             ) : (
-              <Grid item xs={12}>
+              <Grid  >
                 <Typography sx={{ mt: 4 }}>
                   No complaints found.
                 </Typography>

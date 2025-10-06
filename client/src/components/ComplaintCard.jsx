@@ -37,9 +37,9 @@ function ComplaintCard({ complaint }) {
       variant="outlined"
       sx={{
         width: {
-          xs: '20rem', // extra-small devices: full width
-          sm: '25rem', // small devices: 25rem
-          md: '30rem', // medium devices: 30rem
+          xs: '23rem', // extra-small devices: full width
+          sm: '33rem', // small devices: 25rem
+          md: '40rem', // medium devices: 30rem
           lg: '33rem', // large devices: 35rem
           xl: '40rem', // extra large devices: 40rem
         },
