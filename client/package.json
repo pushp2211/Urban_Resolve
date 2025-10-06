@@ -16,9 +16,11 @@
     "@mui/material": "^7.3.4",
     "@tailwindcss/vite": "^4.1.14",
     "axios": "^1.12.2",
+    "rc-virtual-list": "^3.19.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.3",
+    "react-window": "^2.2.0",
     "tailwindcss": "^4.1.14"
   },
   "devDependencies": {

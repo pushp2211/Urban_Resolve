@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Button from '@mui/material/Button'
 import ProtectedRoute from './components/ProtectedRoute';
@@ -13,11 +13,14 @@ import MyComplaints from './pages/MyComplaints';
 import Profile from './pages/Profile';
 import Home from './pages/Home';
 import { Navigate } from 'react-router-dom';
-
+import { ThemeProvider } from '@emotion/react';
+import theme from './theme';
 function App() {
 // pinCode, locality, city, dateRange, status
+const [curTheme, setTheme] = useState("light");
   return (
     <BrowserRouter>
+    <ThemeProvider theme={theme} >
     <FilterProvider>
       <Routes>
         {/* All routes inside here are now protected */}
@@ -38,6 +41,7 @@ function App() {
         
       </Routes>
       </FilterProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }
