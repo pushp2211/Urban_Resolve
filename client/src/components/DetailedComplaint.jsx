@@ -3,7 +3,10 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
-import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
+import {
+  COMPLAINT_STATUS,
+  COMPLAINT_STATUS_ENUM,
+} from '../../enum/ComplaintStatus';
 import Avatar from '@mui/material/Avatar';
 import { useAuth } from '../context/AuthContext';
 import { ROLES } from '../../enum/roles';
@@ -13,6 +16,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import apiClient from '../api/axios';
 import StaffListDialog from './StaffListDialog.jsx';
 import theme from '../theme.js';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -29,7 +36,7 @@ const getStatusColor = (status) => {
   }
 };
 function DetailedComplaint({ complaint, onAssign }) {
-  console.log(theme);
+  // console.log(theme);
 
   const { user } = useAuth();
   const [listOpen, setListOpen] = useState(false);
@@ -40,6 +47,55 @@ function DetailedComplaint({ complaint, onAssign }) {
 
   const [staffAssignError, setStaffAssignError] = useState('');
   const [staffAssignLoading, setStaffAssignLoading] = useState(false);
+  
+
+
+  const [validComplaintStatus, setValidComplaintStatus] = useState([]);
+  const [statusError, setStatusError] = useState("");
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [curComplaintStatus, setComplaintCurStatus] = useState(complaint.status)
+
+  useEffect(() => {
+    if (complaint.status === COMPLAINT_STATUS.IN_PROGRESS) {
+      setValidComplaintStatus([COMPLAINT_STATUS.IN_PROGRESS,COMPLAINT_STATUS.RESOLVED]);
+    }
+    if (complaint.status === COMPLAINT_STATUS.PENDING) {
+      setValidComplaintStatus([COMPLAINT_STATUS.PENDING,COMPLAINT_STATUS.REJECTED]);
+    }
+    // if(complaint.status === COMPLAINT_STATUS.)
+  }, [complaint.status, curComplaintStatus]);
+
+  const handleChange = async(event) => {
+    if(event.target.value=="") return;
+    event.stopPropagation();
+    const id = complaint._id;
+    console.log(event.target.value);
+    // const status = complaint.status;
+    const newStatus = event.target.value;
+    setStatusError("");
+    setStatusLoading(true);
+    try {
+
+      const response = await apiClient.put(`/admin/updateStatus/${id}`, {status:newStatus});
+      if(response.status !== 200){
+        setStatusError("Encountered an error while updating the status");
+        return;
+      }
+      console.log(response);
+      const upDatedComplaint = response.data.data;
+      complaint.status = upDatedComplaint.status;
+      setComplaintCurStatus(complaint.status);
+      onAssign(upDatedComplaint);
+
+      
+    } catch (error) {
+      setStaffAssignError('Unable to update, please try again.');
+      console.error('Error updating status:', error);
+    }
+    finally{
+      setStatusLoading(false);
+    }
+  };
 
   const getEligibleStaffList = async (event) => {
     setListOpen(true);
@@ -56,7 +112,7 @@ function DetailedComplaint({ complaint, onAssign }) {
         return;
       }
       let simplifiedArray = [];
-      console.log(response.data.data);
+      // console.log(response.data.data);
       if (response.data.data.length === 0) {
         setEligibleError(
           'no staff found in the district of the complaint address'
@@ -84,18 +140,19 @@ function DetailedComplaint({ complaint, onAssign }) {
       setStaffAssignError('staff id not found');
       return;
     }
+
     setStaffAssignError('');
     setLoading(true);
     try {
       const response = await apiClient.put(`/admin/assignComplaint/${id}`, {
         staffId,
       });
-      console.log(Response);
+      // console.log(Response);
       if (response.status != 200) {
         setStaffAssignError('unable to assign, try again');
         return;
       }
-      console.log(response);
+      // console.log(response);
       const updatedComplaint = response.data.data;
       complaint.status = updatedComplaint.status;
       onAssign(updatedComplaint);
@@ -132,7 +189,7 @@ function DetailedComplaint({ complaint, onAssign }) {
         backgroundColor: 'background.paper',
         borderRadius: '2rem',
         paddingX: '1rem',
-        paddingY:'1rem'
+        paddingY: '1rem',
       }}
     >
       <Box
@@ -163,35 +220,35 @@ function DetailedComplaint({ complaint, onAssign }) {
               display: 'flex',
               flexDirection: 'column',
               gap: '0.1rem',
-              width:"100%"
+              width: '100%',
             }}
           >
             <Typography variant="h4">{complaint.title}</Typography>
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: "space-between",
+                justifyContent: 'space-between',
                 alignItems: 'center',
                 gap: 2,
                 marginY: '0.2rem',
-                minWidth:"100%"
+                minWidth: '100%',
               }}
             >
               <Box
                 sx={{
-                  display:"flex",
-                  gap:2,
-                  justifyContent:"center",
-                  alignItems:"center"
+                  display: 'flex',
+                  gap: 2,
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
                 <Avatar
-                alt={complaint.submittedBy.fullName}
-                src={complaint.submittedBy.profilePicture}
-              />
-              <Typography variant="button">
-                {complaint.submittedBy.fullName}
-              </Typography>
+                  alt={complaint.submittedBy.fullName}
+                  src={complaint.submittedBy.profilePicture}
+                />
+                <Typography variant="button">
+                  {complaint.submittedBy.fullName}
+                </Typography>
               </Box>
               <Chip
                 label={complaint.status}
@@ -233,7 +290,7 @@ function DetailedComplaint({ complaint, onAssign }) {
             }}
           >
             {new Date(complaint.createdAt).toLocaleDateString()}
-            <Typography variant="h6">Type: {complaint.type}</Typography>
+            <Typography variant="button">Type: {complaint.type}</Typography>
           </Typography>
         </Container>
         <Container>
@@ -296,8 +353,21 @@ function DetailedComplaint({ complaint, onAssign }) {
           </Box>
         </Box>
         {user.role === ROLES.ADMIN && !complaint.assignedTo && (
-          <Box>
-            Assign this Complaint
+          <Box
+            sx={{
+              backgroundColor:
+                theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+              paddingX: '1rem',
+              paddingY: '1rem',
+              borderRadius: '1rem',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: "space-between",
+              gap: '8%',
+            }}
+          >
+            Assign to
             <Button
               onClick={getEligibleStaffList}
               variant="contained"
@@ -326,6 +396,43 @@ function DetailedComplaint({ complaint, onAssign }) {
             )}
           </Box>
         )}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 1,
+            backgroundColor:
+              theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+            paddingX: '1rem',
+            paddingY: '1rem',
+            borderRadius: '1rem',
+            alignItems:"center",
+            justifyContent:"space-between"
+          }}
+        >
+          Change status
+          <FormControl
+            sx={{ m: 1, minWidth: 120 }}
+            size="small"
+            disabled = {statusLoading || curComplaintStatus===COMPLAINT_STATUS.REJECTED || curComplaintStatus===COMPLAINT_STATUS.RESOLVED}
+          >
+            <InputLabel id="demo-select-small-label">Status</InputLabel>
+            <Select
+              labelId="demo-select-small-label"
+              id="demo-select-small"
+              value={curComplaintStatus}
+              label="Status"
+              onChange={handleChange}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {validComplaintStatus.map((value) => (
+                <MenuItem value={value}>{value}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
       </Box>
     </Box>
   );
