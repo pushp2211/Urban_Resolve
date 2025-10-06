@@ -60,6 +60,14 @@ const complaintSchema = new mongoose.Schema({
     },
     deadline: {
         type: Date
+    },
+    upvotes: {
+        users: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            }
+        ]
     }
 }, { timestamps: true }); // automatically adds createdAt and updatedAt
 
