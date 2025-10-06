@@ -21,6 +21,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
+import CloseIcon from '@mui/icons-material/Close';
+
 const getStatusColor = (status) => {
   switch (status) {
     case COMPLAINT_STATUS.PENDING:
@@ -35,7 +37,7 @@ const getStatusColor = (status) => {
       return 'default';
   }
 };
-function DetailedComplaint({ complaint, onAssign }) {
+function DetailedComplaint({ complaint, onAssign, onClose }) {
   // console.log(theme);
 
   const { user } = useAuth();
@@ -190,6 +192,7 @@ function DetailedComplaint({ complaint, onAssign }) {
         borderRadius: '2rem',
         paddingX: '1rem',
         paddingY: '1rem',
+        
       }}
     >
       <Box
@@ -223,7 +226,27 @@ function DetailedComplaint({ complaint, onAssign }) {
               width: '100%',
             }}
           >
-            <Typography variant="h4">{complaint.title}</Typography>
+            <Box
+              sx={{
+                display:{
+                  xs:'flex',
+                  lg:"none"
+                },
+                justifyContent:"space-between",
+                alignItems:"center"
+
+              }}
+              
+            >
+              <Typography variant="h4">{complaint.title}</Typography>
+              <Button
+                onClick={onClose}
+                color='warning'
+              >
+                Close
+                <CloseIcon/>
+              </Button>
+            </Box>
             <Box
               sx={{
                 display: 'flex',
@@ -266,7 +289,10 @@ function DetailedComplaint({ complaint, onAssign }) {
               paddingTop: '56.25%', // 16:9 aspect ratio (9/16 = 0.5625 * 100)
               overflow: 'hidden',
               borderRadius: 1,
-              marginY: '1rem',
+              marginY: {
+                lg:'1rem',
+                xs:"0.3rem"
+              }
             }}
           >
             <Box
@@ -304,7 +330,11 @@ function DetailedComplaint({ complaint, onAssign }) {
           flexDirection: 'column',
           justifyContent: 'center',
           flexGrow: 1,
-          gap: 2,
+          gap: {
+            lg:2,
+            sm:1,
+            xs:1,
+          },
           marginRight: '1rem',
         }}
       >
@@ -315,7 +345,11 @@ function DetailedComplaint({ complaint, onAssign }) {
             // alignItems:"center",
             width: '100%',
             flexDirection: 'column',
-            gap: 2,
+            gap:{
+              lg:2,
+              xs:1,
+              sm:1
+            }
           }}
         >
           <Box
@@ -325,8 +359,14 @@ function DetailedComplaint({ complaint, onAssign }) {
               flexDirection: 'row',
               backgroundColor:
                 theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-              paddingX: '1rem',
-              paddingY: '1rem',
+              paddingX: {
+              lg:'1rem',
+              xs:"0.5rem"
+            },
+            paddingY: {
+              lg:'1rem',
+              xs:"0.5rem"
+            },
               borderRadius: '1rem',
             }}
           >
@@ -340,8 +380,14 @@ function DetailedComplaint({ complaint, onAssign }) {
               flexDirection: 'row',
               backgroundColor:
                 theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-              paddingX: '1rem',
-              paddingY: '1rem',
+              paddingX: {
+              lg:'1rem',
+              xs:"0.5rem"
+            },
+            paddingY: {
+              lg:'1rem',
+              xs:"0.5rem"
+            },
               borderRadius: '1rem',
             }}
           >
@@ -357,8 +403,14 @@ function DetailedComplaint({ complaint, onAssign }) {
             sx={{
               backgroundColor:
                 theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-              paddingX: '1rem',
-              paddingY: '1rem',
+              paddingX: {
+              lg:'1rem',
+              xs:"0.5rem"
+            },
+            paddingY: {
+              lg:'1rem',
+              xs:"0.5rem"
+            },
               borderRadius: '1rem',
               display: 'flex',
               flexDirection: 'row',
@@ -403,8 +455,14 @@ function DetailedComplaint({ complaint, onAssign }) {
             gap: 1,
             backgroundColor:
               theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-            paddingX: '1rem',
-            paddingY: '1rem',
+            paddingX: {
+              lg:'1rem',
+              xs:"0.5rem"
+            },
+            paddingY: {
+              lg:'1rem',
+              xs:"0.5rem"
+            },
             borderRadius: '1rem',
             alignItems:"center",
             justifyContent:"space-between"

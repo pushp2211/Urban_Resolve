@@ -2,6 +2,7 @@ import React from 'react'
 import Dialog from '@mui/material/Dialog'
 import DetailedComplaint from './DetailedComplaint'
 import Modal from '@mui/material/Modal'
+import { Button } from '@mui/material'
 function AdminComplaintDetailedDialog({open, onClose, complaint, onAssign}) {
 
   return (
@@ -15,10 +16,12 @@ function AdminComplaintDetailedDialog({open, onClose, complaint, onAssign}) {
               width:"100%",
               display:"flex",
               justifyContent:"center",
-              alignItems:"center"
+              alignItems:"center",
+              // overflow:"scroll"
             }}
         >
-          <DetailedComplaint complaint={complaint} onAssign={onAssign}/>
+          {/* <Button>hello</Button> */}
+          <DetailedComplaint complaint={complaint} onAssign={onAssign} onClose={onClose}/>
     </Modal>
   )
 }
