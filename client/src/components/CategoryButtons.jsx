@@ -3,19 +3,19 @@ import Button from '@mui/material/Button'
 import React from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Link as routerLink } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 // pinCode, locality, city, dateRange, status
 
 
 
 function CategoryButtons() {
   const [searchParams, setSearchParams] = useSearchParams();
-  
+  const {user} = useAuth();
   const filters = [
     {label:'This Month', key:'dateRange', value:'this_month'},
-    {label:'My City',key:'city', value:'myCity'},
-    {label:'My pinCode',key:'pinCode',  value:'myPinCode'},
+    {label:'My City',key:'city', value:user.address?.city},
+    {label:'My pinCode',key:'pinCode',  value:user.address?.pinCode},
   ]
-
   const navigate = useNavigate();
 
   const handleClick = (key, value)=>{

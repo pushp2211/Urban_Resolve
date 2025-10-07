@@ -58,6 +58,7 @@ function SignIn() {
     <Box
       sx={{
         // backgroundColor:'white',
+
       }}
       className="min-h-screen flex justify-center items-center"
     >
@@ -68,8 +69,12 @@ function SignIn() {
           flexDirection:'column',
           justifyContent:'center',
           alignItems:'center',
-          gap:'1rem'
-
+          gap:'1rem',
+          width: {
+            lg:"30rem",
+            sm:"20rem"
+          },
+          marginX:2
         }}
         component={'form'}
         elevation={3}

@@ -5,8 +5,12 @@ import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
-import { Complaint } from '../../../backend/src/models/complaint.model';
-
+import { useState } from 'react';
+import Button from '@mui/material/Button';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { useEffect } from 'react';
+import apiClient from '../api/axios';
+import theme from '../theme';
 // Function to get a color for the status chip
 const getStatusColor = (status) => {
   switch (status) {
@@ -24,13 +28,68 @@ const getStatusColor = (status) => {
 };
 
 function ComplaintCard({ complaint }) {
-  console.log(complaint);
+  const [isUpvoted, setIsUpvoted] = useState(false);
+  const [upvoteCount, setUpvoteCount] = useState(0);
+  const [countLoading, setCountLoading] = useState(false);
+  const [countLoadingError, setCountLoadingError] = useState(false);
+  useEffect(() => {
+    const fetchUpvoteStatus = async () => {
+      setCountLoading(true);
+      setCountLoadingError("")
+      try {
+        const response = await apiClient.get(
+          `/service/complaints/${complaint._id}/upvote`
+        );
+        const { isUpvoted, totalUpvotes } = response.data.data;
+        setIsUpvoted(isUpvoted);
+        setUpvoteCount(totalUpvotes);
+      } catch (error) {
+        setCountLoadingError("Error while loading vote count")
+        console.error('Error fetching upvote status:', error);
+      } finally {
+        setCountLoading(false);
+      }
+    };
+
+    fetchUpvoteStatus();
+  }, [complaint._id]);
+
+  const handleUpVote = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCountLoading(true);
+    setCountLoadingError("");
+    try {
+      const response = await apiClient.put(
+        `/service/complaints/${complaint._id}/toggleUpvote`
+      );
+      // /complaints/:complaintId/toggleUpvote
+      const { isUpvoted, total } = response.data.data;
+      // console.log(response.data.data);
+      // console.log(total)
+      setIsUpvoted(isUpvoted);
+      setUpvoteCount(total);
+    } catch (error) {
+      setCountLoadingError("error while toggle upvote");
+      console.error('Error toggling upvote:', error);
+    }
+    finally{
+      setCountLoading(false);
+    }
+  };
+
   return (
     <Card
       variant="outlined"
       sx={{
-        width: '30rem',
-        borderRadius:'1rem'
+        width: {
+          xs: '23rem', // extra-small devices: full width
+          sm: '33rem', // small devices: 25rem
+          md: '40rem', // medium devices: 30rem
+          lg: '33rem', // large devices: 35rem
+          xl: '40rem', // extra large devices: 40rem
+        },
+        borderRadius: '1rem',
       }}
     >
       <CardContent>
@@ -43,7 +102,7 @@ function ComplaintCard({ complaint }) {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            {complaint.address?.city}, {complaint.address.pinCode}
+            {complaint.address?.city}, {complaint.address?.pinCode}
           </Typography>
           <Chip
             label={complaint.status}
@@ -58,7 +117,7 @@ function ComplaintCard({ complaint }) {
             paddingTop: '56.25%', // 16:9 aspect ratio (9/16 = 0.5625 * 100)
             overflow: 'hidden',
             borderRadius: 1,
-            marginY:"1rem"
+            marginY: '1rem',
           }}
         >
           <Box
@@ -75,15 +134,41 @@ function ComplaintCard({ complaint }) {
             }}
           />
         </Box>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-          {complaint.title}
-        </Typography>
-        <Typography variant="">{complaint.description}</Typography>
-        <Typography sx={{ mt: 1.5 }} color="text.secondary">
-          {new Date(complaint.createdAt).toLocaleDateString()}
-          {"  "}
-          {complaint.address.district}
-        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Box>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ fontWeight: 'bold' }}
+            >
+              {complaint.title}
+            </Typography>
+            <Typography variant="">{complaint.description}</Typography>
+            <Typography sx={{ mt: 1.5 }} color="text.secondary">
+              {new Date(complaint.createdAt).toLocaleDateString()}
+              {'  '}
+              {complaint.address?.district}
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              height: '3rem',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <Button onClick={handleUpVote} sx={{}}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={isUpvoted?"red": theme.palette.mode ==="light" ? "white" :""} stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-big-up-icon lucide-arrow-big-up"><path d="M9 13a1 1 0 0 0-1-1H5.061a1 1 0 0 1-.75-1.811l6.836-6.835a1.207 1.207 0 0 1 1.707 0l6.835 6.835a1 1 0 0 1-.75 1.811H16a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/></svg>
+            </Button>
+            {upvoteCount}
+          </Box>
+        </Box>
       </CardContent>
     </Card>
   );

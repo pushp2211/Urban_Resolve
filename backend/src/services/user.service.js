@@ -13,31 +13,24 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
         throw new apiError(404, "User profile or address not found, Please complete your profile");
     }
 
-    const {pinCode, locality, city, dateRange, status, page = 1, limit = 10} = req.query;
+    const {district, pinCode, locality, city, dateRange, status, page = 1, limit = 10, submittedBy, assignedTo} = req.query;
 
     const filter = {
-        'address.district' : user.address.district
+        
+    }
+    if(district){
+        filter['address.district'] = district;
     }
 
     if(pinCode){
-        if(pinCode === "myPinCode"){
-            filter['address.pinCode'] = user.address.pinCode;
-        }
-        else{
-            filter['address.pinCode'] = pinCode
-        }
+        filter['address.pinCode'] = pinCode
     }
 
     if(locality){
         filter['address.locality'] = locality
     }
     if(city){
-        if(city === "myCity"){
-            filter['address.city'] = user.address.city;
-        }
-        else{
-            filter['address.city'] = city
-        }
+        filter['address.city'] = city
     }
     
     if(status){
@@ -51,14 +44,20 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
             $gte:startOfMonth
         }
     }
+    if(submittedBy){
+        filter.submittedBy = submittedBy;
+    }
+    if(assignedTo){
+        filter.assignedTo = assignedTo;
+    }
 
     const options = {
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         sort: {createdAt:-1},
         populate:[
-            {path: 'submittedBy', select: 'fullName email'},
-            {path:'assignedTo', select: 'fullName email'}
+            {path: 'submittedBy', select: 'fullName email profilePicture'},
+            {path:'assignedTo', select: 'fullName email profilePicture'}
         ]
     }
 
@@ -68,7 +67,7 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
     .skip((options.page-1)*options.limit)
     .limit(options.limit)
     
-    console.log(complaints);
+    // console.log(complaints);
     const totalComplaints = await Complaint.countDocuments(filter);
 
     const responsePayload = {

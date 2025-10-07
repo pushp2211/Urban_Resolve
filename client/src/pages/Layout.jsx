@@ -5,7 +5,9 @@ import { Outlet } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import NavBarBottom from '../components/NavBarBottom'
 import Container from '@mui/material/Container'
+import FabRegisterComplaint from '../components/FabRegisterComplaint'
 function Layout() {
+  
   return (
     <Box
         
@@ -14,7 +16,7 @@ function Layout() {
       <Toolbar /> {/* <-- ADD THIS SPACER */}
         <Container
             sx={{
-                marginTop:'3rem'
+                marginTop:'3rem',
             }}
         >
             <main className="content-area">
@@ -23,6 +25,7 @@ function Layout() {
         </Container>
         <Toolbar />
         <NavBarBottom/>
+        <FabRegisterComplaint/>
     </Box>
   )
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link as routerLink, useNavigate } from 'react-router-dom';
-
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext'; // <-- Import useAuth
 import apiClient from '../api/axios';
 // MUI Imports
@@ -13,35 +13,42 @@ import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import { ROLES } from '../../enum/roles';
 
 // Update pages to be an array of objects with paths
 const userPages = [
   { label: 'Home', path: '/dashboard' },
-  { label: 'Highlights', path: '/highlights' },
   { label: 'My Complaints', path: '/my-complaints' }
 ];
 const settings = ['Profile', 'Logout'];
 const staffPages = [
   { label: 'Home', path: '/dashboard' },
-  { label: 'Highlights', path: '/highlights' },
   { label: 'My Complaints', path: '/my-complaints' },
   { label: 'Assigned Complaints', path: '/assigned-complaints' }
 ]
 
 const adminPages = [
   { label: 'Home', path: '/dashboard' },
-  { label: 'Highlights', path: '/highlights' },
   { label: 'My Complaints', path: '/my-complaints' },
-  { label: 'Staff List', path: '/manageStaffs' }
+  { label: 'Manage', path: '/manageStaffs' }
 ]
 
 function NavBar() {
-  const {user, logout } = useAuth(); // <-- Get logout function from context
+  const {user, logout } = useAuth();
+
   const navigate = useNavigate();
+  console.log(user);
+  useEffect(()=>{
+    if(user.role === ROLES.ADMIN){
+    setPages(adminPages);
+    }
+    if(user.role === ROLES.STAFF){
+    setPages(staffPages);
+    }
+  }, [user])
 
   const [pages, setPages] = React.useState(userPages);
-
-  console.log(user);
+  
 
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
@@ -68,7 +75,7 @@ function NavBar() {
     }
   };
   const openProfile = ()=>{
-
+    
   }
 
   return (
@@ -140,12 +147,11 @@ function NavBar() {
             </Button>
             <Tooltip title="Open settings">
               <IconButton 
-
               key='profile'
               component={routerLink}
               to='/profile'
               sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={user.fullName} src={user.profilePicture} />
               </IconButton>
             </Tooltip>
             {/* You will need to add the <Menu> component here for the settings dropdown */}

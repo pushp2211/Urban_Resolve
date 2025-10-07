@@ -32,7 +32,7 @@ function Dashboard() {
             fontWeight:'bold'
           }}
         >
-          Blog
+          Citizen Stories
         </Typography>
         <Typography
           variant='overline'
