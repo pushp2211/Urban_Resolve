@@ -32,7 +32,7 @@ function AssignComplaints() {
       const queryString = new URLSearchParams(queryParams).toString();
 
       const res = await axios.get(
-        `http://localhost:5000/api/v1/complaints/my-assigned?${queryString}`, // ✅ use queryString
+        `http://localhost:5000/api/v1/complaints/my-assigned?${queryString}`, 
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),

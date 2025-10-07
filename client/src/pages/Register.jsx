@@ -20,6 +20,8 @@ const steps = ['Your Credentials', 'Address Details'];
 function Register() {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
+  const [step1Error, setStep1Error] = useState(true);
+  const [step2Error, setStep2Error] = useState(true);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -35,6 +37,35 @@ function Register() {
   const [profilePicture, setProfilePicture] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (activeStep == 0) {
+      if (
+        !formData ||
+        formData?.fullName.toString().trim() == '' ||
+        formData?.email.toString().trim() === '' ||
+        !profilePicture
+      ) {
+        setStep1Error(true);
+      } else {
+        setStep1Error(false);
+      }
+    } else if(activeStep == 1) {
+      if (
+        !formData||(formData?.pinCode.toString().length > 0 &&
+        formData?.pinCode.toString().length != 6) ||
+        formData?.city.toString().trim().length == 0 ||
+        formData?.locality.toString().trim().length == 0 ||
+        formData?.district.toString().trim().length == 0 ||
+        formData?.state.toString().trim().length == 0
+        
+      ) {
+        setStep2Error(true);
+      } else {
+        setStep2Error(false);
+      }
+    }
+  }, [formData, profilePicture]);
 
   const handleChange = (e) =>
     setFormData({
@@ -66,7 +97,10 @@ function Register() {
         );
       case 1:
         return (
-          <Step2Register formData={formData} handleChange={handleChange} />
+          <Step2Register
+            formData={formData}
+            handleChange={handleChange}
+          />
         );
       default:
         throw new Error('unknown step');
@@ -77,21 +111,22 @@ function Register() {
     // event.preventDefault();
 
     setError('');
-    
-    const isEmptyField = Object.values(formData).some(value=>value.trim()==='');
-    if(isEmptyField || !profilePicture){
-        setError('All fields, including a profile picture, are required.');
-        return;
+
+    const isEmptyField = Object.values(formData).some(
+      (value) => value.trim() === ''
+    );
+    if (isEmptyField || !profilePicture) {
+      setError('All fields, including a profile picture, are required.');
+      return;
     }
     setError('');
     setLoading(true);
     const dataToSubmit = new FormData();
 
-    for(const key in formData){
-        dataToSubmit.append(key, formData[key]);
+    for (const key in formData) {
+      dataToSubmit.append(key, formData[key]);
     }
     dataToSubmit.append('profilePicture', profilePicture);
-
 
     try {
       const response = await apiClient.post('/register', dataToSubmit);
@@ -117,7 +152,6 @@ function Register() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-
       }}
     >
       <Paper
@@ -126,14 +160,14 @@ function Register() {
           borderRadius: '1rem',
           padding: '3rem',
           width: {
-            lg:"30rem",
-            sm:"27rem"
+            lg: '30rem',
+            sm: '27rem',
           },
           margin: '1rem',
           minHeight: {
-            lg:"38rem",
-            sm:"34rem"
-          }
+            lg: '38rem',
+            sm: '34rem',
+          },
         }}
       >
         <Typography
@@ -191,11 +225,21 @@ function Register() {
 
             <Box sx={{ flex: '1 1 auto' }}>
               {activeStep === steps.length - 1 ? (
-                <Button type="submit" variant="contained" disabled={loading} loading={loading} loadingPosition='end' >
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={loading || step2Error}
+                  loading={loading}
+                  loadingPosition="end"
+                >
                   {loading ? 'Registering...' : 'Finish'}
                 </Button>
               ) : (
-                <Button onClick={handleNext} variant="contained">
+                <Button
+                  onClick={handleNext}
+                  variant="contained"
+                  disabled={step1Error}
+                >
                   Next
                 </Button>
               )}

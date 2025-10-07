@@ -21,6 +21,8 @@ const steps = ['Your Credentials', 'Address Details'];
 
 function ComplaintRegister({ handleClose }) {
   const [activeStep, setActiveStep] = useState(0);
+  const [step1Error, setStep1Error] = useState(true);
+    const [step2Error, setStep2Error] = useState(true);
 
   // title, description, type, locality, district, city, pinCode, state,  urgency
 
@@ -39,6 +41,39 @@ function ComplaintRegister({ handleClose }) {
   const [complaintPicture, setComplaintPicture] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+
+  useEffect(() => {
+      if (activeStep == 0) {
+        if (
+          !formData ||
+          formData?.title.toString().trim() == '' ||
+          formData?.description.toString().trim() === '' ||
+          !complaintPicture ||
+          formData?.type.toString().trim() ==='' || (!COMPLAINT_TYPE_ENUM.includes(formData.type.toString().trim()))||
+          formData?.urgency.toString().trim()=='' || (!COMPLAINT_URGENCY_ENUM.includes(formData?.urgency.toString().trim()))
+
+        ) {
+          setStep1Error(true);
+        } else {
+          setStep1Error(false);
+        }
+      } else if(activeStep == 1) {
+        if (
+          !formData||(formData?.pinCode.toString().length > 0 &&
+          formData?.pinCode.toString().length != 6) ||
+          formData?.city.toString().trim().length == 0 ||
+          formData?.locality.toString().trim().length == 0 ||
+          formData?.district.toString().trim().length == 0 ||
+          formData?.state.toString().trim().length == 0
+          
+        ) {
+          setStep2Error(true);
+        } else {
+          setStep2Error(false);
+        }
+      }
+    }, [formData, complaintPicture]);
 
   const handleChange = (e) =>
     setFormData({
@@ -70,7 +105,7 @@ function ComplaintRegister({ handleClose }) {
         );
       case 1:
         return (
-          <Step2Complaint formData={formData} handleChange={handleChange} />
+          <Step2Complaint formData={formData} handleChange={handleChange}/>
         );
       default:
         throw new Error('unknown step');
@@ -216,14 +251,16 @@ function ComplaintRegister({ handleClose }) {
                   <Button
                     type="submit"
                     variant="contained"
-                    disabled={loading}
+                    disabled={loading || step2Error}
                     loading={loading}
                     loadingPosition="end"
                   >
                     {loading ? 'Registering...' : 'Finish'}
                   </Button>
                 ) : (
-                  <Button onClick={handleNext} variant="contained">
+                  <Button onClick={handleNext} variant="contained"
+                    disabled={step1Error}
+                  >
                     Next
                   </Button>
                 )}

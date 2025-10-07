@@ -1,10 +1,10 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import TextField from '@mui/material/TextField'
 import Stack from '@mui/material/Stack'
 
 
 function Step2Complaint({formData, handleChange}) {
-
+    
   return (
     <Stack
         sx={{
@@ -44,6 +44,8 @@ function Step2Complaint({formData, handleChange}) {
             required
             value={formData.pinCode}
             onChange={handleChange}
+            error = {formData.pinCode.toString().length>0 && formData.pinCode.toString().length != 6}
+            helperText = {(formData.pinCode.toString().length>0 && formData.pinCode.toString().length != 6) ? "Pin code must be of 6 digits" : ""}
         />
         <TextField
             name='state'

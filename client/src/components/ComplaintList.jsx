@@ -29,7 +29,7 @@ function ComplaintList({ filter = {} }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [complaints, setComplaints] = useState([]);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [hasNextPage, setHasNextPage] = useState(true);
   const observerRef = useRef(null);
   const location = useLocation();
@@ -169,13 +169,15 @@ function ComplaintList({ filter = {} }) {
     <>
     <Box
       sx={{
+        height:"100%",
         width:'100%',
         display:'flex',
         flexDirection:'column',
-        justifyContent:'center'
+        justifyContent:'center',
+        alignItems:"center",
       }}
     >
-      {<Grid container spacing={3} columns={2}
+      { <Grid container spacing={3} columns={2}
         sx={{
           display:"flex",
           justifyContent:"center",
@@ -208,7 +210,7 @@ function ComplaintList({ filter = {} }) {
 
       {/* The parent decides if we are loading the *next* page */}
       {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4, alignItems:"center", height:"100%" }}>
           <CircularProgress />
         </Box>
       )}

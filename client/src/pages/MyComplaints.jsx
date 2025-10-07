@@ -6,6 +6,7 @@ import apiClient from '../api/axios';
 import ComplaintCard from '../components/ComplaintCard';
 import ComplaintList from '../components/ComplaintList';
 import { useAuth } from '../context/AuthContext';
+import FilterBar from '../components/FilterBar';
 
 function MyComplaints() {
   // const [complaintss, setComplaint] = useState([]);
@@ -45,9 +46,39 @@ function MyComplaints() {
       <Box
         sx={{
           width:'100%',
-          marginY:'2rem'
+          marginY:'2rem',
+          display:"flex",
+          justifyContent:"center",
+          alignItems:"center",
+          flexDirection:"column"
         }}
       >
+        <Container
+        disableGutters
+        maxWidth="xl"
+        sx={{
+          marginY:'2rem',
+          // paddingX:0
+        }}
+      >
+        <Typography
+          variant='h2'
+          sx={{
+            fontWeight:'bold'
+          }}
+        >
+          Citizen Stories
+        </Typography>
+        <Typography
+          variant='overline'
+          sx={{
+            fontSize:'0.9rem'
+          }}
+        >
+          Every Issue Matters. Every Voice Counts.
+          
+        </Typography>
+        </Container>
         <ComplaintList filter={userSpecificFilter}/>
       </Box>
     );

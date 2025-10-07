@@ -16,7 +16,7 @@ function Layout() {
       <Toolbar /> {/* <-- ADD THIS SPACER */}
         <Container
             sx={{
-                marginTop:'3rem'
+                marginTop:'3rem',
             }}
         >
             <main className="content-area">
