@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import { ROLES, ROLES_ENUM } from '../enum/roles.js';
 import { Complaint } from '../models/complaint.model.js';
+import { COMPLAINT_STATUS, COMPLAINT_STATUS_ENUM } from '../enum/ComplaintStatus.js';
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -221,12 +222,15 @@ const userProfile = asyncHandler(async (req, res) => {
     },
   ]);
 
+  const initialStats = Object.fromEntries(COMPLAINT_STATUS_ENUM.map(status => [status, 0])); //to take all states intially
+  //to ensure that even if the status result is 0, it is in our Complaint stats result
+
   // Convert the aggregation result array into a more convenient object
   // e.g., from [{ _id: 'PENDING', count: 5 }] to { PENDING: 5 }
   const complaintStats = complaintStatusCounts.reduce((acc, status) => {
     acc[status._id] = status.count; //status curreent value ko denote krta hai aur acc result array hai
     return acc;
-  }, {});
+  }, initialStats);
 
   const data = {
     role: userRole,
