@@ -1,8 +1,24 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Modal } from '@mui/material'
 import {Box} from '@mui/material'
 
+
 function EditProfile({open, onClose}) {
+
+    const [formData, setFormData] = useState({
+        fullName: '',
+        email: '',
+        password: '',
+        locality: '',
+        city: '',
+        district: '',
+        pinCode: '',
+        state: '',
+      });
+    
+    const [profilePicture, setProfilePicture] = useState(null);
+
+
   return (
     <Modal
             open={open}

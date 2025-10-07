@@ -56,6 +56,9 @@ const registerUser = asyncHandler(async (req, res) => {
             'fullname, email and password and address fields are necessary'
         );
     }
+    if (password.length < 8) {
+        throw new apiError(400, "Password must be at least 8 characters long");
+    }
 
     const existingUser = await User.findOne({
         email,
@@ -77,7 +80,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const user = await User.create({
         fullName,
-        email,
+        email : email.toLowerCase(),
         password,
         profilePicture: profilePicture.url,
         address: {
@@ -107,7 +110,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!password || !email) {
         throw new apiError(400, 'username and email both are required');
     }
-
+    email = email.toLowerCase();
     const user = await User.findOne({
         email,
     });
@@ -256,6 +259,11 @@ const editProfile = asyncHandler(async (req, res) => {
         throw new apiError(404, "User not found");
     }
 
+    const isValidPassword = user.isPasswordCorrect(password);
+    if(!isValidPassword){
+        throw new apiError(403, "Incorrect verification password");
+    }
+
     const {
         email,
         password,
@@ -272,7 +280,7 @@ const editProfile = asyncHandler(async (req, res) => {
 
     if (password) {
         if (password.length < 8) {
-            throw new apiError(400, "Password must be at least 8 characters long");
+            throw new apiError(422, "Password must be at least 8 characters long");
         }
         user.password = await bcrypt.hash(password, 10);
     }
