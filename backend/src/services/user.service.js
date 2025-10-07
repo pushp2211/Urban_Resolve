@@ -23,24 +23,14 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
     }
 
     if(pinCode){
-        if(pinCode === "myPinCode"){
-            filter['address.pinCode'] = user.address.pinCode;
-        }
-        else{
-            filter['address.pinCode'] = pinCode
-        }
+        filter['address.pinCode'] = pinCode
     }
 
     if(locality){
         filter['address.locality'] = locality
     }
     if(city){
-        if(city === "myCity"){
-            filter['address.city'] = user.address.city;
-        }
-        else{
-            filter['address.city'] = city
-        }
+        filter['address.city'] = city
     }
     
     if(status){

@@ -448,7 +448,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
             )}
           </Box>
         )}
-        <Box
+        {(user.role === ROLES.ADMIN || user.role ===ROLES.STAFF) && <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
@@ -490,7 +490,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               ))}
             </Select>
           </FormControl>
-        </Box>
+        </Box>}
       </Box>
     </Box>
   );
