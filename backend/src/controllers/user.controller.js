@@ -110,9 +110,9 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!password || !email) {
         throw new apiError(400, 'username and email both are required');
     }
-    email = email.toLowerCase();
+    const newEmail = email.toLowerCase();
     const user = await User.findOne({
-        email,
+        email: newEmail,
     });
     if (!user) {
         throw new apiError(
