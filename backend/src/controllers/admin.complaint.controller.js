@@ -189,4 +189,28 @@ export const getStaffList = asyncHandler(async(req, res)=>{
     .status(200)
     .json(new apiResponse(200, eligibleStaff, "Eligible staff list fetched successfully"));
     
-})
+});
+
+export const getUser = asyncHandler(async (req, res) => {
+  const adminId = req.user?._id;
+
+  if (!adminId) {
+    throw new apiError(401, "Unauthorized access");
+  }
+
+  const userEmail = req.query.email;
+  if (!userEmail) {
+    throw new apiError(400, "Email query parameter is required");
+  }
+
+  // Find user by email
+  const user = await User.findOne({ email: userEmail }).select("-password -refreshToken");
+
+  if (!user) {
+    throw new apiError(404, "No user found with this email");
+  }
+
+  return res
+    .status(200)
+    .json(new apiResponse(200, user, "User fetched successfully"));
+});
