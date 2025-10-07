@@ -5,6 +5,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import VirtualList from 'rc-virtual-list';
 import Avatar from '@mui/material/Avatar';
+import { Typography } from '@mui/material';
 export default function StaffListDialog({ staffList, onSelectStaff, assignComplaint }) {
 
 
@@ -21,8 +22,21 @@ export default function StaffListDialog({ staffList, onSelectStaff, assignCompla
         bgcolor: 'background.paper',
         overflow: 'hidden',
         margin:"1rem",
+        borderRadius:"1rem",
+        padding:1
       }}
     >
+      {
+        staffList.length === 0 &&
+        <Typography
+          sx={{
+            backgroundColor:"transparent",
+            borderRadius:"1rem"
+          }}
+        >
+          No eleigible staffs found, add staffs in this district.
+        </Typography>
+      }
       <VirtualList
         data={staffList}
         // height={ContainerHeight}

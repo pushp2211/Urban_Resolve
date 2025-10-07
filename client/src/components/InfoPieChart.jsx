@@ -10,7 +10,10 @@ import {
 
 
 import { Box } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
+import { ROLES } from '../../enum/roles';
 export default function InfoPieChart({ data}) {
+  const {user} = useAuth();
   console.log(data)
   return (
     <Box
@@ -19,7 +22,7 @@ export default function InfoPieChart({ data}) {
         height:"17rem"
       }}
     >
-      <ResponsiveContainer width="100%" height="100%">
+      {user.role !== ROLES.ADMIN  &&<ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
@@ -40,7 +43,7 @@ export default function InfoPieChart({ data}) {
           <Tooltip />
           <Legend />
         </PieChart>
-      </ResponsiveContainer>
+      </ResponsiveContainer>}
     </Box>
   );
 }
