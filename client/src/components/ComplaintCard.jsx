@@ -38,7 +38,7 @@ function ComplaintCard({ complaint }) {
       setCountLoadingError("")
       try {
         const response = await apiClient.get(
-          `/dashboard/complaints/${complaint._id}/upvote`
+          `/service/${complaint._id}/upvote`
         );
         const { isUpvoted, totalUpvotes } = response.data.data;
         setIsUpvoted(isUpvoted);
@@ -61,7 +61,7 @@ function ComplaintCard({ complaint }) {
     setCountLoadingError("");
     try {
       const response = await apiClient.put(
-        `/dashboard/complaints/${complaint._id}/toggleUpvote`
+        `/service/${complaint._id}/toggleUpvote`
       );
       const { isUpvoted, total } = response.data.data;
       // console.log(response.data.data);
