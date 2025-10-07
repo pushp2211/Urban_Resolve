@@ -10,6 +10,7 @@ import Button from '@mui/material/Button';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useEffect } from 'react';
 import apiClient from '../api/axios';
+import theme from '../theme';
 // Function to get a color for the status chip
 const getStatusColor = (status) => {
   switch (status) {
@@ -100,7 +101,7 @@ function ComplaintCard({ complaint }) {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            {complaint.address?.city}, {complaint.address.pinCode}
+            {complaint.address?.city}, {complaint.address?.pinCode}
           </Typography>
           <Chip
             label={complaint.status}
@@ -150,7 +151,7 @@ function ComplaintCard({ complaint }) {
             <Typography sx={{ mt: 1.5 }} color="text.secondary">
               {new Date(complaint.createdAt).toLocaleDateString()}
               {'  '}
-              {complaint.address.district}
+              {complaint.address?.district}
             </Typography>
           </Box>
 
@@ -162,7 +163,7 @@ function ComplaintCard({ complaint }) {
             }}
           >
             <Button onClick={handleUpVote} sx={{}}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={isUpvoted?"red":""} stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-up-icon lucide-arrow-big-up"><path d="M9 13a1 1 0 0 0-1-1H5.061a1 1 0 0 1-.75-1.811l6.836-6.835a1.207 1.207 0 0 1 1.707 0l6.835 6.835a1 1 0 0 1-.75 1.811H16a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill={isUpvoted?"red": theme.palette.mode ==="light" ? "white" :""} stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-up-icon lucide-arrow-big-up"><path d="M9 13a1 1 0 0 0-1-1H5.061a1 1 0 0 1-.75-1.811l6.836-6.835a1.207 1.207 0 0 1 1.707 0l6.835 6.835a1 1 0 0 1-.75 1.811H16a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/></svg>
             </Button>
             {upvoteCount}
           </Box>

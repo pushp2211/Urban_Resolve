@@ -13,10 +13,13 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
         throw new apiError(404, "User profile or address not found, Please complete your profile");
     }
 
-    const {pinCode, locality, city, dateRange, status, page = 1, limit = 10} = req.query;
+    const {district, pinCode, locality, city, dateRange, status, page = 1, limit = 10, submittedBy} = req.query;
 
     const filter = {
-        'address.district' : user.address.district
+        
+    }
+    if(district){
+        filter['address.district'] = district;
     }
 
     if(pinCode){
@@ -50,6 +53,9 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res)=>{
         filter.createdAt = {
             $gte:startOfMonth
         }
+    }
+    if(submittedBy){
+        filter.submittedBy = user._id;
     }
 
     const options = {

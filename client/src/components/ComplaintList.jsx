@@ -45,7 +45,15 @@ function ComplaintList({ filter = {} }) {
   const dateRange = searchParams.get('dateRange') || '';
   const limit = searchParams.get('limit') || 12;
 
-  
+  useEffect(() => {
+    // resetting the page number on reload 
+    setSearchParams(prevParams => {
+      const newParams = new URLSearchParams(prevParams);
+      // Set the page to 1
+      newParams.set('page', '1');
+      return newParams;
+    });
+  }, []);
 
 
   
@@ -61,6 +69,16 @@ function ComplaintList({ filter = {} }) {
     if (status) query.append('status', status);
     if (dateRange) query.append('dateRange', dateRange);
     if (limit) query.append('limit', limit);
+    if (filter) {
+      Object.entries(filter).forEach(([key, value]) => {
+        // Ensure the value is not null/undefined before adding it
+        if (value) {
+          query.append(key, value);
+        }
+      });
+    }
+    console.log("query")
+    console.log(query.get('submittedBy'));
 
     const fetchComplaints = async () => {
       try {
@@ -68,8 +86,9 @@ function ComplaintList({ filter = {} }) {
         setError('');
 
         const response = await apiClient.get(
-          `${location.pathname}?${query.toString()}`
+          `/service?${query.toString()}`
         );
+        console.log(response);
         const newComplaints = response.data.data.complaints || [];
         if (page > 1) {
           setComplaints((prev) => [...prev, ...newComplaints]);
@@ -97,7 +116,7 @@ function ComplaintList({ filter = {} }) {
     if(hasNextPage || page==1){
       fetchComplaints();
     }
-  }, [page, city, locality, pinCode, status, dateRange, limit]);
+  }, [page, city, locality, pinCode, status, dateRange, limit, filter]);
 
   
 
