@@ -9,12 +9,14 @@ import apiClient from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { ROLES } from '../../enum/roles';
 import ComplaintDetailedDialog from './ComplaintDetailedDialog';
+import { useNavigate } from 'react-router-dom';
 // {pinCode :"", locality : "", city : "", dateRange : "", status : "", page: 1, limit : 14}
 
 
   
 function ComplaintList({ filter = {} }) {
   const {user} = useAuth();
+  const navigate = useNavigate();
 
   const [parsedUser, setParsedUser] = useState(null);
 
@@ -82,6 +84,10 @@ function ComplaintList({ filter = {} }) {
           setHasNextPage(false);
         }
       } catch (error) {
+        if(error.status === 401){
+          localStorage.clear();
+          navigate('/login');
+        }
         setError('Error while fetching complaints, Try again later');
         console.log(error);
       } finally {

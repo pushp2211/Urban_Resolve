@@ -75,7 +75,7 @@ function NavBar() {
     }
   };
   const openProfile = ()=>{
-
+    
   }
 
   return (

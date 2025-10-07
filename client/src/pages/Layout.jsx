@@ -7,6 +7,7 @@ import NavBarBottom from '../components/NavBarBottom'
 import Container from '@mui/material/Container'
 import FabRegisterComplaint from '../components/FabRegisterComplaint'
 function Layout() {
+  
   return (
     <Box
         
