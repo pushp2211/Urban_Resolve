@@ -15,10 +15,14 @@ const notificationSchema = new Schema(
     complaint_id: {
       type: Schema.Types.ObjectId,
       ref: 'Complaint',
-      required: true,
     },
     // ID of the user who will receive the notification
     recipient_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    sender_id: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,

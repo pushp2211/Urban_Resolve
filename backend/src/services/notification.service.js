@@ -1,14 +1,23 @@
 import Notification from '../models/notification.model.js';
 import cron from 'node-cron';
+import { apiError } from '../utils/apiError.js';
 
 /**
  * Creates and saves a new notification.
  */
 export const sendNotification = async (notificationData) => {
   const notification = new Notification(notificationData);
-  await notification.save();
-  console.log(`Notification sent to ${notificationData.recipient_id}`);
-  return notification;
+  const savedNotification = await notification.save();
+
+  if (!savedNotification) {
+    throw new apiError(500, 'Failed to save the notification in the database.');
+  }
+
+  console.log(
+    `Notification sent from ${notificationData.sender_id} to ${notificationData.recipient_id}`
+  );
+
+  return savedNotification;
 };
 
 /**
@@ -22,11 +31,15 @@ export const getNotifications = async (userId) => {
  * Marks a specific notification as read.
  */
 export const markAsRead = async (notificationId, userId) => {
-  return Notification.findOneAndUpdate(
+  const updatedNotification = Notification.findOneAndUpdate(
     { _id: notificationId, recipient_id: userId },
     { read_status: true },
     { new: true }
   );
+  if (!updatedNotification) {
+    throw new apiError(500, 'Unable to mark as read in database, server error');
+  }
+  return updatedNotification;
 };
 
 /**
@@ -51,6 +64,8 @@ const deleteOldReadNotifications = async () => {
       'Error in scheduled job for deleting old notifications:',
       error
     );
+    // Note: Throwing here might stop your server if not handled.
+    // For a cron job, logging the error is often sufficient.
   }
 };
 
