@@ -11,6 +11,6 @@ router.use(verifyJWT);
 
 router.get('/', getNotificationsForUser);
 
-router.patch('/:id/read', markNotificationAsRead);
+router.patch('/:id/markread', markNotificationAsRead);
 
 export default router;
