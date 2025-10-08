@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Highlights from './pages/Highlights';
 import MyComplaints from './pages/MyComplaints';
 import Profile from './pages/Profile';
+import Management from './pages/Management';
 import Home from './pages/Home';
 import { Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@emotion/react';
@@ -38,6 +39,7 @@ const [curTheme, setTheme] = useState("light");
             <Route path="my-complaints" element={<MyComplaints />} />
             <Route path="profile" element={<Profile />} />
             {user?.role === ROLES.STAFF && <Route path="assigned-complaints" element={<MyAssignedComplaints />} />}
+            {user?.role ===ROLES.ADMIN && <Route path='management' element={<Management/>}/>}
           </Route>
           
         </Route>

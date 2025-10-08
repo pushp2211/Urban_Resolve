@@ -33,7 +33,7 @@ router.route("/staffList/:id").get(
     getStaffList
 )
 
-router.route("/search").get(
+router.route("/searchUser").get(
     verifyJWT,
     verifyRole(ROLES.ADMIN),
     getUser
