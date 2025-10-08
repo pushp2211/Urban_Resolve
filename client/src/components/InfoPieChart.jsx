@@ -32,7 +32,7 @@ export default function InfoPieChart({ data}) {
             outerRadius={80}
             dataKey="value"
             label = {data.label}
-            paddingAngle={5}
+            paddingAngle={0}
             nameKey="label"
             cornerRadius={10}
             stroke="none"

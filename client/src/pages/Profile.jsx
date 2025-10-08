@@ -156,6 +156,47 @@ function Profile() {
             Edit Profile
           </Button>
         </Box>
+        <Box
+          sx={{
+            // display:"flex",
+            // gap:1,
+            // alignItems:"center",
+            // justifyContent:"center"
+          }}
+        >
+          <Typography color='text.secondary' variant='overline'
+            sx={{
+              fontSize:"1rem",
+              
+            }}
+            // align='center'
+          >
+            Addres details
+          </Typography>
+          <Box
+          sx={{
+            display:"flex",
+            flexDirection:"column"
+          }}
+          >
+            <Typography
+              variant='overline'
+              sx={{
+                fontWeight:"medium"
+              }}
+            >
+              {user?.address?.locality}, {user?.address?.city}, {user?.address?.district}
+            </Typography>
+            <Typography
+              variant='overline'
+              sx={{
+                fontWeight:"medium"
+              }}
+            >
+              {user?.address?.state}{",  "}{user?.address?.pinCode}
+            </Typography>
+          </Box>
+        </Box>
       </Box>
 
       <Box
