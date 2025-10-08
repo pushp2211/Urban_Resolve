@@ -23,6 +23,7 @@ import Select from '@mui/material/Select';
 
 import CloseIcon from '@mui/icons-material/Close';
 
+
 const getStatusColor = (status) => {
   switch (status) {
     case COMPLAINT_STATUS.PENDING:
@@ -41,6 +42,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
   // console.log(theme);
 
   const { user } = useAuth();
+  const assignedTo = complaint.assignedTo;
   const [listOpen, setListOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [staffList, setStaffList] = useState([]);
@@ -472,7 +474,10 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           <FormControl
             sx={{ m: 1, minWidth: 120 }}
             size="small"
-            disabled = {statusLoading || curComplaintStatus===COMPLAINT_STATUS.REJECTED || curComplaintStatus===COMPLAINT_STATUS.RESOLVED}
+            disabled = {statusLoading || curComplaintStatus===COMPLAINT_STATUS.REJECTED || curComplaintStatus===COMPLAINT_STATUS.RESOLVED
+
+              || (user.role===ROLES.STAFF && user._id !== assignedTo)
+            }
           >
             <InputLabel id="demo-select-small-label">Status</InputLabel>
             <Select

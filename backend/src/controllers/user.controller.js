@@ -205,7 +205,7 @@ const userProfile = asyncHandler(async (req, res) => {
     // Determine the match criteria based on the user's role
     if (userRole === ROLES.STAFF) {
         matchQuery = { assignedTo: userId };
-    } else if (userRole === ROLES.USER) {
+    } else if (userRole === ROLES.USER || userRole === ROLES.ADMIN) {
         matchQuery = { submittedBy: userId };
     } else {
         // Handle cases where user might not have a role that sees complaints
@@ -259,12 +259,10 @@ const editProfile = asyncHandler(async (req, res) => {
         throw new apiError(404, "User not found");
     }
 
-    const isValidPassword = user.isPasswordCorrect(password);
-    if(!isValidPassword){
-        throw new apiError(403, "Incorrect verification password");
-    }
+    
 
     const {
+        fullName,
         email,
         password,
         locality,
@@ -273,6 +271,15 @@ const editProfile = asyncHandler(async (req, res) => {
         pinCode,
         state,
     } = req.body;
+
+    
+
+    if(password){
+        const isValidPassword = user.isPasswordCorrect(password);
+        if(!isValidPassword){
+        throw new apiError(403, "Incorrect verification password");
+        }
+    }
 
     if (email) user.email = email.toLowerCase();
 
@@ -283,6 +290,10 @@ const editProfile = asyncHandler(async (req, res) => {
             throw new apiError(422, "Password must be at least 8 characters long");
         }
         user.password = await bcrypt.hash(password, 10);
+    }
+
+    if(fullName){
+        user.fullName = fullName
     }
 
     if (locality || district || city || pinCode || state) {

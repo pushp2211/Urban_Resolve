@@ -20,7 +20,7 @@ function Dashboard() {
     >
       <Container
         disableGutters
-        maxWidth="xl"
+        // maxWidth="xl"
         sx={{
           marginY:'2rem',
           // paddingX:0
@@ -44,7 +44,7 @@ function Dashboard() {
           
         </Typography>
       </Container>
-      <FilterBar userAddress={user?.address}/>
+      {/* <FilterBar /> */}
       <Outlet/>
     </Box>
   )

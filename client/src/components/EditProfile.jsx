@@ -9,7 +9,8 @@ import {
   Button,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-
+import apiClient from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 function EditProfile({ open, onClose }) {
   // Field disable/enabling flags
   const [editable, setEditable] = useState({
@@ -46,15 +47,21 @@ function EditProfile({ open, onClose }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
+  const {setUser} = useAuth();
+
+  const handleSubmit = async () => {
     setLoading(true);
     setError('');
     try {
       console.log('Submitting profile:', formData);
-      // here call your API
+      const response = await apiClient.put(`/editProfile`, formData);
+      const userData = response.data.data
+      localStorage.setItem('user', JSON.stringify(userData))
+      setUser(userData);
+        console.log(response);
       onClose();
     } catch (err) {
-      setError('Something went wrong!');
+      setError('Unable to modify given details, Try agian later!');
     } finally {
       setLoading(false);
     }
@@ -83,7 +90,7 @@ function EditProfile({ open, onClose }) {
           width: {
             xs: '90%',
             sm: '30rem',
-            md: '35rem',
+            md: '30rem',
           },
           maxHeight: '90vh',
           overflowY: 'auto',
@@ -109,7 +116,7 @@ function EditProfile({ open, onClose }) {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: "space-evenly",
                 gap: 1,
               }}
             >
@@ -119,9 +126,10 @@ function EditProfile({ open, onClose }) {
                 value={formData[field]}
                 onChange={(e) => handleChange(field, e.target.value)}
                 disabled={!editable[field]}
-                fullWidth
+                // fullWidth
                 variant="outlined"
                 size="small"
+
               />
               <IconButton onClick={() => handleToggle(field)} color="primary">
                 <EditIcon />

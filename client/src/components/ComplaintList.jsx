@@ -10,6 +10,8 @@ import { useAuth } from '../context/AuthContext';
 import { ROLES } from '../../enum/roles';
 import ComplaintDetailedDialog from './ComplaintDetailedDialog';
 import { useNavigate } from 'react-router-dom';
+import FilterBar from './FilterBar';
+import { Container } from '@mui/material';
 // {pinCode :"", locality : "", city : "", dateRange : "", status : "", page: 1, limit : 14}
 
 
@@ -173,17 +175,29 @@ function ComplaintList({ filter = {} }) {
         width:'100%',
         display:'flex',
         flexDirection:'column',
-        justifyContent:'center',
+        // justifyContent:'center',
         alignItems:"center",
       }}
     >
-      { <Grid container spacing={3} columns={2}
+      
+      
+      <Container>
+         <FilterBar />
+      </Container>
+     {complaints.length === 0&& !loading &&
+        <Box>
+          No complaints found.
+        </Box>
+      }
+
+      { <Grid container spacing={3} columns={4}
         sx={{
           display:"flex",
           justifyContent:"center",
 
         }}
       >
+        
         {complaints.map((complaint, index) => {
           // Attach the ref to the last element to trigger infinite scroll
           if (complaints.length === index + 1) {

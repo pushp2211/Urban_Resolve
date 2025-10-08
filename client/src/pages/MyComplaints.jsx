@@ -55,9 +55,9 @@ function MyComplaints() {
       >
         <Container
         disableGutters
-        maxWidth="xl"
+        // maxWidth="xl"
         sx={{
-          marginY:'2rem',
+          // marginY:'2rem',
           // paddingX:0
         }}
       >
@@ -79,6 +79,7 @@ function MyComplaints() {
           
         </Typography>
         </Container>
+        {/* <FilterBar/> */}
         <ComplaintList filter={userSpecificFilter}/>
       </Box>
     );
