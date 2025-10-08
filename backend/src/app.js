@@ -8,6 +8,7 @@
     import commonDashboardRouter from './routes/service.routes.js'
     import reportRouter from './routes/report.routes.js'
 import { verifyJWT } from './middlewares/auth.middleware.js';
+import notificationRouter from './routes/notification.routes.js'
     const app = express();
 
     app.use(cors({
@@ -42,5 +43,8 @@ app.use("/api/v1/admin/", adminRouter)
 
 //servics routes
 app.use("/api/v1/service/", commonDashboardRouter);
+
+//notification routes
+app.use("/user/notification",notificationRouter);
 
 export {app};
