@@ -22,6 +22,22 @@ export const getNotificationsForUser = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Controller for Admins to get all notifications for a specific user by their ID.
+ */
+export const getNotificationsByUserId = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    if (!userId) {
+        throw new apiError(400, "User ID is required");
+    }
+
+    const notifications = await notificationService.getNotifications(userId);
+
+    return res
+        .status(200)
+        .json(new apiResponse(200, notifications, `Notifications for user ${userId} retrieved successfully`));
+});
+
+/**
  * Controller to mark a notification as read.
  */
 export const markNotificationAsRead = asyncHandler(async (req, res) => {

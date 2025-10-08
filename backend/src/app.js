@@ -45,6 +45,6 @@ app.use("/api/v1/admin/", adminRouter)
 app.use("/api/v1/service/", commonDashboardRouter);
 
 //notification routes
-app.use("/user/notification",notificationRouter);
+app.use("/api/v1/user/notification", notificationRouter);
 
 export {app};
