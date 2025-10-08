@@ -15,7 +15,11 @@ import Home from './pages/Home';
 import { Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@emotion/react';
 import theme from './theme';
+import MyAssignedComplaints from './pages/MyAssignedComplaints';
+import { ROLES } from '../enum/roles';
+import { useAuth } from './context/AuthContext';
 function App() {
+  const {user} = useAuth();
 // pinCode, locality, city, dateRange, status
 const [curTheme, setTheme] = useState("light");
   return (
@@ -33,6 +37,7 @@ const [curTheme, setTheme] = useState("light");
             <Route path="highlights" element={<Highlights />} />
             <Route path="my-complaints" element={<MyComplaints />} />
             <Route path="profile" element={<Profile />} />
+            {user?.role === ROLES.STAFF && <Route path="assigned-complaints" element={<MyAssignedComplaints />} />}
           </Route>
           
         </Route>

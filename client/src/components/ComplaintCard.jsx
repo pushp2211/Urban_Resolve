@@ -84,10 +84,16 @@ function ComplaintCard({ complaint }) {
       sx={{
         width: {
           xs: '23rem', // extra-small devices: full width
-          sm: '33rem', // small devices: 25rem
-          md: '40rem', // medium devices: 30rem
-          lg: '33rem', // large devices: 35rem
-          xl: '40rem', // extra large devices: 40rem
+          sm: '23rem', // small devices: 25rem
+          md: '22rem', // medium devices: 30rem
+          lg: '23rem', // large devices: 35rem
+          xl: '28rem', // extra large devices: 40rem
+        },
+        maxHeight:{
+          lg:"27rem"
+        },
+        minHeight:{
+          lg:"27rem"
         },
         borderRadius: '1rem',
       }}

@@ -7,9 +7,10 @@ function FilterBar() {
   return (
     <Box
         sx={{
-            width:'100%'
+            // width:'100%',
+            marginY:"2rem"
         }}
-        minWidth='full'
+        // minWidth='full'
     >
    <CategoryButtons />
     </Box>

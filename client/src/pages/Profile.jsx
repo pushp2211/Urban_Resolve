@@ -9,6 +9,7 @@ import apiClient from '../api/axios';
 import theme from '../theme';
 import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 import EditProfile from '../components/EditProfile';
+import { ROLES } from '../../enum/roles';
 function Profile() {
   const { user } = useAuth();
   const [userComplaintDetails, setUserComplaintDetails] = useState({});
@@ -63,6 +64,7 @@ function Profile() {
           setError('Error occured while fetching the profile information');
           return;
         }
+        console.log(response.data.data);
         const complaintStats = response.data?.data?.complaintStats;
         // console.log(complaintStats);
         setUserComplaintDetails(complaintStats);
@@ -131,7 +133,7 @@ function Profile() {
             gap: 1,
             alignItems: 'center',
             justifyContent: 'center',
-            padding: 2,
+            padding: 1,
             backgroundColor:
               theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
             borderRadius: '1rem',
@@ -143,11 +145,57 @@ function Profile() {
         </Box>
         <Box>
           <Button
-          
+            sx={{
+              borderRadius:"3rem",
+
+              backgroundColor:theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+              paddingX:1,
+            }}
             onClick={setEditOpenController}
           >
             Edit Profile
           </Button>
+        </Box>
+        <Box
+          sx={{
+            // display:"flex",
+            // gap:1,
+            // alignItems:"center",
+            // justifyContent:"center"
+          }}
+        >
+          <Typography color='text.secondary' variant='overline'
+            sx={{
+              fontSize:"1rem",
+              
+            }}
+            // align='center'
+          >
+            Addres details
+          </Typography>
+          <Box
+          sx={{
+            display:"flex",
+            flexDirection:"column"
+          }}
+          >
+            <Typography
+              variant='overline'
+              sx={{
+                fontWeight:"medium"
+              }}
+            >
+              {user?.address?.locality}, {user?.address?.city}, {user?.address?.district}
+            </Typography>
+            <Typography
+              variant='overline'
+              sx={{
+                fontWeight:"medium"
+              }}
+            >
+              {user?.address?.state}{",  "}{user?.address?.pinCode}
+            </Typography>
+          </Box>
         </Box>
       </Box>
 
@@ -167,8 +215,8 @@ function Profile() {
             }}
           >
             Hello &nbsp;
-            {user.fullName.length > 10
-              ? `${user.fullName.slice(0, 10)}…`
+            {user.fullName?.length > 10
+              ? `${user.fullName?.slice(0, 10)}…`
               : user.fullName}
             !
           </Typography>
@@ -229,7 +277,8 @@ function Profile() {
                   borderRadius: '1rem',
                 }}
               >
-                Total Complaints reported: {totalComplaints}
+                {user.role !==ROLES.STAFF && `Total Complaints reported: ${totalComplaints}`}
+                {user.role ===ROLES.STAFF && `Total Complaints Assigned: ${totalComplaints}`}
               </Typography>
               <Typography
                 sx={{
@@ -261,7 +310,7 @@ function Profile() {
               >
                 In Progress: {inProgress}
               </Typography>
-              <Typography
+              {user.role!==ROLES.STAFF && <Typography
                 sx={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -275,8 +324,8 @@ function Profile() {
                 }}
               >
                 Pending:{pending}
-              </Typography>
-              <Typography
+              </Typography>}
+              {user.role!==ROLES.STAFF && <Typography
                 sx={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -287,10 +336,12 @@ function Profile() {
                   backgroundColor:
                     theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
                   borderRadius: '1rem',
+                  
                 }}
+                
               >
                 Rejected: {rejected}
-              </Typography>
+              </Typography>}
             </Box>
           </Box>
           <Box></Box>

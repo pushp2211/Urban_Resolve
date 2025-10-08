@@ -14,7 +14,7 @@ import { useAuth } from '../context/AuthContext';
 import { ROLES } from '../../enum/roles';
 export default function InfoPieChart({ data}) {
   const {user} = useAuth();
-  console.log(data)
+  // console.log(data)
   return (
     <Box
       sx={{
@@ -22,7 +22,7 @@ export default function InfoPieChart({ data}) {
         height:"17rem"
       }}
     >
-      {user.role !== ROLES.ADMIN  &&<ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
@@ -32,9 +32,10 @@ export default function InfoPieChart({ data}) {
             outerRadius={80}
             dataKey="value"
             label = {data.label}
-            paddingAngle={5}
+            paddingAngle={0}
             nameKey="label"
             cornerRadius={10}
+            stroke="none"
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${entry.label}`} fill={entry.color} />
@@ -43,7 +44,7 @@ export default function InfoPieChart({ data}) {
           <Tooltip />
           <Legend />
         </PieChart>
-      </ResponsiveContainer>}
+      </ResponsiveContainer>
     </Box>
   );
 }

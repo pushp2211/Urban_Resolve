@@ -6,23 +6,28 @@ import Box from '@mui/material/Box'
 import NavBarBottom from '../components/NavBarBottom'
 import Container from '@mui/material/Container'
 import FabRegisterComplaint from '../components/FabRegisterComplaint'
+import FilterBar from '../components/FilterBar';
 function Layout() {
   
   return (
     <Box
-        
+        sx={{
+          width:"100vw"
+        }}
     >
       <NavBar />
-      <Toolbar /> {/* <-- ADD THIS SPACER */}
-        <Container
+      {/* <FilterBar/> */}
+      <Toolbar /> 
+        <Box
             sx={{
                 marginTop:'3rem',
+                width:"100%",
             }}
         >
             <main className="content-area">
             <Outlet />
             </main>
-        </Container>
+        </Box>
         <Toolbar />
         <NavBarBottom/>
         <FabRegisterComplaint/>
