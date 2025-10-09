@@ -2,7 +2,7 @@ import { Complaint } from "../models/complaint.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { apiError } from "../utils/apiError.js";
 import { apiResponse } from "../utils/apiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, getOptimizedUrl } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
 import { COMPLAINT_STATUS } from "../enum/ComplaintStatus.js";
 
@@ -29,7 +29,7 @@ const createUserComplaint = asyncHandler(async (req, res) => {
   if (!photo || !photo.url) {
     throw new apiError(500, "Error: Failed to upload photo. Please try again.");
   }
-
+  const optimisedPhotoUrl = getOptimizedUrl(photo.url)
   const complaint = await Complaint.create({
     title,
     description,
@@ -41,7 +41,7 @@ const createUserComplaint = asyncHandler(async (req, res) => {
       city: city,
       state:state
     },
-    photoUrl: photo.url,
+    photoUrl: optimisedPhotoUrl,
     submittedBy,
     urgency,
   });

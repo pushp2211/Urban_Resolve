@@ -116,7 +116,6 @@ useEffect(() => {
         <Box
           sx={{
             flexGrow: 1,
-            display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             height: '100%',
