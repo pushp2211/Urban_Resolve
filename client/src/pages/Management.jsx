@@ -8,7 +8,9 @@ import apiClient from '../api/axios';
 import FilterListAltIcon from '@mui/icons-material/FilterListAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import AdminFilterModal from '../components/AdminFilterModal';
+import { useLoading } from '../context/LoadingContext';
 function Management() {
+  const {showLoading, hideLoading} = useLoading()
   // setSearchValue, searchResult, loading, error, handleSearch, searchValue
   const [searchValue, setSearchValue] = useState('');
   const [searchResult, setSearchResult] = useState([]);

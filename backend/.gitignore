@@ -10,7 +10,7 @@
 .env.production.local
 
 # Build output
-/dist
+/distgti
 /build
 
 # Logs

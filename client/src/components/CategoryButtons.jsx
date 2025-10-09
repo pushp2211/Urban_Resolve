@@ -39,7 +39,12 @@ function CategoryButtons() {
             variant='outlined'
             sx={{
               borderRadius:'2rem',
-              paddingX:'0.8rem'
+              paddingX:'0.8rem',
+              fontSize:{
+                xs:"0.7rem",
+                md:"1rem",
+                lg:""
+              }
             }}
             onClick={()=>handleClick(filter.key, filter.value)}
           >

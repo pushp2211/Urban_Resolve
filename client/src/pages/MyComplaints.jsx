@@ -7,7 +7,7 @@ import ComplaintCard from '../components/ComplaintCard';
 import ComplaintList from '../components/ComplaintList';
 import { useAuth } from '../context/AuthContext';
 import FilterBar from '../components/FilterBar';
-
+import NotificationButton from '../components/NotificationButton';
 function MyComplaints() {
   // const [complaintss, setComplaint] = useState([]);
   // const [loading, setLoading] = useState(false);
@@ -58,12 +58,16 @@ function MyComplaints() {
         // maxWidth="xl"
         sx={{
           // marginY:'2rem',
-          // paddingX:0
-          paddingX:4
+          paddingX:4,
+          display:"flex",
+          flexDirection:"row",
+          justifyContent:"space-between",
+          alignItems:"center"
         }}
       >
-        <Typography
-          variant='h2'
+        <Box>
+          <Typography
+          variant='h3'
           sx={{
             fontWeight:'bold'
           }}
@@ -79,7 +83,9 @@ function MyComplaints() {
           Every Issue Matters. Every Voice Counts.
           
         </Typography>
-        </Container>
+        </Box>
+          <NotificationButton/>
+      </Container>
         {/* <FilterBar/> */}
         <ComplaintList filter={userSpecificFilter}/>
       </Box>

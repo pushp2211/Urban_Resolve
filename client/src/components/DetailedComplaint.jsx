@@ -22,6 +22,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 import CloseIcon from '@mui/icons-material/Close';
+import { triggerNotification } from '../../utils/notificationService.js';
 
 
 const getStatusColor = (status) => {
@@ -85,12 +86,19 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
         setStatusError("Encountered an error while updating the status");
         return;
       }
-      console.log(response);
+      // console.log(response);
+      
       const upDatedComplaint = response.data.data;
       complaint.status = upDatedComplaint.status;
       setComplaintCurStatus(complaint.status);
       onAssign(upDatedComplaint);
-
+      triggerNotification(
+        {
+          recipient_id:complaint.submittedBy,
+          message:`Your complaint (topic: ${complaint.title}) status has been changed to ${complaint.status}`,
+          complaint_id:complaint._id
+        }
+      )
       
     } catch (error) {
       setStaffAssignError('Unable to update, please try again.');
@@ -160,6 +168,20 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
       const updatedComplaint = response.data.data;
       complaint.status = updatedComplaint.status;
       onAssign(updatedComplaint);
+      triggerNotification(
+        {
+          recipient_id:staffId,
+          message:`You have been assigned a complaint from locality ${updatedComplaint.address?.locality} (Topic: ${updatedComplaint.title}, Urgency: ${updatedComplaint.urgency})`,
+          complaint_id:updatedComplaint._id
+        }
+      )
+      triggerNotification(
+        {
+          recipient_id:complaint.submittedBy,
+          message:`Your complaint (topic: ${complaint.title}) has been cassigned to staff, we'll be happy to solve as soon as possible`,
+          complaint_id:complaint._id
+        }
+      )
       setListOpen(false);
       setLoading(false);
     } catch (error) {
@@ -240,7 +262,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               }}
               
             >
-              <Typography variant="h4">{complaint.title}</Typography>
+              <Typography variant="button">{complaint.title}</Typography>
               <Button
                 onClick={onClose}
                 color='warning'

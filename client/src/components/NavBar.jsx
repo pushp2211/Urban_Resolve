@@ -20,7 +20,6 @@ const userPages = [
   { label: 'Home', path: '/dashboard' },
   { label: 'My Complaints', path: '/my-complaints' }
 ];
-const settings = ['Profile', 'Logout'];
 const staffPages = [
   { label: 'Home', path: '/dashboard' },
   { label: 'My Complaints', path: '/my-complaints' },
@@ -37,7 +36,7 @@ function NavBar() {
   const {user, logout } = useAuth();
 
   const navigate = useNavigate();
-  console.log(user);
+  // console.log(user);
   useEffect(()=>{
     if(user.role === ROLES.ADMIN){
     setPages(adminPages);

@@ -16,7 +16,12 @@ function Dashboard() {
     <Box
       sx={{
         width:'100%',
-          marginY:'2rem',
+          marginY:{
+            xs:-4,
+            sm:-4,
+            md:-4,
+            lg:2
+          },
           display:"flex",
           justifyContent:"center",
           alignItems:"center",
@@ -37,7 +42,7 @@ function Dashboard() {
       >
         <Box>
           <Typography
-          variant='h2'
+          variant='h3'
           sx={{
             fontWeight:'bold'
           }}

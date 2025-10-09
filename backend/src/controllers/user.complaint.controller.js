@@ -5,7 +5,7 @@ import { apiResponse } from "../utils/apiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
 import { COMPLAINT_STATUS } from "../enum/ComplaintStatus.js";
-
+import { getOptimizedUrl } from "../utils/cloudinary.js";
 /**
  * @description Controller for a logged-in user to create a new complaint.
  * @route POST /api/v1/user/complaints/create

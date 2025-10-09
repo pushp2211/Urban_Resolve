@@ -10,12 +10,16 @@ import theme from '../theme';
 import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 import EditProfile from '../components/EditProfile';
 import { ROLES } from '../../enum/roles';
+import { useLoading } from '../context/LoadingContext';
 function Profile() {
   const { user } = useAuth();
   const [userComplaintDetails, setUserComplaintDetails] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [data, setData] = useState([]);
+
+
+  const {showLoading, hideLoading} = useLoading();
 
   const [totalComplaints, setTotalComplaints] = useState(0);
   const [resolved, setResolved] = useState(0);
@@ -59,6 +63,8 @@ function Profile() {
       setError('');
       setLoading(true);
       try {
+        showLoading();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const response = await apiClient.get(`/profile`);
         if (response.status !== 200) {
           setError('Error occured while fetching the profile information');
@@ -74,6 +80,7 @@ function Profile() {
         setError('Error while fetching profile information');
         console.log(error);
       } finally {
+        hideLoading();
         setLoading(false);
       }
     };
@@ -106,7 +113,10 @@ function Profile() {
           lg: 'row',
           xl: 'row',
         },
-        paddingY: 3,
+        paddingY: {
+          xs:0,
+          lg:3
+        },
         justifyContent: 'center',
       }}
     >
@@ -124,7 +134,17 @@ function Profile() {
         <Avatar
           alt={user.fullName}
           src={user.profilePicture}
-          sx={{ width: 130, height: 130 }}
+          sx={{ width: {
+            xs:110,
+            md:120,
+            lg:130,
+          },
+             height: {
+            xs:110,
+            md:120,
+            lg:130,
+          }
+             }}
         />
         <Box
           sx={{
@@ -139,9 +159,9 @@ function Profile() {
             borderRadius: '1rem',
           }}
         >
-          <Typography variant="h6">ROLE:</Typography>
+          <Typography variant="h7">ROLE:</Typography>
 
-          <Typography variant="h6">{user.role}</Typography>
+          <Typography variant="h7">{user.role}</Typography>
         </Box>
         <Box>
           <Button
@@ -150,6 +170,11 @@ function Profile() {
 
               backgroundColor:theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
               paddingX:1,
+              fontSize:{
+                xs:"0.7rem",
+                md:"1rem",
+                lg:""
+              }
             }}
             onClick={setEditOpenController}
           >
@@ -207,11 +232,29 @@ function Profile() {
           padding: 1,
         }}
       >
-        <Box>
+        <Box
+          sx={{
+            display:"flex",
+            flexDirection:"column",
+
+          }}
+        >
           <Typography
-            variant="h3"
+            // variant="h3"
             sx={{
               fontWeight: 'bold',
+              textAlign:{
+                xs:"center",
+                sm:"center",
+                md:"center",
+                lg:"left"
+              },
+              fontSize:{
+                xs:"1rem",
+                md:"1.2rem",
+                lg:"3rem"
+              },
+              width:"100%"
             }}
           >
             Hello &nbsp;
@@ -220,8 +263,19 @@ function Profile() {
               : user.fullName}
             !
           </Typography>
-          <Typography variant="button">
-            A cleaner, safer society starts with you.
+          <Typography variant="button"
+            sx={{
+              textAlign:{
+                xs:"center",
+                sm:"center",
+                md:"center",
+                lg:"left"
+              },
+              width:"100%",
+              alignSelf:"center"
+            }}
+          >
+            A cleaner, safer society starts with you
           </Typography>
         </Box>
         <Box
@@ -256,7 +310,7 @@ function Profile() {
               },
             }}
           >
-            <InfoPieChart data={data} colors={STATUS_COLORS} />
+            {totalComplaints>0 && <InfoPieChart data={data} colors={STATUS_COLORS} />}
             <Box
               sx={{
                 display: 'flex',

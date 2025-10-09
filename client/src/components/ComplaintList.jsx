@@ -12,8 +12,8 @@ import ComplaintDetailedDialog from './ComplaintDetailedDialog';
 import { useNavigate } from 'react-router-dom';
 import FilterBar from './FilterBar';
 import { Container } from '@mui/material';
+import { useLoading } from '../context/LoadingContext';
 // {pinCode :"", locality : "", city : "", dateRange : "", status : "", page: 1, limit : 14}
-
 
   
 function ComplaintList({ filter = {} }) {
@@ -79,8 +79,8 @@ function ComplaintList({ filter = {} }) {
         }
       });
     }
-    console.log("query")
-    console.log(query.get('submittedBy'));
+    // console.log("query")
+    // console.log(query.get('submittedBy'));
 
     const fetchComplaints = async () => {
       try {
@@ -90,7 +90,7 @@ function ComplaintList({ filter = {} }) {
         const response = await apiClient.get(
           `/service?${query.toString()}`
         );
-        console.log(response);
+        // console.log(response);
         const newComplaints = response.data.data.complaints || [];
         if (page > 1) {
           setComplaints((prev) => [...prev, ...newComplaints]);
@@ -159,7 +159,7 @@ function ComplaintList({ filter = {} }) {
 
 
   const onAssign = (updatedComplaint)=>{
-    console.log(updatedComplaint);
+    // console.log(updatedComplaint);
     setComplaints((prevComplaints)=>
       prevComplaints.map((complaint)=>
         complaint?._id === updatedComplaint?._id ? updatedComplaint : complaint

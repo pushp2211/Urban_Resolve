@@ -17,14 +17,21 @@ import { Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@emotion/react';
 import theme from './theme';
 import MyAssignedComplaints from './pages/MyAssignedComplaints';
+import Notifications from './pages/Notifications';
 import { ROLES } from '../enum/roles';
 import { useAuth } from './context/AuthContext';
+import { LoadingProvider, useLoading } from './context/LoadingContext.jsx';
+import GlobalLoading from './components/GlobalLoading.jsx';
 function App() {
   const {user} = useAuth();
+  const { globalLoading } = useLoading();
 // pinCode, locality, city, dateRange, status
 const [curTheme, setTheme] = useState("light");
+
   return (
     <BrowserRouter>
+    <LoadingProvider>
+    <GlobalLoading open={globalLoading} />
     <ThemeProvider theme={theme} >
     <FilterProvider>
       <Routes>
@@ -37,6 +44,7 @@ const [curTheme, setTheme] = useState("light");
             </Route>
             <Route path="my-complaints" element={<MyComplaints />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="notifications" element={<Notifications />} />
             {user?.role === ROLES.STAFF && <Route path="assigned-complaints" element={<MyAssignedComplaints />} />}
             {user?.role ===ROLES.ADMIN && <Route path='management' element={<Management/>}/>}
           </Route>
@@ -48,6 +56,7 @@ const [curTheme, setTheme] = useState("light");
       </Routes>
       </FilterProvider>
       </ThemeProvider>
+      </LoadingProvider>
     </BrowserRouter>
   )
 }

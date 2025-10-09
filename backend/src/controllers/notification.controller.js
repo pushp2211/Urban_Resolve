@@ -32,9 +32,9 @@ export const sendNotificationToUser = asyncHandler(async (req, res) => {
     await notificationService.sendNotification(notificationData);
 
   return res
-    .status(201)
+    .status(200)
     .json(
-      new apiResponse(201, notification, 'Notification sent successfully.')
+      new apiResponse(200, notification, 'Notification sent successfully.')
     );
 });
 

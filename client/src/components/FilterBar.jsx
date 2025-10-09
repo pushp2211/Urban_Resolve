@@ -8,7 +8,10 @@ function FilterBar() {
     <Box
         sx={{
             // width:'100%',
-            marginY:"2rem"
+            marginY:{
+              xs:"1.2rem",
+              lg:"2rem"
+            }
         }}
         // minWidth='full'
     >

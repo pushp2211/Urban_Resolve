@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import theme from '../theme';
+import { triggerNotification } from '../../utils/notificationService';
 import {
   Modal,
   Box,
@@ -59,6 +60,12 @@ useEffect(() => {
         console.log(response);
         const updatedUser = response.data.data; // depends on your apiResponse format
         setCurrentUser(updatedUser)
+        triggerNotification(
+        {
+          recipient_id:user._id,
+          message:`Your role status has been upgraded to ${newRole}`,
+        }
+      )
     } else {
       setRoleSetError("Error while changing the role.");
       console.error("Unexpected response:", response);

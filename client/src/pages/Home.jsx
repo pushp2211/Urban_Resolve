@@ -9,12 +9,12 @@ import { useAuth } from '../context/AuthContext';
 function Home() {
   const location = useLocation();
   const queryParams = Object.fromEntries(new URLSearchParams(location.search));
-  console.log(queryParams);
+  // console.log(queryParams);
   const {user} = useAuth();
   queryParams['district'] = user.address?.district;
   // const dateRange = queryParams.get('dateRange');
   // const [loading, setLoading] = useState(false);
-  console.log(location.pathname);
+  // console.log(location.pathname);
   return (
       <Box
         sx={{

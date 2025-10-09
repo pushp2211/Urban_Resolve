@@ -3,11 +3,6 @@ const { Schema } = mongoose;
 
 const notificationSchema = new Schema(
   {
-    complaint_title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
     message: {
       type: String,
       required: true,
