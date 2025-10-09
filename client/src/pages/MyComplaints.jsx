@@ -59,6 +59,7 @@ function MyComplaints() {
         sx={{
           // marginY:'2rem',
           // paddingX:0
+          paddingX:4
         }}
       >
         <Typography

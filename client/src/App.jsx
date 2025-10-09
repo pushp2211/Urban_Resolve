@@ -35,7 +35,6 @@ const [curTheme, setTheme] = useState("light");
             <Route path='dashboard' element={<Dashboard/>}>
               <Route index element={<Home/>}/>
             </Route>
-            <Route path="highlights" element={<Highlights />} />
             <Route path="my-complaints" element={<MyComplaints />} />
             <Route path="profile" element={<Profile />} />
             {user?.role === ROLES.STAFF && <Route path="assigned-complaints" element={<MyAssignedComplaints />} />}

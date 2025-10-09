@@ -84,7 +84,7 @@ function Search({setSearchValue, searchResult, loading, error, handleSearch, sea
       {loading && <CircularProgress size={32} sx={{ alignSelf: 'center' }} />}
 
       {error && (
-        <Typography color="secondary" textAlign="center">
+        <Typography color="#f44336" textAlign="center">
           {error}
         </Typography>
       )}

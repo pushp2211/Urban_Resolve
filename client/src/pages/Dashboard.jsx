@@ -8,6 +8,8 @@ import ComplaintCard from '../components/ComplaintCard';
 import FilterBar from '../components/FilterBar';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Button } from '@mui/material';
+import NotificationButton from '../components/NotificationButton';
 
 function Dashboard() {
   return (
@@ -26,10 +28,15 @@ function Dashboard() {
         // maxWidth="xl"
         sx={{
           // marginY:'2rem',
-          paddingX:4
+          paddingX:4,
+          display:"flex",
+          flexDirection:"row",
+          justifyContent:"space-between",
+          alignItems:"center"
         }}
       >
-        <Typography
+        <Box>
+          <Typography
           variant='h2'
           sx={{
             fontWeight:'bold'
@@ -46,6 +53,8 @@ function Dashboard() {
           Every Issue Matters. Every Voice Counts.
           
         </Typography>
+        </Box>
+          <NotificationButton/>
       </Container>
       {/* <FilterBar /> */}
       <Outlet/>
