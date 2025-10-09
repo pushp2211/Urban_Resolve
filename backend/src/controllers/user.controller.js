@@ -2,7 +2,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { apiError } from '../utils/apiError.js';
 import { apiResponse } from '../utils/apiResponse.js';
 import { User } from '../models/user.model.js';
-import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { getOptimizedUrl, uploadOnCloudinary } from '../utils/cloudinary.js';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import { ROLES, ROLES_ENUM } from '../enum/roles.js';
@@ -77,12 +77,13 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!profilePicture) {
         throw new apiError(500, 'Error uploading profile picture');
     }
-
+    const optimisedProfilePictureUrl = getOptimizedUrl(profilePicture.url)
+    // console.log(optimisedProfilePictureUrl);
     const user = await User.create({
         fullName,
         email : email.toLowerCase(),
         password,
-        profilePicture: profilePicture.url,
+        profilePicture: optimisedProfilePictureUrl,
         address: {
             locality: locality,
             pinCode: pinCode,
@@ -310,10 +311,11 @@ const editProfile = asyncHandler(async (req, res) => {
     const profilePictureLocalPath = req.files?.profilePicture?.[0]?.path;
     if (profilePictureLocalPath) {
         const profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
+        const optimisedProfilePictureUrl = getOptimizedUrl(profilePicture.url)
         if (!profilePicture) {
             throw new apiError(500, "Error uploading profile picture");
         }
-        user.profilePicture = profilePicture.url;
+        user.profilePicture = optimisedProfilePictureUrl;
     }
 
     const updatedUser = await user.save();

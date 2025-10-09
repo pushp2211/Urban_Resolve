@@ -23,5 +23,17 @@ const uploadOnCloudinary = async (localFilePath) =>{
         return null;
     }
 }
+const getOptimizedUrl = (publicId, width = 1000) => {
+  return cloudinary.url(publicId, {
+    secure: true,
+    transformation: [
+      { width, crop: 'scale' },
+      { quality: 'auto' },
+      { fetch_format: 'auto' },
+    ],
+  });
+};
 
-export {uploadOnCloudinary}
+export { uploadOnCloudinary, getOptimizedUrl };
+
+// export {uploadOnCloudinary}

@@ -30,7 +30,7 @@ const staffPages = [
 const adminPages = [
   { label: 'Home', path: '/dashboard' },
   { label: 'My Complaints', path: '/my-complaints' },
-  { label: 'Manage', path: '/manageStaffs' }
+  { label: 'Manage', path: '/management' }
 ]
 
 function NavBar() {

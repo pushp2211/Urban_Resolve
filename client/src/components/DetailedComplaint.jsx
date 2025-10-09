@@ -123,9 +123,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
         );
       } else {
         simplifiedArray = response.data.data.map((item) => ({
-          _id: item._id,
-          fullName: item.fullName,
-          profilePicture: item.profilePicture,
+          _id: item?._id,
+          fullName: item?.fullName,
+          profilePicture: item?.profilePicture,
         }));
         setStaffList(simplifiedArray);
       }
@@ -268,16 +268,16 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                 }}
               >
                 <Avatar
-                  alt={complaint.submittedBy.fullName}
-                  src={complaint.submittedBy.profilePicture}
+                  alt={complaint.submittedBy?.fullName}
+                  src={complaint.submittedBy?.profilePicture}
                 />
                 <Typography variant="button">
-                  {complaint.submittedBy.fullName}
+                  {complaint.submittedBy?.fullName}
                 </Typography>
               </Box>
               <Chip
-                label={complaint.status}
-                color={getStatusColor(complaint.status)}
+                label={complaint?.status}
+                color={getStatusColor(complaint?.status)}
                 size="small"
               />
             </Box>
@@ -373,7 +373,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
             }}
           >
             <Typography>Reported by :</Typography>
-            <Typography>{complaint.submittedBy.fullName}</Typography>
+            <Typography>{complaint.submittedBy?.fullName}</Typography>
           </Box>
           <Box
             sx={{

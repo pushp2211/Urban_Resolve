@@ -10,20 +10,23 @@ import { Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Dashboard() {
-  const {user} = useAuth();
   return (
     <Box
       sx={{
         width:'100%',
-        bgcolor:'transparent'
+          marginY:'2rem',
+          display:"flex",
+          justifyContent:"center",
+          alignItems:"center",
+          flexDirection:"column"
       }}
     >
       <Container
         disableGutters
         // maxWidth="xl"
         sx={{
-          marginY:'2rem',
-          // paddingX:0
+          // marginY:'2rem',
+          paddingX:4
         }}
       >
         <Typography

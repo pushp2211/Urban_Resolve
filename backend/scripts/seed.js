@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
-import path from 'path';
 
 // This line loads the environment variables from the .env file in your project's root directory
 dotenv.config({
-    path: './.env'
+    path: '../.env'
 })
+console.log("Connecting to:", process.env.MONGODB_URI);
 
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
@@ -31,10 +31,18 @@ const seedAdmin = async () => {
             email: 'admin@gmail.com',
             password: process.env.ADMIN_PASSWORD,
             role: ROLES.ADMIN,
-            
+            address:{
+                locality:"mnnit",
+                city:"prayagraj",
+                district:"prayagraj",
+                pinCode:"211004",
+                state:"uttar pradesh"
+            },
+            profilePicture:"https://res.cloudinary.com/complainttrackingsystem/image/upload/v1759994824/avatar_2_palrfq.jpg"
         });
 
-        console.log('✅ Default admin user created successfully!');
+
+        // console.log('✅ Default admin user created successfully!');
 
     } catch (error) {
         console.error('Error seeding admin user:', error);
