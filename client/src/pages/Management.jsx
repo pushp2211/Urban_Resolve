@@ -13,6 +13,23 @@ function Management() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
+
+  const [complaintStatsLoading, setComplaintStatsLoading] = useState(false);
+  const[complaintStatsError, setComplaintStatsError] = useState("");
+  const [complaintDistrict, setCcomplaintDistrict] = useState("");
+  const [complaintCity, setComplaintCity] = useState("");
+  const [complaintState, setComplaintState] = useState("");
+  const [fetchedComplaintStats, setFetchedComplaintStats] = useState(null);
+
+
+  const [userStatsLoading, setUserStatsLoading] = useState(false);
+  const[userStatsError, setUserStatsError] = useState("");
+  const [userDistrict, setUserDistrict] = useState("");
+  const [userCity, setUserCity] = useState("");
+  const [userState, setUserState] = useState("");
+  const [fetchedUserStats, setFetchedUserStats] = useState(null);
+
+
   const[userPanelOpen, setUserPanelOpen] = useState(false);
 
   const handleOnUserClick = ()=>{
@@ -29,7 +46,6 @@ function Management() {
       return;
     }
 
-    // 1️⃣ create controller for this invocation
     const controller = new AbortController();
 
     const fetchData = async () => {
@@ -38,7 +54,7 @@ function Management() {
       try {
         const response = await apiClient.get(
           `/admin/searchUser?email=${searchValue}`,
-          { signal: controller.signal } // 2️⃣ Attach abort signal
+          { signal: controller.signal }
         );
         setSearchResult([]);
         setSearchResult([response.data.data])
@@ -55,10 +71,8 @@ function Management() {
       }
     };
 
-    // 3️⃣ Debounce: wait briefly so we don't fire on every keystroke
     const debounce = setTimeout(fetchData, 500);
 
-    // 4️⃣ Cleanup: cancel any pending fetch if input changes or component unmounts
     return () => {
       controller.abort();
       clearTimeout(debounce);
@@ -67,19 +81,84 @@ function Management() {
 
 
   const userStats = [
-    { label: 'Total Registered User', value: '100' },
-    { label: 'Staffs', value: '100' },
-    { label: 'Admins', value: '100' },
+    { label: 'Total Registered User', value: fetchedUserStats?.total },
+    { label: 'Staffs', value: fetchedUserStats?.staffs },
+    { label: 'Admins', value: fetchedUserStats?.admins },
   ];
 
   const complaintStats = [
-    { label: 'Total Active Complaints', value: '100' },
-    { label: 'Resolved', value: '100' },
-    { label: 'In Progress', value: '100' },
-    { label: 'Pending', value: '100' },
-    { label: 'Rejected', value: '100' },
+    { label: 'Total Active Complaints', value: fetchedComplaintStats?.total },
+    { label: 'Resolved', value: fetchedComplaintStats?.resolved },
+    { label: 'In Progress', value: fetchedComplaintStats?.inProgress },
+    { label: 'Pending', value: fetchedComplaintStats?.pending },
+    { label: 'Rejected', value: fetchedComplaintStats?.rejected },
   ];
 
+  useEffect(()=>{
+    
+    const fetchComplaintStats = async()=>{
+      setComplaintStatsError("")
+
+      try {
+        setComplaintStatsLoading(true);
+        const params = new URLSearchParams();
+        if(complaintCity?.length>0){
+          params.append("city", complaintCity);
+        }
+        if(complaintDistrict?.length>0){
+          params.append("district", complaintDistrict);
+        }
+        if(complaintState?.length>0){
+          params.append("state", complaintState);
+        }
+        
+        const response = await apiClient.get(`/service/complaint/stats?${params.toString()}`)
+        // console.log(response);
+        // console.log("response loaded");
+        setFetchedComplaintStats(response?.data?.data);
+      } catch (error) {
+        console.log(error, "error while fetching complaint stats");
+        setComplaintStatsError("error occured while fetching the complaint stats");
+      }
+      finally{
+        setComplaintStatsLoading(false);
+      }
+    }
+    fetchComplaintStats();
+  }, [complaintDistrict, complaintCity, complaintState, ])
+
+  useEffect(()=>{
+    
+    const fetchUserStats = async()=>{
+      setUserStatsError("")
+
+      try {
+        setUserStatsLoading(true);
+        const params = new URLSearchParams();
+        if(userCity?.length>0){
+          params.append("city", userCity);
+        }
+        if(userDistrict?.length>0){
+          params.append("district", userDistrict);
+        }
+        if(userState?.length>0){
+          params.append("state", userState);
+        }
+        
+        const response = await apiClient.get(`/service/user/stats?${params.toString()}`)
+        // console.log(response);
+        // console.log("response loaded");
+        setFetchedUserStats(response?.data?.data);
+      } catch (error) {
+        console.log(error, "error while fetching user stats");
+        setUserStatsError("error occured while fetching the user stats");
+      }
+      finally{
+        setUserStatsLoading(false);
+      }
+    }
+    fetchUserStats();
+  }, [userDistrict, userCity, userState, ])
 
   return (
     <Container
@@ -183,7 +262,6 @@ function Management() {
             theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
             paddingY: 2,
             paddingX: 1,
-            minHeight:"100%",
             display:"flex",
             flexDirection:"column",
             gap:2,

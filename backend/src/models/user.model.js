@@ -37,11 +37,11 @@ const userSchema = new Schema(
       default: null,
     },
     address: {
-      locality: { type: String, required: true, trim: true },
-      city: { type: String, required: true, trim: true },
-      district: { type: String, required: true, trim: true },
+      locality: { type: String, required: true, trim: true, lowercase:true },
+      city: { type: String, required: true, trim: true, lowercase:true },
+      district: { type: String, required: true, trim: true, lowercase:true },
       pinCode: { type: String, required: true, trim: true, match: [/^\d{6}$/, 'Please fill a valid 6-digit pin code'] },
-      state: { type: String, required: true, trim: true },
+      state: { type: String, required: true, trim: true, lowercase:true },
     },
     refreshToken: {
       type: String,

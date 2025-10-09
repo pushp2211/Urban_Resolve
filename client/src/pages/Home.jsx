@@ -19,7 +19,7 @@ function Home() {
       <Box
         sx={{
           width:'100%',
-          marginY:'2rem'
+          // marginY:'2rem'
         }}
       >
         <ComplaintList filter={queryParams}/>
