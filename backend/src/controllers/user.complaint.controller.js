@@ -12,42 +12,70 @@ import { COMPLAINT_STATUS } from "../enum/ComplaintStatus.js";
  * @access Private (Requires user to be logged in)
  */
 const createUserComplaint = asyncHandler(async (req, res) => {
-  const { title, description, type, latitude, longitude, urgency } = req.body;
+  const {
+    title,
+    description,
+    type,
+    locality,
+    district,
+    city,
+    pinCode,
+    state,
+    urgency,
+  } = req.body;
   const submittedBy = req.user._id;
 
-  const requiredFields = { title, description, type, latitude, longitude };
-  if (Object.values(requiredFields).some((field) => !field || field.trim() === "")) {
-    throw new apiError(400, "Title, description, type, and location are required fields.");
+  const requiredFields = {
+    title,
+    description,
+    type,
+    locality,
+    district,
+    city,
+    pinCode,
+    state,
+  };
+  if (
+    Object.values(requiredFields).some((field) => !field || field.trim() === '')
+  ) {
+    throw new apiError(
+      400,
+      'Title, description, type, and address details are required fields.'
+    );
   }
 
   const photoLocalPath = req.files?.photo?.[0]?.path;
   if (!photoLocalPath) {
-    throw new apiError(400, "A photo of the complaint is required.");
+    throw new apiError(400, 'A photo of the complaint is required.');
   }
 
   const photo = await uploadOnCloudinary(photoLocalPath);
   if (!photo || !photo.url) {
-    throw new apiError(500, "Error: Failed to upload photo. Please try again.");
+    throw new apiError(500, 'Error: Failed to upload photo. Please try again.');
   }
-
+  const optimisedPhotoUrl = getOptimizedUrl(photo.url)
   const complaint = await Complaint.create({
     title,
     description,
     type,
-    location: {
-      type: "Point",
-      coordinates: [parseFloat(longitude), parseFloat(latitude)],
+    address: {
+      locality: locality,
+      pinCode: pinCode,
+      district: district,
+      city: city,
+      state: state,
     },
-    photoUrl: photo.url,
+    photoUrl: optimisedPhotoUrl,
     submittedBy,
     urgency,
   });
 
   return res
     .status(201)
-    .json(new apiResponse(201, complaint, "Complaint registered successfully."));
+    .json(
+      new apiResponse(201, complaint, 'Complaint registered successfully.')
+    );
 });
-
 
 /**
  * @description Controller for a user to view all of their own complaints and their status.
@@ -72,43 +100,43 @@ const getUserComplaintsDashboard = asyncHandler(async (req, res) => {
     );
 });
 
-
 /**
  * @description Controller for a user to delete one of their own complaints.
  * @route DELETE /api/v1/user/complaints/:complaintId
  * @access Private (Requires user to be logged in)
  */
 const deleteUserComplaint = asyncHandler(async (req, res) => {
-    const { complaintId } = req.params;
+  const { complaintId } = req.params;
 
-    if (!mongoose.isValidObjectId(complaintId)) {
-        throw new apiError(400, "Invalid complaint ID format.");
-    }
+  if (!mongoose.isValidObjectId(complaintId)) {
+    throw new apiError(400, 'Invalid complaint ID format.');
+  }
 
-    const complaint = await Complaint.findById(complaintId);
+  const complaint = await Complaint.findById(complaintId);
 
-    if (!complaint) {
-        throw new apiError(404, "Complaint not found.");
-    }
+  if (!complaint) {
+    throw new apiError(404, 'Complaint not found.');
+  }
 
-    if (complaint.submittedBy.toString() !== req.user._id.toString()) {
-        throw new apiError(403, "Forbidden: You are not authorized to delete this complaint.");
-    }
-    
-    if (complaint.status !== COMPLAINT_STATUS.PENDING) {
-        throw new apiError(400, `Cannot delete complaint as its status is "${complaint.status}".`);
-    }
+  if (complaint.submittedBy.toString() !== req.user._id.toString()) {
+    throw new apiError(
+      403,
+      'Forbidden: You are not authorized to delete this complaint.'
+    );
+  }
 
-    await Complaint.findByIdAndDelete(complaintId);
+  if (complaint.status !== COMPLAINT_STATUS.PENDING) {
+    throw new apiError(
+      400,
+      `Cannot delete complaint as its status is "${complaint.status}".`
+    );
+  }
 
-    return res
-        .status(200)
-        .json(new apiResponse(200, {}, "Complaint deleted successfully."));
+  await Complaint.findByIdAndDelete(complaintId);
+
+  return res
+    .status(200)
+    .json(new apiResponse(200, {}, 'Complaint deleted successfully.'));
 });
 
-
-export {
-  createUserComplaint,
-  getUserComplaintsDashboard,
-  deleteUserComplaint,
-};
+export { createUserComplaint, getUserComplaintsDashboard, deleteUserComplaint };

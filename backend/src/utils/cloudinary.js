@@ -14,8 +14,8 @@ const uploadOnCloudinary = async (localFilePath) =>{
             resource_type:'auto'
         });
         //file has been uploaded
-        console.log("file has been uploaded on cloudinary", response.url)
-        console.log("response print", response)
+        // console.log("file has been uploaded on cloudinary", response.url)
+        // console.log("response print", response)
         fs.unlinkSync(localFilePath);
         return response;
     } catch (error) {
@@ -23,5 +23,17 @@ const uploadOnCloudinary = async (localFilePath) =>{
         return null;
     }
 }
+const getOptimizedUrl = (publicId, width = 1000) => {
+  return cloudinary.url(publicId, {
+    secure: true,
+    transformation: [
+      { width, crop: 'scale' },
+      { quality: 'auto' },
+      { fetch_format: 'auto' },
+    ],
+  });
+};
 
-export {uploadOnCloudinary}
+export { uploadOnCloudinary, getOptimizedUrl };
+
+// export {uploadOnCloudinary}
