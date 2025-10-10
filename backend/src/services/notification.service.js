@@ -2,9 +2,7 @@ import Notification from '../models/notification.model.js';
 import cron from 'node-cron';
 import { apiError } from '../utils/apiError.js';
 
-/**
- * Creates and saves a new notification.
- */
+
 export const sendNotification = async (notificationData) => {
   const notification = new Notification(notificationData);
   const savedNotification = await notification.save();
@@ -20,16 +18,12 @@ export const sendNotification = async (notificationData) => {
   return savedNotification;
 };
 
-/**
- * Retrieves all notifications for a specific user.
- */
+
 export const getNotifications = async (userId) => {
   return Notification.find({ recipient_id: userId }).sort({ createdAt: -1 });
 };
 
-/**
- * Marks a specific notification as read.
- */
+
 export const markAsRead = async (notificationId, userId) => {
   const updatedNotification = Notification.findOneAndUpdate(
     { _id: notificationId, recipient_id: userId },
@@ -42,9 +36,6 @@ export const markAsRead = async (notificationId, userId) => {
   return updatedNotification;
 };
 
-/**
- * Deletes notifications that were read more than 7 days ago.
- */
 const deleteOldReadNotifications = async () => {
   try {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -64,16 +55,12 @@ const deleteOldReadNotifications = async () => {
       'Error in scheduled job for deleting old notifications:',
       error
     );
-    // Note: Throwing here might stop your server if not handled.
-    // For a cron job, logging the error is often sufficient.
   }
 };
 
-/**
- * Schedules the cleanup job to run daily.
- */
+
 export const scheduleCleanup = () => {
-  // Runs at 2:00 AM every day.
+
   cron.schedule(
     '0 2 * * *',
     () => {

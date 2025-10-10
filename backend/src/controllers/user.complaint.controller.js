@@ -6,11 +6,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
 import { COMPLAINT_STATUS } from "../enum/ComplaintStatus.js";
 import { getOptimizedUrl } from "../utils/cloudinary.js";
-/**
- * @description Controller for a logged-in user to create a new complaint.
- * @route POST /api/v1/user/complaints/create
- * @access Private (Requires user to be logged in)
- */
+
 const createUserComplaint = asyncHandler(async (req, res) => {
   const {
     title,
@@ -77,11 +73,7 @@ const createUserComplaint = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * @description Controller for a user to view all of their own complaints and their status.
- * @route GET /api/v1/user/complaints/dashboard
- * @access Private (Requires user to be logged in)
- */
+
 const getUserComplaintsDashboard = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
@@ -100,11 +92,7 @@ const getUserComplaintsDashboard = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * @description Controller for a user to delete one of their own complaints.
- * @route DELETE /api/v1/user/complaints/:complaintId
- * @access Private (Requires user to be logged in)
- */
+
 const deleteUserComplaint = asyncHandler(async (req, res) => {
   const { complaintId } = req.params;
 

@@ -68,28 +68,28 @@ const userSchema = new Schema(
   }
 );
 
-// This pre-save hook securely hashes the password before saving.
+
 userSchema.pre('save', async function (next) {
-  // Only hash the password if it has been modified (or is new)
+  
   if (!this.isModified('password')) return next();
 
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// Method to compare an incoming password with the stored hash.
+
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-// Method to generate the access token. The role is included in the payload.
+
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
       email: this.email,
       fullName: this.fullName,
-      role: this.role, // The role is now a direct property
+      role: this.role, 
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -98,7 +98,6 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
-// Method to generate the refresh token.
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {

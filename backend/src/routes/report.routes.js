@@ -4,8 +4,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-// Defines the GET route to generate a report, protected by authentication.
-// Usage Example: GET /api/v1/reports/locality?locality=Downtown
+
 router.route("/report").get(verifyJWT, generateLocalityReport);
 
 export default router;

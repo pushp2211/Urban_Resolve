@@ -69,6 +69,6 @@ const complaintSchema = new mongoose.Schema({
             }
         ]
     }
-}, { timestamps: true }); // automatically adds createdAt and updatedAt
+}, { timestamps: true }); 
 
 export const Complaint = mongoose.model("Complaint", complaintSchema);

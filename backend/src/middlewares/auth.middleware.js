@@ -5,7 +5,7 @@ import { apiError } from '../utils/apiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import jwt from 'jsonwebtoken';
 
-// export const verifyJWT = asyncHandler(async (req, res, next) => {
+
 //   try {
 //     const token =
 //       req.cookies?.accessToken 
@@ -115,12 +115,12 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
 
   } catch (error) {
     if (error.name !== "TokenExpiredError") {
-      // If it’s invalid for other reasons (tampered, malformed)
+
       throw new apiError(401, error.message || "Invalid access token");
     }
   }
 
-  // Handle expired token *outside* the catch now
+
   try {
     const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const user = await User.findById(decodedRefresh._id);

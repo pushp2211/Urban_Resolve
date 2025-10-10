@@ -3,9 +3,7 @@ import { apiError } from '../utils/apiError.js';
 import { apiResponse } from '../utils/apiResponse.js';
 import * as notificationService from '../services/notification.service.js';
 
-/**
- * Controller to send a notification to another user.
- */
+
 export const sendNotificationToUser = asyncHandler(async (req, res) => {
   const { recipient_id, message, complaint_id } = req.body;
   const sender_id = req.user?._id;
@@ -38,9 +36,7 @@ export const sendNotificationToUser = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * Controller to get all notifications for the currently logged-in user.
- */
+
 export const getNotificationsForUser = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
   const notifications = await notificationService.getNotifications(userId);
@@ -56,9 +52,7 @@ export const getNotificationsForUser = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * Controller to mark a notification as read.
- */
+
 export const markNotificationAsRead = asyncHandler(async (req, res) => {
   const { id: notificationId } = req.params;
   const userId = req.user?._id;

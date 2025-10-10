@@ -8,12 +8,11 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getAssignedComplaints = asyncHandler(async (req, res) => {
     const staffId = req.user._id;
-    // 1. Destructure page and limit from query with default values
+
     const { status, urgency, page = 1, limit = 10 } = req.query;
 
-    // Base query to find complaints assigned to the logged-in staff
+
     const filter = { assignedTo: staffId };
-    // Dynamically add status to the query if provided
 
     if (status) {
         if (!COMPLAINT_STATUS_ENUM.includes(status)) {
@@ -25,7 +24,7 @@ export const getAssignedComplaints = asyncHandler(async (req, res) => {
         filter.status = status;
     }
 
-    // Dynamically add urgency to the query if provided
+
     if (urgency) {
         if (!COMPLAINT_URGENCY_ENUM.includes(urgency)) {
             throw new apiError(
@@ -36,30 +35,25 @@ export const getAssignedComplaints = asyncHandler(async (req, res) => {
         filter.urgency = urgency;
     }
 
-    // 2. Define options for the query
+
     const options = {
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         sort: { createdAt: -1 },
-        // Populating the user who submitted the complaint
+
         populate: [{ path: 'submittedBy', select: 'fullName email' }]
     };
 
     
-     // 3. Fetch the paginated list of complaints
     const complaints = await Complaint.find(filter)
         .sort(options.sort)
         .populate(options.populate)
         .skip((options.page - 1) * options.limit)
         .limit(options.limit);
 
-    // 4. Get the total count of documents matching the filter
     const totalComplaints = await Complaint.countDocuments(filter);
 
     
-   // if (!complaints.length) {
-    //     throw new apiError(404, "No complaints are assigned to you");
-    // }
 
     const responsePayload = {
             complaints,
@@ -68,7 +62,6 @@ export const getAssignedComplaints = asyncHandler(async (req, res) => {
             totalCount: totalComplaints
         };
 
-        // 6. Return the structured response
         return res
             .status(200)
             .json(new apiResponse(200, responsePayload, "Assigned complaints fetched successfully"));
@@ -95,7 +88,6 @@ export const updateComplaintStatus=asyncHandler(async(req,res)=>{
             throw new apiError(403, "You are not authorised to change status of this Complaint");
         }
 
-        // 4. State Transition Logic using the status object
         const currentStatus = complaint.status;
         let isTransitionAllowed = false;
 
@@ -112,7 +104,6 @@ export const updateComplaintStatus=asyncHandler(async(req,res)=>{
                 if (newStatus === COMPLAINT_STATUS.RESOLVED) isTransitionAllowed = true;
                 break;
                 
-            // By default, no status changes are allowed from RESOLVED or REJECTED by staff
         }
 
         if (!isTransitionAllowed) {
