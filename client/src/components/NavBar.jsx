@@ -122,7 +122,7 @@ function NavBar() {
               flexGrow: 1, // Pushes other items to the right
             }}
           >
-            LOGO
+            Urban resolve
           </Typography>
           
           <Box sx={{ display: 'flex' }}>
