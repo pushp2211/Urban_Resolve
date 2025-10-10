@@ -16,6 +16,7 @@
     "@mui/material": "^7.3.4",
     "@tailwindcss/vite": "^4.1.14",
     "axios": "^1.12.2",
+    "date-fns": "^4.1.0",
     "rc-virtual-list": "^3.19.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
