@@ -29,7 +29,7 @@ export default function VerifyEmail() {
       const email = searchParams.get("email");
 
       if (!token || !email) {
-        setStatus("Invalid verification link.");
+        setLoading("Invalid verification link.");
         return;
       }
       setVerified(false);
@@ -40,14 +40,10 @@ export default function VerifyEmail() {
           { params: { token, email } }
         );
         console.log(response);
-        // if (res.data.data.success) {
-        //   setStatus("Email verified successfully! You can now log in.");
-        // }
         setVerified(true);
       } catch (err) {
         const msg =
           err.response?.data?.message || "Verification failed or link expired.";
-            setStatus(` ${msg}`);
       }
       finally{
         setLoading(false);
@@ -107,7 +103,6 @@ export default function VerifyEmail() {
         >
             Verify your Email
         </Button>
-      {/* <h2>{status}</h2> */}
       {verified && <Typography variant="button"
 
       >Redirecting to login...</Typography>}
