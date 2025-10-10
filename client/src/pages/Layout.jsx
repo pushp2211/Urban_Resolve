@@ -42,7 +42,16 @@ function Layout() {
             <Outlet />
             </main>
         </Box>
-        <Toolbar />
+        <Toolbar 
+          sx={{
+            marginY:{
+              xs:"2rem",
+              sm:"2rem",
+              md:"2rem",
+              lg:"0rem"
+            }
+          }}
+        />
         <NavBarBottom/>
         <FabRegisterComplaint/>
     </Box>

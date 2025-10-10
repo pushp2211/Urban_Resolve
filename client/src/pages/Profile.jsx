@@ -110,6 +110,7 @@ function Profile() {
         flexDirection: {
           xs: 'column',
           sm: 'column',
+          md:"row",
           lg: 'row',
           xl: 'row',
         },
@@ -118,6 +119,7 @@ function Profile() {
           lg:3
         },
         justifyContent: 'center',
+        alignItems:"center"
       }}
     >
       <Box
@@ -246,7 +248,7 @@ function Profile() {
               textAlign:{
                 xs:"center",
                 sm:"center",
-                md:"center",
+                md:"left",
                 lg:"left"
               },
               fontSize:{
@@ -268,7 +270,7 @@ function Profile() {
               textAlign:{
                 xs:"center",
                 sm:"center",
-                md:"center",
+                md:"left",
                 lg:"left"
               },
               width:"100%",
@@ -296,9 +298,10 @@ function Profile() {
               display: 'flex',
               flexDirection: {
                 xs: 'column',
-                sm: 'column',
-                lg: 'row',
-                xl: 'row',
+          sm: 'column',
+          md:"row",
+          lg: 'row',
+          xl: 'row',
               },
               alignItems: 'center',
 
