@@ -138,10 +138,13 @@ function Register() {
         navigate('/login');
       }
     } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          'Registration failed please try again after some time'
-      );
+      // console.log(error);
+      if(error.status === 409){
+        setError("User already exists please login");
+      }
+      else if(error.status === 400){
+        setError("All fields are required and password must be atleast 8 characters long.")
+      }
       console.error('Registration error', error);
     } finally {
       setLoading(false);

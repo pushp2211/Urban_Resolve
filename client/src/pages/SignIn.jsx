@@ -47,7 +47,21 @@ function SignIn() {
         navigate('/dashboard');
       }
     } catch (error) {
-      setError(error.response?.data?.message || "Login failed please check your credentials")
+      if(error.status === 400){
+        setError("both email and password are required");
+      }
+      else if(error.status===404){
+        setError('User not found, Please register and try login again');
+      }
+      else if(error.status === 403){
+        setError("Please verify your email before logging in.");
+      }
+      else if(error.status === 404){
+        setError("Invalid credentials");
+      }
+      else{
+        setError("login failed, try again");
+      }
       console.error("login error", error);
     }
     finally{
