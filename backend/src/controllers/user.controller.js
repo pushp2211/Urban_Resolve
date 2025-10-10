@@ -8,7 +8,8 @@ import mongoose from 'mongoose';
 import { ROLES, ROLES_ENUM } from '../enum/roles.js';
 import { Complaint } from '../models/complaint.model.js';
 import { COMPLAINT_STATUS, COMPLAINT_STATUS_ENUM } from '../enum/ComplaintStatus.js';
-
+import crypto from "crypto";
+import { sendEmail } from '../utils/sendEmail.js';
 const generateAccessAndRefreshToken = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -63,8 +64,11 @@ const registerUser = asyncHandler(async (req, res) => {
     const existingUser = await User.findOne({
         email,
     });
-    if (existingUser) {
+    if (existingUser && existingUser.isEmailVerified===true) {
         throw new apiError(409, 'User already exists, please login');
+    }
+    if(existingUser && !existingUser.isEmailVerified===true){
+        await User.deleteOne({ email: existingUser.email });
     }
 
     const profilePictureLocalPath = req.files?.profilePicture[0].path;
@@ -78,6 +82,8 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new apiError(500, 'Error uploading profile picture');
     }
     const optimisedProfilePictureUrl = getOptimizedUrl(profilePicture.url)
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationExpiry = Date.now() + 60 * 60 * 1000; // 1 hour
     // console.log(optimisedProfilePictureUrl);
     const user = await User.create({
         fullName,
@@ -91,7 +97,19 @@ const registerUser = asyncHandler(async (req, res) => {
             city: city,
             state: state,
         },
+        emailVerificationToken: verificationToken,
+        emailVerificationExpiry: verificationExpiry,
     });
+
+    const verifyLink = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}&email=${email.toLowerCase()}`;
+    await sendEmail(
+    email.toLowerCase(),
+    "Verify your email address",
+    `<p>Hi ${fullName},</p>
+     <p>Click below to verify your email:</p>
+     <p><a href="${verifyLink}" target="_blank">${verifyLink}</a></p>
+     <p>This link expires in 1 hour.</p>`
+    );
 
     const createdUser = await User.findById(user._id)?.select(
         '-password -refreshToken'
@@ -102,7 +120,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
     return res
         .status(201)
-        .json(new apiResponse(201, createdUser, 'User registered Successfully'));
+        .json(new apiResponse(201, createdUser, 'User registered Successfully, verify your email to login'));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -120,6 +138,9 @@ const loginUser = asyncHandler(async (req, res) => {
             404,
             'User not found, Please register and try login again'
         );
+    }
+    if(!user.isEmailVerified){
+        throw new apiError(403, "Please verify your email before logging in.");
     }
 
     //password checking

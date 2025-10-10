@@ -9,6 +9,7 @@
     import reportRouter from './routes/report.routes.js'
 import { verifyJWT } from './middlewares/auth.middleware.js';
 import notificationRouter from './routes/notification.routes.js'
+import verificationRouter from './routes/verifyEmail.routes.js'
     const app = express();
 
     app.use(cors({
@@ -49,4 +50,7 @@ app.use("/api/v1/service/", commonDashboardRouter);
 //notification routes
 app.use("/api/v1/user/notification", notificationRouter);
 
+
+//verify email router
+app.use("/api/v1/user/verify/", verificationRouter);
 export {app};

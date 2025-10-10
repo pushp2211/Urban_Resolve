@@ -14,6 +14,7 @@ import Link from '@mui/material/Link';
 
 import Step1Register from '../components/Step1Register';
 import Step2Register from '../components/Step2Register';
+import { sendNotification } from '../api/notificationApi';
 
 const steps = ['Your Credentials', 'Address Details'];
 
@@ -132,7 +133,8 @@ function Register() {
       const response = await apiClient.post('/register', dataToSubmit);
 
       if (response.status === 201) {
-        alert('Registration Successful, you can now log in');
+        
+        alert('Registration Successful, after verifying your email you can now log in');
         navigate('/login');
       }
     } catch (error) {

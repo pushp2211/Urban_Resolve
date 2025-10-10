@@ -9,7 +9,7 @@ export async function triggerNotification({ recipient_id, message, complaint_id 
 
   try {
     const response = await sendNotification({ recipient_id, message, complaint_id });
-    // you could optionally log a metric, toast, etc.
+
     console.debug('Notification sent:', response);
     return response;
   } catch (error) {

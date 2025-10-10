@@ -22,6 +22,7 @@ import { ROLES } from '../enum/roles';
 import { useAuth } from './context/AuthContext';
 import { LoadingProvider, useLoading } from './context/LoadingContext.jsx';
 import GlobalLoading from './components/GlobalLoading.jsx';
+import VerifyEmail from './pages/VerifyEmail.jsx';
 function App() {
   const {user} = useAuth();
   const { globalLoading } = useLoading();
@@ -35,6 +36,7 @@ const [curTheme, setTheme] = useState("light");
     <ThemeProvider theme={theme} >
     <FilterProvider>
       <Routes>
+        
         {/* All routes inside here are now protected */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Layout />}>
@@ -52,6 +54,7 @@ const [curTheme, setTheme] = useState("light");
         </Route>
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />}></Route>
         
       </Routes>
       </FilterProvider>
