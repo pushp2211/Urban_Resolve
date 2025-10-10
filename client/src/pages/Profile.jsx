@@ -115,7 +115,7 @@ function Profile() {
           xl: 'row',
         },
         paddingY: {
-          xs:0,
+          xs:5,
           lg:3
         },
         justifyContent: 'center',
