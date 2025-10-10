@@ -60,6 +60,7 @@ function ComplaintCard({ complaint }) {
     setCountLoading(true);
     setCountLoadingError("");
     try {
+      setIsUpvoted(true);
       const response = await apiClient.put(
         `/service/complaints/${complaint._id}/toggleUpvote`
       );
@@ -70,6 +71,7 @@ function ComplaintCard({ complaint }) {
       setIsUpvoted(isUpvoted);
       setUpvoteCount(total);
     } catch (error) {
+      setIsUpvoted(false);
       setCountLoadingError("error while toggle upvote");
       console.error('Error toggling upvote:', error);
     }
