@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import React from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Link as routerLink } from 'react-router-dom'
+import {  useSearchParams } from 'react-router-dom'
+
 import { useAuth } from '../context/AuthContext'
 // pinCode, locality, city, dateRange, status
 
@@ -16,7 +16,6 @@ function CategoryButtons() {
     {label:'My City',key:'city', value:user.address?.city},
     {label:'My pinCode',key:'pinCode',  value:user.address?.pinCode},
   ]
-  const navigate = useNavigate();
 
   const handleClick = (key, value)=>{
     // console.log(value)

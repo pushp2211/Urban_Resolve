@@ -89,6 +89,9 @@ export default function VerifyEmail() {
         >
             Click the button below to verify your email
         </Typography>
+        <Typography variant="caption">
+            Don't forget to check the spam folder
+        </Typography>
         <Button
         variant="contained"
             disabled = {verified}

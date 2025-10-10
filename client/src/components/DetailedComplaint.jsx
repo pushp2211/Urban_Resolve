@@ -419,10 +419,10 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
             {complaint.assignedTo && (
               <Typography>{complaint.assignedTo?.fullName}</Typography>
             )}
-            {!complaint.assignedTo && <Typography>Not assigned yet</Typography>}
+            {!complaint?.assignedTo && <Typography>Not assigned yet</Typography>}
           </Box>
         </Box>
-        {user.role === ROLES.ADMIN && !complaint.assignedTo && (
+        {user?.role === ROLES?.ADMIN && !complaint?.assignedTo && complaint?.status!==COMPLAINT_STATUS.REJECTED && (
           <Box
             sx={{
               backgroundColor:
