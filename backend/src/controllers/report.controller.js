@@ -12,7 +12,7 @@ export const generateLocalityReport = asyncHandler(async (req, res) => {
         throw new apiError(400, "Locality is a required query parameter.");
     }
 
-    // Fetch and populate complaints matching the locality, sorted by creation date.
+    
     const complaints = await Complaint.find({ "address.locality": locality })
         .populate("submittedBy", "fullName email")
         .sort({ createdAt: -1 });
@@ -21,7 +21,7 @@ export const generateLocalityReport = asyncHandler(async (req, res) => {
         throw new apiError(404, `No complaints found for locality: ${locality}`);
     }
 
-    // Aggregate data for pie charts by counting statuses and types.
+   
     const statusCounts = {
         [COMPLAINT_STATUS.PENDING]: 0,
         [COMPLAINT_STATUS.IN_PROGRESS]: 0,
@@ -42,10 +42,10 @@ export const generateLocalityReport = asyncHandler(async (req, res) => {
         typeCounts[complaint.type]++;
     }
 
-    // Set headers to prompt a PDF download.
+  
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=report_${locality}_${new Date().toISOString().slice(0,10)}.pdf`);
 
-    // Call the service to generate and stream the PDF.
+    
     generateComplaintReportPDF(complaints, statusCounts, typeCounts, locality, res);
 });

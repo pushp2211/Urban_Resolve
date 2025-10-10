@@ -84,7 +84,7 @@ function Notifications() {
       // maxWidth="xl"
       sx={{
         // marginY:'2rem',
-        paddingX: 4,
+        padding: 4,
         display: 'flex',
         flexDirection: 'column',
         // justifyContent:"",

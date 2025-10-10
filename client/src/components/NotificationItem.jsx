@@ -35,7 +35,7 @@ export default function NotificationItem({ notification, onMarkAsRead }) {
       }}
     >
       {/* Left side: message + meta info */}
-      <Box sx={{ display: 'flex', alignItems: "flex-start", gap: 2, flexGrow: 1, flexDirection:"column" }}>
+      <Box sx={{ display: 'flex', alignItems: "flex-start", gap: 2, flexGrow: 1, flexDirection:"column", alignSelf:"flex-start" }}>
         {complaint_id && (
           <Chip
             label="Complaint"
