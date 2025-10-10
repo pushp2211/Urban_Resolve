@@ -132,7 +132,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     const newAccessToken = user.generateAccessToken();
     const newRefreshToken = user.generateRefreshToken();
 
-    const cookieOptions = { httpOnly: true, secure: true, sameSite: "strict" };
+    const cookieOptions = { httpOnly: true, secure: true, sameSite: "none" };
     res
       .cookie("accessToken", newAccessToken, cookieOptions)
       .cookie("refreshToken", newRefreshToken, cookieOptions);
