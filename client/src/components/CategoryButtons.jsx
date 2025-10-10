@@ -7,11 +7,12 @@ import { useAuth } from '../context/AuthContext'
 import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus'
 // pinCode, locality, city, dateRange, status
 
-
+import { useLoading } from '../context/LoadingContext'
 
 function CategoryButtons() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selected, setSelected] = useState("");
+  const {showLoading, hideLoading} = useLoading();
   const handleChange = (e)=>{
     setSelected(e.target.value)
   }

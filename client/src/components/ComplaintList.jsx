@@ -39,6 +39,8 @@ function ComplaintList({ filter = {} }) {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [openDetailedDialogue, setOpenDetailedDialogue] = useState(false);
 
+  const{showLoading, hideLoading} = useLoading();
+
   const page = parseInt(searchParams.get('page')) || 1;
   const city = searchParams.get('city') || '';
   const locality = searchParams.get('locality') || '';
@@ -64,6 +66,13 @@ function ComplaintList({ filter = {} }) {
     const query = new URLSearchParams();
 
     query.append('page', page);
+    
+    if(page==1){
+      showLoading();
+      setTimeout(()=>{
+
+      }, [1500])
+    }
 
     if (city) query.append('city', city);
     if (locality) query.append('locality', locality);
@@ -112,6 +121,7 @@ function ComplaintList({ filter = {} }) {
         setError('Error while fetching complaints, Try again later');
         console.log(error);
       } finally {
+        hideLoading()
         setLoading(false);
       }
     };

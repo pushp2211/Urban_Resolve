@@ -10,7 +10,8 @@ import { Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '@mui/material';
 import NotificationButton from '../components/NotificationButton';
-
+import ReportModalButton from '../components/ReportModalButton';
+import ReportModal from '../components/ReportModal';
 function Dashboard() {
   return (
     <Box
@@ -54,9 +55,8 @@ function Dashboard() {
           
         </Typography>
         </Box>
-          <NotificationButton/>
+          
       </Container>
-      {/* <FilterBar /> */}
       <Outlet/>
     </Box>
   )

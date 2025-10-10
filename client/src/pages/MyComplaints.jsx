@@ -39,7 +39,7 @@ function MyComplaints() {
 // },[]);
 
   const userSpecificFilter = {
-    submittedBy: user?._id, // Assuming you want to filter by the logged-in user's ID
+    submittedBy: user?._id, 
   };
 
   return (
@@ -84,9 +84,7 @@ function MyComplaints() {
           
         </Typography>
         </Box>
-          <NotificationButton/>
       </Container>
-        {/* <FilterBar/> */}
         <ComplaintList filter={userSpecificFilter}/>
       </Box>
     );

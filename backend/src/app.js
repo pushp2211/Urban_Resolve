@@ -53,4 +53,8 @@ app.use("/api/v1/user/notification", notificationRouter);
 
 //verify email router
 app.use("/api/v1/user/verify/", verificationRouter);
+
+
+//report router
+app.use("/api/v1/data/", reportRouter)
 export {app};

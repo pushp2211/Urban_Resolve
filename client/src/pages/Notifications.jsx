@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import apiClient from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import { useLoading } from '../context/LoadingContext';
 import {
   getNotifications,
   markNotificationAsRead,
@@ -10,6 +11,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Chip } from '@mui/material';
 import NotificationList from '../components/NotificationList';
+
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [notificationLoading, setNotificationLoading] = useState(false);
@@ -21,11 +23,17 @@ function Notifications() {
   const[readListOpen, setReadListOpen] = useState(true);
   const { user } = useAuth();
 
+  const {showLoading, hideLoading} = useLoading();
+
   useEffect(() => {
     if (!user?._id) {
       return;
     }
     const fetchNotifications = async () => {
+      showLoading();
+      setTimeout(()=>{
+
+      }, [1500])
       setNotificationError('');
       setNotificationLoading(false);
 
@@ -42,6 +50,7 @@ function Notifications() {
         console.log('error while fetching notifications', error);
       } finally {
         setNotificationLoading(false);
+        hideLoading();
       }
     };
     fetchNotifications();
