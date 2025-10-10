@@ -181,8 +181,15 @@ function ComplaintList({ filter = {} }) {
     >
       
       
-      <Container>
-         <FilterBar />
+      <Container
+        sx={{
+          paddingX:{
+            xs:4,
+            md:3
+          }
+        }}
+      >
+        <FilterBar />
       </Container>
      {complaints.length === 0&& !loading &&
         <Box>

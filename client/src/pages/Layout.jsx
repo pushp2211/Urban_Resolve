@@ -17,10 +17,24 @@ function Layout() {
     >
       <NavBar />
       {/* <FilterBar/> */}
-      <Toolbar /> 
+      <Toolbar 
+        sx={{
+          display:{
+            xs:"none",
+            sm:"none",
+            md:"block",
+            lg:"block"
+          }
+        }}
+      /> 
         <Box
             sx={{
-                marginTop:'3rem',
+                marginTop:{
+                  lg:'3rem',
+                  xs:"0rem",
+                  sm:"0rem",
+                  md:"0rem",
+                },
                 width:"100%",
             }}
         >

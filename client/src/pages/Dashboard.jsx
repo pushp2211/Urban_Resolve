@@ -16,12 +16,7 @@ function Dashboard() {
     <Box
       sx={{
         width:'100%',
-          marginY:{
-            xs:-4,
-            sm:-4,
-            md:-4,
-            lg:2
-          },
+          marginY:'2rem',
           display:"flex",
           justifyContent:"center",
           alignItems:"center",
