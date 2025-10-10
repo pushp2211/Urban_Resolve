@@ -141,6 +141,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
+        sameSite: "none",
     };
     console.log(loggedInUser);
 
@@ -177,6 +178,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         //ye krne se ab cookies bs server se modifiable hain
         httpOnly: true,
         secure: true,
+        sameSite: "none",
     };
 
     return res
