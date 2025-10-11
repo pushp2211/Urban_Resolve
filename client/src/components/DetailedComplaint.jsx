@@ -23,6 +23,7 @@ import Select from '@mui/material/Select';
 
 import CloseIcon from '@mui/icons-material/Close';
 import { triggerNotification } from '../../utils/notificationService.js';
+import Snack from './Snack.jsx';
 
 
 const getStatusColor = (status) => {
@@ -43,7 +44,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
   // console.log(theme);
 
   const { user } = useAuth();
-  const assignedTo = complaint.assignedTo;
+  const assignedTo = complaint?.assignedTo;
   const [listOpen, setListOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [staffList, setStaffList] = useState([]);
@@ -52,8 +53,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
 
   const [staffAssignError, setStaffAssignError] = useState('');
   const [staffAssignLoading, setStaffAssignLoading] = useState(false);
-  
-
+  const [showSnack, setShowSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("")
+ 
 
   const [validComplaintStatus, setValidComplaintStatus] = useState([]);
   const [statusError, setStatusError] = useState("");
@@ -61,14 +63,14 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
   const [curComplaintStatus, setComplaintCurStatus] = useState(complaint.status)
 
   useEffect(() => {
-    if (complaint.status === COMPLAINT_STATUS.IN_PROGRESS) {
+    if (complaint?.status === COMPLAINT_STATUS.IN_PROGRESS) {
       setValidComplaintStatus([COMPLAINT_STATUS.IN_PROGRESS,COMPLAINT_STATUS.RESOLVED]);
     }
     if (complaint.status === COMPLAINT_STATUS.PENDING) {
       setValidComplaintStatus([COMPLAINT_STATUS.PENDING,COMPLAINT_STATUS.REJECTED]);
     }
     // if(complaint.status === COMPLAINT_STATUS.)
-  }, [complaint.status, curComplaintStatus]);
+  }, [complaint?.status, curComplaintStatus]);
 
   const handleChange = async(event) => {
     if(event.target.value=="") return;
@@ -88,10 +90,13 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
       }
       // console.log(response);
       
-      const upDatedComplaint = response.data.data;
+      const upDatedComplaint = response?.data?.data;
       complaint.status = upDatedComplaint.status;
       setComplaintCurStatus(complaint.status);
       onAssign(upDatedComplaint);
+      setSnackMessage("Status updated successfully");
+      setShowSnack(true)
+
       triggerNotification(
         {
           recipient_id:complaint.submittedBy,
@@ -108,6 +113,12 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
       setStatusLoading(false);
     }
   };
+  useEffect(()=>{
+    setTimeout(()=>{
+      setSnackMessage("");
+      setShowSnack(false)
+    }, [3000])
+  }, [snackMessage, showSnack])
 
   const getEligibleStaffList = async (event) => {
     setListOpen(true);
@@ -182,9 +193,13 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           complaint_id:complaint._id
         }
       )
+      setSnackMessage("complaint assigned successfully");
+      setShowSnack(true);
       setListOpen(false);
       setLoading(false);
     } catch (error) {
+      setSnackMessage("Unable to assign, please try again.");
+      setShowSnack(true);
       setStaffAssignError('Unable to assign, please try again.');
       console.error('Error assigning staff:', error);
     } finally {
@@ -498,7 +513,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
             size="small"
             disabled = {statusLoading || curComplaintStatus===COMPLAINT_STATUS.REJECTED || curComplaintStatus===COMPLAINT_STATUS.RESOLVED
 
-              || (user.role===ROLES.STAFF && user._id !== assignedTo)
+              || (user.role===ROLES.STAFF && user._id !== assignedTo?._id)
             }
           >
             <InputLabel id="demo-select-small-label">Status</InputLabel>
@@ -519,6 +534,8 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           </FormControl>
         </Box>}
       </Box>
+
+      {showSnack && <Snack openStatus={showSnack} message={snackMessage}/>}
     </Box>
   );
 }
