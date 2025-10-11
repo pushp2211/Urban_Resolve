@@ -17,7 +17,7 @@
 
     <br />
     <br />
-    <a href="https://urban-resolve-client.vercel.app/dashboard?page=1" ><strong style="text-decoration: underline; color: #0366d6;">View Demo »</strong></a>
+    <a href="https://urban-resolve-client.onrender.com/" ><strong style="text-decoration: underline; color: #0366d6;">View Demo »</strong></a>
     <br />
     <a href="https://github.com/abhiishhekk/Complaint_Tracking_System/issues" style="text-decoration: underline; color: #0366d6;">Report Bug</a>
     ·
