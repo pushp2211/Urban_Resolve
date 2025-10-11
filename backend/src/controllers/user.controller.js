@@ -162,7 +162,9 @@ const loginUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: 'Lax',
+      domain: '.onrender.com',
+      path: '/',
     };
     console.log(loggedInUser);
 

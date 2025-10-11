@@ -132,7 +132,11 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     const newAccessToken = user.generateAccessToken();
     const newRefreshToken = user.generateRefreshToken();
 
-    const cookieOptions = { httpOnly: true, secure: true, sameSite: "none" };
+    const cookieOptions = { httpOnly: true, secure: true, sameSite: 'Lax',
+      domain: '.onrender.com',
+      path: '/',
+
+     };
     res
       .cookie("accessToken", newAccessToken, cookieOptions)
       .cookie("refreshToken", newRefreshToken, cookieOptions);
