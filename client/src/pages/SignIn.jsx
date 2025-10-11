@@ -41,7 +41,11 @@ function SignIn() {
 
     try {
       const response = await apiClient.post('/login', {email, password});
-
+      const accessToken = response.data.data.accessToken;
+      if(accessToken){
+        localStorage.setItem('accessToken', accessToken);
+      }
+      
       if(response.data?.data?.user){
         login(response.data.data.user);
         navigate('/dashboard');
