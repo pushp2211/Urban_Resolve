@@ -6,7 +6,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(()=>{
     const storedUser = JSON.parse(localStorage.getItem('user'));
     return storedUser? storedUser : null
-  }); // Or load from localStorage
+  }); 
 
   // useEffect(()=>{
   //   setUser(localStorage.getItem('user'));

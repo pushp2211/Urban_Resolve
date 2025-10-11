@@ -24,7 +24,6 @@ function ComplaintRegister({ handleClose }) {
   const [step1Error, setStep1Error] = useState(true);
     const [step2Error, setStep2Error] = useState(true);
 
-  // title, description, type, locality, district, city, pinCode, state,  urgency
 
   const [formData, setFormData] = useState({
     title: '',

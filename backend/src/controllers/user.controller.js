@@ -162,7 +162,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: 'none',
     };
     console.log(loggedInUser);
 
@@ -196,16 +196,15 @@ const logoutUser = asyncHandler(async (req, res) => {
         }
     );
     const options = {
-        //ye krne se ab cookies bs server se modifiable hain
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "none", // Match the 'Lax' setting used elsewhere
     };
 
     return res
         .status(200)
-        .clearCookie('accessToken')
-        .clearCookie('refreshToken')
+        .clearCookie('accessToken',  options)
+        .clearCookie('refreshToken', options)
         .json(new apiResponse(200, {}, 'user logged out'));
 });
 
