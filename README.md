@@ -8,7 +8,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/abhiishhekk/Complaint_Tracking_System">
-    <img src="assets/logo.png" alt="Logo" width="80" height="80">
+    <img src="assets/logo.jpeg" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">Urban Resolve © 2025</h3>
@@ -93,7 +93,6 @@ This project is built with a modern, scalable, and robust tech stack.
 * [![Node][Node.js]][Node-url]
 * [![Express][Express.js]][Express-url]
 * [![MongoDB][MongoDB]][Mongo-url]
-* [![TailwindCSS][TailwindCSS]][TailwindCSS-url]
 * **Authentication:** JSON Web Tokens (JWT)
 * **Media Storage:** Cloudinary
 
@@ -111,7 +110,7 @@ This project is built with a modern, scalable, and robust tech stack.
 ### Video Demo
 For the video, a great approach is to upload it to a service like YouTube or Loom and link it here. You can make a thumbnail image clickable.
 
-[![Urban Resolve Video Demo](assets/logo.png)](https://drive.google.com/file/d/1C9R_wtKDtVnYiXyUblwNIcUlwVJdWWmj/view?usp=drive_link)
+[![Urban Resolve Video Demo](assets/logo.jpeg)](https://drive.google.com/file/d/1C9R_wtKDtVnYiXyUblwNIcUlwVJdWWmj/view?usp=drive_link)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -135,7 +134,7 @@ Ensure you have the following installed on your local development machine:
 
 1.  **Clone the repository**
     ```sh
-    git clone https://github.com/your-username/Municipal_Complaint_Tracking_System.git
+    git clone https://github.com/abhiishhekk/Complaint_Tracking_System.git
     ```
 
 2.  **Backend Setup**
