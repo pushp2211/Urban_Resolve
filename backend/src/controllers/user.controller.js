@@ -198,16 +198,17 @@ const logoutUser = asyncHandler(async (req, res) => {
         }
     );
     const options = {
-        //ye krne se ab cookies bs server se modifiable hain
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "Lax", // Match the 'Lax' setting used elsewhere
+        domain: ".onrender.com", // You MUST provide the domain
+        path: "/", // You MUST provide the path
     };
 
     return res
         .status(200)
-        .clearCookie('accessToken')
-        .clearCookie('refreshToken')
+        .clearCookie('accessToken',  options)
+        .clearCookie('refreshToken', options)
         .json(new apiResponse(200, {}, 'user logged out'));
 });
 
