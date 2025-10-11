@@ -110,7 +110,7 @@ This project is built with a modern, scalable, and robust tech stack.
 ### Video Demo
 For the video, a great approach is to upload it to a service like YouTube or Loom and link it here. You can make a thumbnail image clickable.
 
-[![Urban Resolve Video Demo](assets/logo.jpeg)](https://drive.google.com/file/d/1C9R_wtKDtVnYiXyUblwNIcUlwVJdWWmj/view?usp=drive_link)
+[![Urban Resolve Video Demo](assets/logo.jpeg)](https://youtu.be/sFHfBcbmpGA)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
