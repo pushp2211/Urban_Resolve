@@ -162,9 +162,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-        sameSite: 'Lax',
-      domain: '.onrender.com',
-      path: '/',
+        sameSite: 'none',
     };
     console.log(loggedInUser);
 
@@ -200,9 +198,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
         secure: true,
-        sameSite: "Lax", // Match the 'Lax' setting used elsewhere
-        domain: ".onrender.com", // You MUST provide the domain
-        path: "/", // You MUST provide the path
+        sameSite: "none", // Match the 'Lax' setting used elsewhere
     };
 
     return res
