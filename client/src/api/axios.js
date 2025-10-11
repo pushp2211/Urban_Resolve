@@ -57,18 +57,15 @@ apiClient.interceptors.request.use(
     return config; // Continue with the request
   },
   (error) => {
-    // If there's an error during request setup, reject the promise
     return Promise.reject(error);
   }
 );
 
 
 // --- Axios Response Interceptor ---
-// This runs AFTER a response is received.
 
 apiClient.interceptors.response.use(
   (response) => {
-    // 1. Handle SUCCESSFUL responses (status 2xx)
     
     // Check if the server sent a new access token in the custom header
     const newAccessToken = response.headers['x-access-token'];
@@ -81,23 +78,19 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    // 2. Handle ERROR responses
     
-    // Check if the error is a 401 Unauthorized
+
     if (error.response?.status === 401) {
-      // This means both the access token and refresh token have failed.
-      // The session is truly over.
+
+
       console.error('Unauthorized! Redirecting to login.');
       
-      // Clear any stale token from storage
+
       removeToken();
       
-      // Redirect to the login page
-      // Using location.href will force a full page reload, clearing any component state.
       window.location.href = '/login';
     }
 
-    // For any other errors, let the promise reject normally
     return Promise.reject(error);
   }
 );
