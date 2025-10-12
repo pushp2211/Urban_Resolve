@@ -259,7 +259,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_twitter) - email@example.com
+application.controllerroute@gmail.com
 
 Project Link: [https://github.com/abhiishhekk/Complaint_Tracking_System](https://github.com/abhiishhekk/Complaint_Tracking_System)
 
