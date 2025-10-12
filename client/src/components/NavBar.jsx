@@ -59,6 +59,7 @@ function NavBar() {
 
     try {
       const response = await apiClient.post('/logout');
+      localStorage.removeItem('accessToken')
 
       if(response.status === 200){
         logout();
