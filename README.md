@@ -109,7 +109,7 @@ This project is built with a modern, scalable, and robust tech stack.
 
 ### Video Demo
 
-[![Urban Resolve Video Demo](assets/logo.jpeg)](https://youtu.be/sFHfBcbmpGA)
+[![Urban Resolve Video Demo](https://img.youtube.com/vi/sFHfBcbmpGA/maxresdefault.jpg)](https://youtu.be/sFHfBcbmpGA)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -166,12 +166,8 @@ Ensure you have the following installed on your local development machine:
         FRONTEND_URL=http://localhost:5173
         BACKEND_URL=http://localhost:8000
         
-        # Email Service (for notifications)
-        EMAIL_SERVICE=gmail
-        EMAIL_PORT=587
-        EMAIL_USER=your_email@gmail.com
-        EMAIL_PASS=your_gmail_app_password
-        EMAIL_ADMIN=municipal_admin_email@example.com
+        # Email Service (for authentication)
+        SENDGRID_API_KEY= your_api_key_from_sendgrid
         
         # Cloudinary API Credentials (for complaint image uploads)
         CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
@@ -259,7 +255,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## Contact
 
-application.controllerroute@gmail.com
+Email: application.controllerroute@gmail.com
 
 Project Link: [https://github.com/abhiishhekk/Complaint_Tracking_System](https://github.com/abhiishhekk/Complaint_Tracking_System)
 
