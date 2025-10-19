@@ -109,7 +109,7 @@ This project is built with a modern, scalable, and robust tech stack.
 
 ### Video Demo
 
-[![Urban Resolve Video Demo](https://img.youtube.com/vi/sFHfBcbmpGA/maxresdefault.jpg)](https://youtu.be/sFHfBcbmpGA)
+[![Urban Resolve Video Demo](https://img.youtube.com/vi/kMk5US-CRag/maxresdefault.jpg)](https://youtu.be/kMk5US-CRag)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
