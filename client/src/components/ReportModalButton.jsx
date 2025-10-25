@@ -5,7 +5,8 @@ import ReportModal from './ReportModal';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 function ReportModalButton() {
     const [open, setOpen] = useState(false);
-    const handleReportModalClose = ()=>{
+    const handleReportModalClose = (e)=>{
+        e.stopPropagation();
         setOpen(false);
     }
     const handleReportModalOpen = ()=>{

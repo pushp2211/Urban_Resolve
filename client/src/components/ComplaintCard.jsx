@@ -91,11 +91,12 @@ function ComplaintCard({ complaint }) {
           lg: '23rem', // large devices: 35rem
           xl: '28rem', // extra large devices: 40rem
         },
-        maxHeight:{
-          lg:"27rem"
-        },
+        // maxHeight:{
+        //   lg:"27rem"
+        // },
         minHeight:{
-          lg:"27rem"
+          md:"24.45rem",
+          lg:"24.45rem"
         },
         borderRadius: '1rem',
       }}
@@ -109,7 +110,7 @@ function ComplaintCard({ complaint }) {
             mb: 1,
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="button" color="text.secondary">
             {complaint.address?.city}, {complaint.address?.pinCode}
           </Typography>
           <Chip
@@ -152,12 +153,29 @@ function ComplaintCard({ complaint }) {
             <Typography
               variant="h6"
               component="div"
-              sx={{ fontWeight: 'bold' }}
+              sx={{ fontWeight: 'bold',
+                display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 1, // number of visible lines
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+
+              }}
             >
               {complaint.title}
             </Typography>
-            <Typography variant="">{complaint.description}</Typography>
-            <Typography sx={{ mt: 1.5 }} color="text.secondary">
+            <Typography variant=""
+              sx={{
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2, // number of visible lines
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+            >
+              
+              {complaint.description}</Typography>
+            <Typography sx={{ mt: 1.5 }} color="text.secondary" variant='button'>
               {new Date(complaint.createdAt).toLocaleDateString()}
               {'  '}
               {complaint.address?.district}

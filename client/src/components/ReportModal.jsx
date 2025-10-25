@@ -58,7 +58,7 @@ function ReportModal({ open, handleReportModalClose }) {
         backdropFilter: 'blur(10px)',
       }}
       open={open}
-      onClose={handleReportModalClose}
+      onClose={(e)=>handleReportModalClose(e)}
     >
       <Paper
         sx={{

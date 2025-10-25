@@ -231,6 +231,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
         borderRadius: '2rem',
         paddingX: '1rem',
         paddingY: '1rem',
+        maxHeight:"95svh",
+        overflowY:"scroll",
+        overflowX:"hidden",
         
       }}
     >
@@ -242,7 +245,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           justifyContent: 'center',
           alignItems: 'center',
           width: {
-            xs: '19rem', // extra-small devices: full width
+            xs: '22rem', // extra-small devices: full width
             sm: '24rem', // small devices: 25rem
             md: '30rem', // medium devices: 30rem
             lg: '33rem', // large devices: 35rem
@@ -269,21 +272,27 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               sx={{
                 display:{
                   xs:'flex',
-                  lg:"none"
+                  
                 },
-                justifyContent:"space-between",
+                justifyContent:"flex-end",
                 alignItems:"center"
 
               }}
               
             >
-              <Typography variant="button">{complaint.title}</Typography>
+              
               <Button
                 onClick={onClose}
                 color='warning'
+                sx={{
+                  // justifySelf:'flex-end'
+                  display:{
+                    lg:"none"
+                  }
+                }}
               >
                 Close
-                <CloseIcon/>
+                {/* <CloseIcon/> */}
               </Button>
             </Box>
             <Box
@@ -318,6 +327,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                 size="small"
               />
             </Box>
+            <Typography variant='button' color='#ffa726'>{complaint.title}</Typography>
           </Box>
         </Container>
         <Container>
@@ -329,7 +339,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               overflow: 'hidden',
               borderRadius: 1,
               marginY: {
-                lg:'1rem',
+                lg:'0.4rem',
                 xs:"0.3rem"
               }
             }}
@@ -359,6 +369,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           </Typography>
         </Container>
         <Container>
+          
           <Typography>{complaint.description}</Typography>
         </Container>
       </Box>
