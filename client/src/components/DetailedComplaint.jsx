@@ -281,7 +281,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               
             >
               
-              <Button
+              {/* <Button
                 onClick={onClose}
                 color='warning'
                 sx={{
@@ -292,8 +292,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                 }}
               >
                 Close
-                {/* <CloseIcon/> */}
-              </Button>
+              </Button> */}
             </Box>
             <Box
               sx={{
@@ -321,13 +320,35 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                   {complaint.submittedBy?.fullName}
                 </Typography>
               </Box>
+              <Button
+                onClick={onClose}
+                color='warning'
+                sx={{
+                  // justifySelf:'flex-end'
+                  display:{
+                    lg:"none"
+                  }
+                }}
+              >
+                Close
+              </Button>
+              
+            </Box>
+            <Box
+              sx={{
+                display:"flex",
+                justifyContent:"space-between",
+                alignItems:"center",
+              }}
+            >
+              <Typography variant='button' color='#ffa726'>{complaint.title}</Typography>
               <Chip
                 label={complaint?.status}
                 color={getStatusColor(complaint?.status)}
                 size="small"
               />
             </Box>
-            <Typography variant='button' color='#ffa726'>{complaint.title}</Typography>
+            
           </Box>
         </Container>
         <Container>
