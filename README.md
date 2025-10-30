@@ -75,7 +75,7 @@
   - View complaint distribution by **type**, **region**, **city**, **pincode**, and **resolution status**.
   - Filter complaints and analytics by **monthly trends** to monitor recurring issues and performance efficiency.
 
-* **Monthly Reports for Admins:** Admins can generate comprehensive reports for the current month including complaint counts, types, resolution rates, and region-wise summaries.
+* **Monthly Reports for Admins:** Admins can generate comprehensive reports including complaint counts, types, resolution rates, and region-wise summaries.
 
 * **Media Upload Support:** Citizens can attach relevant images for complaints to help municipal staff assess issues accurately.
 
