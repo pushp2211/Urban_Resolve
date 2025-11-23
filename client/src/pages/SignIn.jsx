@@ -109,11 +109,14 @@ function SignIn() {
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="example@gmail.com"
+          placeholder="example@email.com"
           variant="standard"
           sx={{
             width: 0.8,
           }}
+          type='email'
+          autoComplete='email'
+        
         />
 
         <TextField
@@ -142,6 +145,7 @@ function SignIn() {
             )
             }
           }}
+          autoComplete='current-password'
         />
 
         <Button
