@@ -61,10 +61,9 @@ function ComplaintCard({ complaint }) {
     setCountLoadingError("");
 
     const newIsUpvoted = !isUpvoted;
-    setIsUpvoted(newIsUpvoted);
+    setIsUpvoted(prev => !prev);
     setUpvoteCount((prev) => newIsUpvoted ? prev + 1 : prev - 1);
     try {
-      setIsUpvoted((prev)=>!prev);
       
       const response = await apiClient.put(
         `/service/complaints/${complaint._id}/toggleUpvote`
