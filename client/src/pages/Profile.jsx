@@ -59,6 +59,7 @@ function Profile() {
   }, [data]);
 
   useEffect(() => {
+
     const fetchInfo = async () => {
       setError('');
       setLoading(true);
@@ -100,6 +101,7 @@ function Profile() {
   }, [userComplaintDetails]);
 
   return (
+    
     <Container
       sx={{
         // bgcolor: 'gray',

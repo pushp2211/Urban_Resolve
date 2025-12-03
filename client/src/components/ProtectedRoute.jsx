@@ -6,7 +6,7 @@ function ProtectedRoute() {
     const {user} = useAuth();
     if(!user){
         return(
-            <Navigate to={"/login"} replace/>
+            <Navigate to={"/urban-resolve"} replace/>
         )
     }
   return <Outlet/>

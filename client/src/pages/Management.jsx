@@ -78,6 +78,7 @@ function Management() {
       controller.abort();
       clearTimeout(debounce);
     };
+    
   }, [searchValue]);
 
   const userStats = [
@@ -162,6 +163,7 @@ function Management() {
       setComplaintStatsError('');
 
       try {
+        showLoading();
         setComplaintStatsLoading(true);
         const params = new URLSearchParams();
         if (complaintCity?.length > 0) {
@@ -192,6 +194,7 @@ function Management() {
         }
       } finally {
         setComplaintStatsLoading(false);
+        hideLoading();
       }
     };
     const debounce = setTimeout(fetchComplaintStats, 500);
@@ -208,6 +211,7 @@ function Management() {
       setUserStatsError('');
 
       try {
+        showLoading();
         setUserStatsLoading(true);
         const params = new URLSearchParams();
         if (userCity?.length > 0) {
@@ -236,6 +240,7 @@ function Management() {
         }
       } finally {
         setUserStatsLoading(false);
+        hideLoading();
       }
     };
     const debounce = setTimeout(fetchUserStats, 500);

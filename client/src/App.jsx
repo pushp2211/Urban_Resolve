@@ -23,6 +23,8 @@ import { useAuth } from './context/AuthContext';
 import { LoadingProvider, useLoading } from './context/LoadingContext.jsx';
 import GlobalLoading from './components/GlobalLoading.jsx';
 import VerifyEmail from './pages/VerifyEmail.jsx';
+import LandingPage from './pages/LandingPage.jsx';
+
 function App() {
   const {user} = useAuth();
   const { globalLoading } = useLoading();
@@ -52,6 +54,7 @@ const [curTheme, setTheme] = useState("light");
           </Route>
           
         </Route>
+        <Route path='/urban-resolve' element={<LandingPage/>}></Route>
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />}></Route>

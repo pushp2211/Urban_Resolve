@@ -21,6 +21,7 @@
     "rc-virtual-list": "^3.19.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-fast-marquee": "^1.6.5",
     "react-router-dom": "^7.9.3",
     "react-window": "^2.2.0",
     "recharts": "^3.2.1",
