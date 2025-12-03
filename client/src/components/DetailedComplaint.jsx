@@ -15,7 +15,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import apiClient from '../api/axios';
 import StaffListDialog from './StaffListDialog.jsx';
-import theme from '../theme.js';
+// import {theme }from '../theme.js';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -25,7 +25,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { triggerNotification } from '../../utils/notificationService.js';
 import Snack from './Snack.jsx';
 
-
+import { useTheme } from '@mui/material/styles';
 const getStatusColor = (status) => {
   switch (status) {
     case COMPLAINT_STATUS.PENDING:
@@ -42,7 +42,7 @@ const getStatusColor = (status) => {
 };
 function DetailedComplaint({ complaint, onAssign, onClose }) {
   // console.log(theme);
-
+  const theme = useTheme();
   const { user } = useAuth();
   const assignedTo = complaint?.assignedTo;
   const [listOpen, setListOpen] = useState(false);

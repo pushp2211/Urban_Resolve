@@ -11,6 +11,7 @@ import {
 
 
 export default function HorizontalChart({data}) {
+  console.log(data);
   return (
     <Box
         sx={{
@@ -34,12 +35,12 @@ export default function HorizontalChart({data}) {
         
           data={data}
           layout="vertical"
-            margin={{ top: 10, right: 10, bottom: 10, left: 20 }}
+            margin={{ top: 10, right: 10, bottom: 10, left: 30 }}
         >
           {/* <CartesianGrid  /> */}
           <XAxis type="number" />
           <YAxis dataKey="role" type="category" />
-          <Tooltip />
+          {/* <Tooltip /> */}
           <Bar dataKey="count" fill="#3f51b5" barSize={30} radius={5}/>
         </BarChart>
       </ResponsiveContainer>

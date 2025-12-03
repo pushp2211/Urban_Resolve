@@ -15,7 +15,7 @@ import Management from './pages/Management';
 import Home from './pages/Home';
 import { Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@emotion/react';
-import theme from './theme';
+// import {theme} from './theme';
 import MyAssignedComplaints from './pages/MyAssignedComplaints';
 import Notifications from './pages/Notifications';
 import { ROLES } from '../enum/roles';
@@ -24,18 +24,21 @@ import { LoadingProvider, useLoading } from './context/LoadingContext.jsx';
 import GlobalLoading from './components/GlobalLoading.jsx';
 import VerifyEmail from './pages/VerifyEmail.jsx';
 import LandingPage from './pages/LandingPage.jsx';
-
+import { CssBaseline } from '@mui/material';
 function App() {
   const {user} = useAuth();
   const { globalLoading } = useLoading();
 // pinCode, locality, city, dateRange, status
-const [curTheme, setTheme] = useState("light");
+  // const [curTheme, setTheme] = useState("light");
+  // const curtheme = theme(curTheme);
 
   return (
     <BrowserRouter>
+    {/* <ThemeProvider theme={curtheme} > */}
+      <CssBaseline/>
     <LoadingProvider>
     <GlobalLoading open={globalLoading} />
-    <ThemeProvider theme={theme} >
+    
     <FilterProvider>
       <Routes>
         
@@ -61,8 +64,9 @@ const [curTheme, setTheme] = useState("light");
         
       </Routes>
       </FilterProvider>
-      </ThemeProvider>
+      
       </LoadingProvider>
+      {/* </ThemeProvider> */}
     </BrowserRouter>
   )
 }

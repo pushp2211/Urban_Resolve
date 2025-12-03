@@ -1,7 +1,8 @@
 import { Box, Container, Button } from '@mui/material';
 import { Typography } from '@mui/material';
 import React, { useEffect, useState, useMemo } from 'react';
-import theme from '../theme';
+// import {theme} from '../theme';
+import { useTheme } from '@mui/material/styles';
 import Search from '../components/Search';
 import UserManageModal from '../components/UserManageModal';
 import apiClient from '../api/axios';
@@ -10,6 +11,7 @@ import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import AdminFilterModal from '../components/AdminFilterModal';
 import { useLoading } from '../context/LoadingContext';
 function Management() {
+  const theme = useTheme();
   const {showLoading, hideLoading} = useLoading()
   // setSearchValue, searchResult, loading, error, handleSearch, searchValue
   const [searchValue, setSearchValue] = useState('');

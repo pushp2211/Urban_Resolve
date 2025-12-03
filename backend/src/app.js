@@ -10,6 +10,9 @@
 import { verifyJWT } from './middlewares/auth.middleware.js';
 import notificationRouter from './routes/notification.routes.js'
 import verificationRouter from './routes/verifyEmail.routes.js'
+
+import landingRouter from './routes/landing.routes.js'
+
     const app = express();
 
     app.use(cors({
@@ -57,4 +60,8 @@ app.use("/api/v1/user/verify/", verificationRouter);
 
 //report router
 app.use("/api/v1/data/", reportRouter)
+
+
+//landing page router
+app.use("/api/v1/landing/", landingRouter)
 export {app};

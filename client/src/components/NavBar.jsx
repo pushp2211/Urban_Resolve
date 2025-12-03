@@ -14,7 +14,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { ROLES } from '../../enum/roles';
-
+import ThemeButton from './ThemeButton';
 // Update pages to be an array of objects with paths
 const userPages = [
   { label: 'Home', path: '/dashboard' },
@@ -138,14 +138,15 @@ function NavBar() {
               </Button>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap:1 }}>
             <Button
                 sx={{ color: 'text.primary', marginX:'2rem' }}
                 onClick={handleLogout} // <-- Add logout functionality
             >
                 Log Out
             </Button>
-            <Tooltip title="Open settings">
+            <ThemeButton/>
+            <Tooltip title="Open profile">
               <IconButton 
               key='profile'
               component={routerLink}
@@ -154,6 +155,7 @@ function NavBar() {
                 <Avatar alt={user.fullName} src={user.profilePicture} />
               </IconButton>
             </Tooltip>
+            
             {/* You will need to add the <Menu> component here for the settings dropdown */}
           </Box>
         </Toolbar>

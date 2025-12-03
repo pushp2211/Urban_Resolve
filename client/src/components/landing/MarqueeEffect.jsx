@@ -5,7 +5,11 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
+
+import { useTheme } from '@emotion/react';
 function MarqueeEffect() {
+  const theme = useTheme();
+  const curTheme = theme.palette.mode;
   const images = [
     { title: 'Dashboard', path: '/Homepage.png', description: '' },
     {
@@ -19,10 +23,12 @@ function MarqueeEffect() {
     { title: 'Live status', path: '/Status.png', description: '' },
   ];
   return (
-    <Marquee pauseOnHover={true} gradient={true} gradientWidth={50}
+    <Marquee pauseOnHover={true}  gradientWidth={50}
+      gradient={curTheme==="dark"? false: true}
       style={{
         
       }}
+      // gradientColor = "#313647"
     >
       {images.map((e, id) => (
         <Card

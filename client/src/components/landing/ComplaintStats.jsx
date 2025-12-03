@@ -1,12 +1,50 @@
 import React from 'react'
 import { Box } from '@mui/material'
 import HorizontalChart from './HorizontalChart';
+import { useState, useEffect } from 'react';
+import { useLoading } from '../../context/LoadingContext';
+import apiClient from '../../api/axios';
 function ComplaintStats() {
-    const complaintData = [
-      { role: 'In Progress', count: 120 },
-      { role: 'Resolved', count: 25 },
-      { role: 'Pending', count: 5 },
-    ];
+    const [complaintData, setUsersData] = useState(null);
+    const {showLoading, hideLoading } = useLoading();
+    const [error, setError] = useState("");
+    const [complaintDataArr, setComplaintDataArr] = useState([]);
+    const map = {
+        pending: "Pending",
+        inProgress: "In Progress",
+        resolved: "Resolved",
+        total: "Registered"
+    }
+    // const userData = Array.of(complaintData);
+    useEffect(()=>{
+        const fetchStats = async()=>{
+            setError("");
+            showLoading();
+            try {
+                const resp = await apiClient.get('/landing/complaint-stats');
+                // console.log(resp.data.data);
+                setUsersData(resp.data.data);
+            } catch (error) {
+                console.log(error.message);
+            }
+            finally{
+                hideLoading();
+            }
+        }
+        fetchStats();
+    }, [])
+
+    useEffect(()=>{
+        if(!complaintData){
+            return;
+        }
+        const arr = Object.keys(map).map(key=>({
+                role: map[key],
+                count:complaintData[key]
+            }))
+        setComplaintDataArr(arr);
+        console.log(complaintDataArr);
+    }, [complaintData]);
   return (
     <Box
             sx={{
@@ -46,7 +84,7 @@ function ComplaintStats() {
                     justifySelf:"center"
                 }}
             >
-                <HorizontalChart data={complaintData}/>
+                <HorizontalChart data={complaintDataArr}/>
             </Box>
             
         </Box>

@@ -4,8 +4,10 @@ import { useSearchParams } from "react-router-dom";
 import apiClient from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { Button, Paper, Typography } from "@mui/material";
-import theme from "../theme";
+// import {theme} from "../theme";
+import { useTheme } from '@mui/material/styles';
 export default function VerifyEmail() {
+    const theme = useTheme();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [verified, setVerified] = useState(false);

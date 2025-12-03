@@ -2,7 +2,8 @@ import React from 'react'
 import { Box, Avatar, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import {AppBar} from '@mui/material'
-function LandingNav() {
+import ThemeButton from '../ThemeButton'
+function LandingNav({scrollControl, refs}) {
     const navigate = useNavigate();
 
     const handleautbuttonClick = ()=>{
@@ -13,7 +14,8 @@ function LandingNav() {
         position='fixed'
         
         sx={{
-            bgcolor:'transparent',
+            bgcolor: 'transparent', // Use transparent for the glass effect
+            backdropFilter: 'blur(24px)',
             borderRadius:"3rem",
             display:'flex',
             flexDirection:'row',
@@ -57,6 +59,7 @@ function LandingNav() {
                     borderRadius:"2rem",
                     paddingX:"2.5rem",
                 }}
+                onClick={()=>scrollControl(refs.home)}
             >
                 Home
             </Button>
@@ -67,11 +70,19 @@ function LandingNav() {
                     borderRadius:"2rem",
                     paddingX:"2.5rem",
                 }}
+                onClick={()=>scrollControl(refs.stats)}
             >
                 Stats
             </Button>
         </Box>
-        <Box>
+        <Box
+            sx={{
+                display:"flex",
+                flexDirection:"row",
+                gap:1
+            }}
+        >
+            <ThemeButton/>
             <Button variant='outlined'
                 sx={{
                     // color:"black"

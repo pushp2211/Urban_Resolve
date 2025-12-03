@@ -10,7 +10,8 @@ import Button from '@mui/material/Button';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useEffect } from 'react';
 import apiClient from '../api/axios';
-import theme from '../theme';
+// import {theme} from '../theme';
+import { useTheme } from '@mui/material/styles';
 // Function to get a color for the status chip
 const getStatusColor = (status) => {
   switch (status) {
@@ -28,6 +29,7 @@ const getStatusColor = (status) => {
 };
 
 function ComplaintCard({ complaint }) {
+  const theme = useTheme();
   const [isUpvoted, setIsUpvoted] = useState(false);
   const [upvoteCount, setUpvoteCount] = useState(0);
   const [countLoading, setCountLoading] = useState(false);

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import theme from '../theme';
+// import {theme} from '../theme';
+// import useTheme from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { triggerNotification } from '../../utils/notificationService';
 import {
   Modal,
@@ -15,6 +17,7 @@ import { ROLES, ROLES_ENUM } from '../../enum/roles';
 import apiClient from '../api/axios';
 import Snack from './Snack';
 function UserManageModal({ open, handleOnClose, user }) {
+  const theme = useTheme();
   console.log(user);
   const [menuOpen, setMenuOpen] = useState(null);
   const handleMenuOpen = (event) => {

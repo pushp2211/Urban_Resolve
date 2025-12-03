@@ -1,14 +1,51 @@
 import { Box } from '@mui/material'
 import React from 'react'
 import HorizontalChart from './HorizontalChart';
-
+import { useState } from 'react';
+import apiClient from '../../api/axios';
+import { useEffect } from 'react';
+import { useLoading } from '../../context/LoadingContext';
 function UserStats() {
 
-    const userData = [
-      { role: 'Active Users', count: 120 },
-      { role: 'Staff', count: 25 },
-      { role: 'Admins', count: 5 },
-    ];
+    const [usersData, setUsersData] = useState(null);
+    const {showLoading, hideLoading } = useLoading();
+    const [error, setError] = useState("");
+    const [userDataArr, setUserDataArr] = useState([]);
+    const map = {
+        users: "Active Users",
+        staffs: "Staff",
+        admins: "Admins"
+    }
+    // const userData = Array.of(usersData);
+    useEffect(()=>{
+        const fetchStats = async()=>{
+            setError("");
+            showLoading();
+            try {
+                const resp = await apiClient.get('/landing/user-stats');
+                // console.log(resp.data.data);
+                setUsersData(resp.data.data);
+            } catch (error) {
+                console.log(error.message);
+            }
+            finally{
+                hideLoading();
+            }
+        }
+        fetchStats();
+    }, [])
+
+    useEffect(()=>{
+        if(!usersData){
+            return;
+        }
+        const arr = Object.keys(map).map(key=>({
+                role: map[key],
+                count:usersData[key]
+            }))
+        setUserDataArr(arr);
+        console.log(userDataArr);
+    }, [usersData]);
 
   return (
     <Box
@@ -34,7 +71,7 @@ function UserStats() {
                 justifySelf:"center"
             }}
         >
-            <HorizontalChart data={userData}/>
+            <HorizontalChart data={userDataArr}/>
         </Box>
         <Box 
             sx={{

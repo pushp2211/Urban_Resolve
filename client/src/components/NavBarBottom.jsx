@@ -8,21 +8,19 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { ROLES } from '../../enum/roles';
-
+import CustomMenu from './CustomMenu';
+import { useThemeToggle } from '../context/ThemeContext';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import { useLoading } from '../context/LoadingContext';
 // Update pages to be an array of objects with paths
 
-const pages = [
-  { label: 'Home', path: '/' },
-  { label: 'Highlights', path: '/highlights' },
-  { label: 'My Complaints', path: '/my-complaints' },
-];
 const userPages = [
   { label: 'Home', path: '/dashboard' },
   { label: 'My Complaints', path: '/my-complaints' },
@@ -40,8 +38,9 @@ const adminPages = [
 ];
 
 function NavBarBottom() {
+  const {showLoading, hideLoading} = useLoading();
   const { user, logout } = useAuth();
-
+  const {mode, toggleTheme} = useThemeToggle();
   const navigate = useNavigate();
   // console.log(user);
   useEffect(() => {
@@ -57,12 +56,17 @@ function NavBarBottom() {
 
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-  const handleLogout = async (event) => {
-    event.preventDefault();
 
+  const handleThemeClick = ()=>{
+    toggleTheme();
+  }
+
+
+
+  const handleLogout = async (event) => {
+    showLoading();
     setLoading(true);
     setError('');
-
     try {
       const response = await apiClient.post('/logout');
 
@@ -77,10 +81,11 @@ function NavBarBottom() {
       );
       console.error('logout error', error);
     } finally {
+      hideLoading();
       setLoading(false);
     }
   };
-  const openProfile = () => {};
+
   return (
     <Box
       sx={{
@@ -106,24 +111,6 @@ function NavBarBottom() {
             minHeight: '4rem', // <-- adjust height here (default 64)
           }}
         >
-          {/* <Typography
-          
-            variant="h6"
-            component={routerLink}
-            to='/dashboard'
-            sx={{
-                
-              display: 'flex',
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'text.primary', // Use inherit for theme-aware color
-              textDecoration: 'none',
-              flexGrow: 1, // Pushes other items to the right
-            }}
-          >
-            LOGO
-          </Typography> */}
 
           <Box
             sx={{
@@ -154,13 +141,39 @@ function NavBarBottom() {
                 {page.label}
               </Button>
             ))}
-            <Button
+            {/*<Button
               sx={{ color: 'text.primary', marginX: '0rem' }}
-              onClick={handleLogout} // <-- Add logout functionality
+               onClick={()=>menuToggle} // <-- Add logout functionality
             >
-              <LogoutIcon />
-            </Button>
-            <Tooltip title="Open settings">
+               <LogoutIcon /> 
+              
+              <MenuIcon/>
+            </Button>*/} 
+            <CustomMenu
+              buttonLabel='Menu'
+              
+              items={[
+                {
+                  label: mode==="dark"? "Light Mode" : "Dark Mode",
+                  icon: mode === "dark"?<LightModeIcon/> : <DarkModeIcon/> ,
+                  onClick: handleThemeClick
+                },
+                {
+                  label: "Logout",
+                  icon: <LogoutIcon/>,
+                  onClick: handleLogout
+                },
+                // {
+                //   item:<Button>
+                //     <LogoutIcon/>
+                //     Log Out
+                //   </Button>
+                // }
+                // <ThemeButton/>
+              ]}
+            />
+            
+            <Tooltip title="Profile">
               <IconButton
                 key="profile"
                 component={routerLink}

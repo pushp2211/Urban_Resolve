@@ -6,12 +6,15 @@ import { Avatar, Container } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import InfoPieChart from '../components/InfoPieChart';
 import apiClient from '../api/axios';
-import theme from '../theme';
+// import {theme} from '../theme';
+// import useTheme from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 import EditProfile from '../components/EditProfile';
 import { ROLES } from '../../enum/roles';
 import { useLoading } from '../context/LoadingContext';
 function Profile() {
+  const theme = useTheme();
   const { user } = useAuth();
   const [userComplaintDetails, setUserComplaintDetails] = useState({});
   const [loading, setLoading] = useState(false);

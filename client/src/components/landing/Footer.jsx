@@ -18,12 +18,19 @@ function Footer() {
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'row',
+          flexDirection:{
+            xs:"column",
+            sm:"column",
+            md:"row",
+          },
           gap: 10,
           paddingY: '2rem',
-          justifyContent: 'space-evenly',
+          justifyContent:{
+            md:'space-evenly',
+            xs:"center"
+          },
           flexGrow: '1',
-          //   bgcolor: 'red',
+            // bgcolor: 'red',
         }}
       >
         <Box
@@ -75,9 +82,13 @@ function Footer() {
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: {
+              xs:'column',
+              md:'row',
+            },
             gap: 1,
             justifyContent: 'center',
+            alignItems:"center"
           }}
         >
           <Box
@@ -86,7 +97,10 @@ function Footer() {
               fontSize: '1.1rem',
               display: 'flex',
               flexDirection: 'row',
+
               gap: 1,
+              justifyContent:"center",
+              alignItems:"center",
             }}
           >
             Email Support:
