@@ -15,7 +15,7 @@ import Link from '@mui/material/Link';
 import Step1Register from '../components/Step1Register';
 import Step2Register from '../components/Step2Register';
 import { sendNotification } from '../api/notificationApi';
-
+import { fetchAddressDetails } from '../../utils/pincodeToAddress';
 const steps = ['Your Credentials', 'Address Details'];
 
 function Register() {
@@ -23,7 +23,7 @@ function Register() {
   const [activeStep, setActiveStep] = useState(0);
   const [step1Error, setStep1Error] = useState(true);
   const [step2Error, setStep2Error] = useState(true);
-
+  
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -38,6 +38,66 @@ function Register() {
   const [profilePicture, setProfilePicture] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [addressLoading, setAddressLoading] = useState(true);
+  const [verifyPass, setVerifyPass] = useState("");
+  const [passwordNotMatch, setPasswordNotMatch] = useState(true);
+
+  useEffect(()=>{
+    if(verifyPass.length===0) return;
+    if(formData.password.length===0) return;
+
+    const check = ()=>{
+      if(verifyPass!=formData.password){
+        setPasswordNotMatch(true);
+      }
+      else{
+        setPasswordNotMatch(false);
+      }
+    }
+    check();
+  }, [formData.password, verifyPass])
+
+  useEffect(() => {
+    const fetchAddressDetail = async () => {
+      setError('');
+      if(activeStep!=1) return;
+      if(formData.pinCode.length===0) return;
+      setAddressLoading(true);
+      try {
+        const response = await fetchAddressDetails(formData.pinCode);
+        const data = response[0];
+      //if(response.sta)
+      // if(!response.status !== "Success"){
+      //   setError("Invalid pincode");
+      // }
+      if(formData.pinCode.length != 6){
+        return;
+      }
+      if(data.Status !== "Success"){
+        setError("Enter a valid pincode");
+        return;
+      }
+      setError("");
+      const city = data.PostOffice[0].Region;
+      const state = data.PostOffice[0].State;
+      const district = data.PostOffice[0].District;
+      setFormData({
+        ...formData,
+        ["city"] : city,
+        ["state"] : state,
+        ["district"] : district
+      })
+
+      console.log(data);
+      } catch (error) {
+        setError("Retry entering the pincode");
+      }
+      finally{
+        setAddressLoading(false);
+      }
+    };
+    fetchAddressDetail();
+  }, [formData.pinCode]);
 
   useEffect(() => {
     if (activeStep == 0) {
@@ -45,39 +105,54 @@ function Register() {
         !formData ||
         formData?.fullName.toString().trim() == '' ||
         formData?.email.toString().trim() === '' ||
-        !profilePicture
+        !profilePicture ||
+        passwordNotMatch
       ) {
         setStep1Error(true);
       } else {
         setStep1Error(false);
       }
-    } else if(activeStep == 1) {
+    } else if (activeStep == 1) {
       if (
-        !formData||(formData?.pinCode.toString().length > 0 &&
-        formData?.pinCode.toString().length != 6) ||
+        !formData ||
+        (formData?.pinCode.toString().length > 0 &&
+          formData?.pinCode.toString().length != 6) ||
         formData?.city.toString().trim().length == 0 ||
         formData?.locality.toString().trim().length == 0 ||
         formData?.district.toString().trim().length == 0 ||
         formData?.state.toString().trim().length == 0
-        
       ) {
         setStep2Error(true);
       } else {
         setStep2Error(false);
+        setError("");
       }
     }
-  }, [formData, profilePicture]);
+  }, [formData, profilePicture, passwordNotMatch]);
 
   const handleChange = (e) =>
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-  const handleFileChange = (e) => setProfilePicture(e.target.files[0]);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const maxSize = 400 * 1024; //400 kb
+    if (file.size > maxSize) {
+      setError('Image size must be less than 400KB');
+      e.target.value = '';
+      return;
+    }
+    setError('');
+    setProfilePicture(e.target.files[0]);
+  };
 
-  const handleNext = () => {
+  const handleNext = (e) => {
+    e.stopPropagation();
     if (activeStep != 1) {
       setActiveStep((prev) => prev + 1);
+      //setStep2Error(true); /////////////
     }
   };
   const handleBack = () => {
@@ -94,23 +169,22 @@ function Register() {
             handleChange={handleChange}
             handleFileChange={handleFileChange}
             profilePicture={profilePicture}
+            setPasswordNotMatch = {setPasswordNotMatch}
+            setVerifyPass={setVerifyPass}
+            verifyPass = {verifyPass}
           />
         );
       case 1:
         return (
-          <Step2Register
-            formData={formData}
-            handleChange={handleChange}
-          />
+          <Step2Register formData={formData} handleChange={handleChange} />
         );
       default:
         throw new Error('unknown step');
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
     // event.preventDefault();
-
     setError('');
 
     const isEmptyField = Object.values(formData).some(
@@ -133,18 +207,14 @@ function Register() {
       const response = await apiClient.post('/register', dataToSubmit);
 
       if (response.status === 201) {
-        
-        alert('Registration Successful, after verifying your email you can now log in');
+        alert(
+          'Registration Successful, after verifying your email you can now log in'
+        );
         navigate('/login');
       }
     } catch (error) {
-      // console.log(error);
-      if(error.status === 409){
-        setError("User already exists please login");
-      }
-      else if(error.status === 400){
-        setError("All fields are required and password must be atleast 8 characters long.")
-      }
+      console.log(error);
+      setError(error.response.data.message)
       console.error('Registration error', error);
     } finally {
       setLoading(false);
@@ -201,10 +271,15 @@ function Register() {
         </Stepper>
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (activeStep == steps.length - 1) {
-              handleSubmit();
+          // onSubmit={(e) => {
+          //   e.preventDefault();
+          //   if (activeStep == steps.length - 1) {
+          //     // handleSubmit();
+          //   }
+          // }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
             }
           }}
         >
@@ -221,6 +296,7 @@ function Register() {
               color="inherit"
               disabled={activeStep == 0}
               onClick={handleBack}
+              type="button"
               sx={{
                 mr: 1,
               }}
@@ -231,11 +307,17 @@ function Register() {
             <Box sx={{ flex: '1 1 auto' }}>
               {activeStep === steps.length - 1 ? (
                 <Button
-                  type="submit"
+                  type="button"
                   variant="contained"
                   disabled={loading || step2Error}
                   loading={loading}
                   loadingPosition="end"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (activeStep === steps.length - 1) {
+                      handleSubmit();
+                    }
+                  }}
                 >
                   {loading ? 'Registering...' : 'Finish'}
                 </Button>
@@ -244,6 +326,7 @@ function Register() {
                   onClick={handleNext}
                   variant="contained"
                   disabled={step1Error}
+                  type="button"
                 >
                   Next
                 </Button>
@@ -260,7 +343,7 @@ function Register() {
         >
           Already have an account?{' '}
           <Link component={routerLink} to="/login">
-            Sign in here
+            Sign in
           </Link>
         </Typography>
       </Paper>

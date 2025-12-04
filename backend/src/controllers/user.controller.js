@@ -85,6 +85,21 @@ const registerUser = asyncHandler(async (req, res) => {
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const verificationExpiry = Date.now() + 60 * 60 * 1000; // 1 hour
     // console.log(optimisedProfilePictureUrl);
+    const verifyLink = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}&email=${email.toLowerCase()}`;
+    const emailResponse = await sendEmail(
+    email.toLowerCase(),
+    "Verify your email address",
+    `<p>Hi ${fullName},</p>
+     <p>Click below to verify your email:</p>
+     <p><a href="${verifyLink}" target="_blank">${verifyLink}</a></p>
+     <p>This link expires in 1 hour.</p>`
+    );
+    // console.log("Below is email response");
+    // console.log(emailResponse);
+    // console.log(emailResponse.code);
+    if(emailResponse.code>=400){
+        throw new apiError(400, "Invalid email address")
+    }
     const user = await User.create({
         fullName,
         email : email.toLowerCase(),
@@ -101,16 +116,7 @@ const registerUser = asyncHandler(async (req, res) => {
         emailVerificationExpiry: verificationExpiry,
     });
 
-    const verifyLink = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}&email=${email.toLowerCase()}`;
-    await sendEmail(
-    email.toLowerCase(),
-    "Verify your email address",
-    `<p>Hi ${fullName},</p>
-     <p>Click below to verify your email:</p>
-     <p><a href="${verifyLink}" target="_blank">${verifyLink}</a></p>
-     <p>This link expires in 1 hour.</p>`
-    );
-
+    
     const createdUser = await User.findById(user._id)?.select(
         '-password -refreshToken'
     );

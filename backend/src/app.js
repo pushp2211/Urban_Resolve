@@ -12,6 +12,7 @@ import notificationRouter from './routes/notification.routes.js'
 import verificationRouter from './routes/verifyEmail.routes.js'
 
 import landingRouter from './routes/landing.routes.js'
+import { apiError } from "./utils/apiError.js";
 
     const app = express();
 
@@ -64,4 +65,23 @@ app.use("/api/v1/data/", reportRouter)
 
 //landing page router
 app.use("/api/v1/landing/", landingRouter)
+
+app.use((err, req, res, next) => {
+    console.error("GLOBAL ERROR HANDLER:", err);
+
+    if (err instanceof apiError) {
+        return res.status(err.statusCode).json({
+            success: false,
+            message: err.message,
+            errors: err.errors,
+        });
+    }
+
+    // fallback for unexpected errors
+    return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: err.message,
+    });
+});
 export {app};

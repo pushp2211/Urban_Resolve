@@ -91,10 +91,10 @@ function NavBar() {
         marginLeft: 'auto',
         marginRight: 'auto',
         // --- Your Glass Effect Styles ---
-        boxShadow: 0,
+        boxShadow: 1,
         bgcolor: 'transparent', // Use transparent for the glass effect
         backdropFilter: 'blur(24px)',
-        borderRadius: '1rem',
+        borderRadius: '1.5rem',
         border: '1px solid rgba(255, 255, 255, 0.2)', // Complete border style
         mt: 2,
         display: {xs:'none',  md:'fixed'}

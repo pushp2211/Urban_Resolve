@@ -81,7 +81,7 @@ export default function VerifyEmail() {
         >
             "Because every small complaint can spark big change"
         </Typography>
-        <Typography variant="button"
+        {/* <Typography variant="button"
             sx={{
                 fontSize:{
                     xs:"1rem",
@@ -90,10 +90,10 @@ export default function VerifyEmail() {
             }}
         >
             Click the button below to verify your email
-        </Typography>
-        <Typography variant="caption">
+        </Typography> */}
+        {/* <Typography variant="caption">
             Don't forget to check the spam folder
-        </Typography>
+        </Typography> */}
         <Button
         variant="contained"
             disabled = {verified}
@@ -106,7 +106,7 @@ export default function VerifyEmail() {
             loading={loading}
             loadingIndicator="Verifying…"
         >
-            Verify your Email
+            Click Here to Verify Your Email
         </Button>
       {verified && <Typography variant="button"
 

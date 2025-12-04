@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
+import { fetchAddressDetails } from '../../utils/pincodeToAddress';
 
 function Step2Register({ formData, handleChange }) {
-
+  
   return ( 
     <Stack
       sx={{
@@ -19,23 +20,6 @@ function Step2Register({ formData, handleChange }) {
         value={formData.locality}
         onChange={handleChange}
       />
-      <TextField
-        name="city"
-        label="City"
-        variant="outlined"
-        required
-        value={formData.city}
-        onChange={handleChange}
-      />
-      <TextField
-        name="district"
-        label="District"
-        variant="outlined"
-        required
-        value={formData.district}
-        onChange={handleChange}
-      />
-
       <TextField
         name="pinCode"
         label="Pin Code"
@@ -55,12 +39,44 @@ function Step2Register({ formData, handleChange }) {
         }
       />
       <TextField
+        name="city"
+        label="City"
+        variant="outlined"
+        required
+        value={formData.city}
+        onChange={handleChange}
+        slotProps={{
+          input:{
+            readOnly:true
+          }
+        }}
+      />
+      <TextField
+        name="district"
+        label="District"
+        variant="outlined"
+        required
+        value={formData.district}
+        onChange={handleChange}
+        slotProps={{
+          input:{
+            readOnly:true
+          }
+        }}
+      />
+      
+      <TextField
         name="state"
         label="State"
         variant="outlined"
         required
         value={formData.state}
         onChange={handleChange}
+        slotProps={{
+          input:{
+            readOnly:true
+          }
+        }}
       />
     </Stack>
   );
