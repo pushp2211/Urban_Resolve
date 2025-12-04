@@ -13,7 +13,7 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Link from '@mui/material/Link';
-
+import { fetchAddressDetails } from '../../utils/pincodeToAddress';
 import { COMPLAINT_URGENCY_ENUM } from '../../enum/ComplaintUrgency';
 import { COMPLAINT_TYPE_ENUM } from '../../enum/ComplaintType';
 
@@ -23,8 +23,7 @@ function ComplaintRegister({ handleClose }) {
   const [activeStep, setActiveStep] = useState(0);
   const [step1Error, setStep1Error] = useState(true);
     const [step2Error, setStep2Error] = useState(true);
-
-
+  const [addressLoading, setAddressLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -40,39 +39,80 @@ function ComplaintRegister({ handleClose }) {
   const [complaintPicture, setComplaintPicture] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
+  useEffect(() => {
+      const fetchAddressDetail = async () => {
+        setError('');
+        if(activeStep!=1) return;
+        if(formData.pinCode.length===0) return;
+        setAddressLoading(true);
+        try {
+          const response = await fetchAddressDetails(formData.pinCode);
+          const data = response[0];
+        //if(response.sta)
+        // if(!response.status !== "Success"){
+        //   setError("Invalid pincode");
+        // }
+        if(formData.pinCode.length != 6){
+          return;
+        }
+        if(data.Status !== "Success"){
+          setError("Enter a valid pincode");
+          return;
+        }
+        setError("");
+        const city = data.PostOffice[0].Region;
+        const state = data.PostOffice[0].State;
+        const district = data.PostOffice[0].District;
+        setFormData({
+          ...formData,
+          ["city"] : city,
+          ["state"] : state,
+          ["district"] : district
+        })
+  
+        console.log(data);
+        } catch (error) {
+          setError("Retry entering the pincode");
+        }
+        finally{
+          setAddressLoading(false);
+        }
+      };
+      fetchAddressDetail();
+    }, [formData.pinCode]);
 
   useEffect(() => {
-      if (activeStep == 0) {
-        if (
-          !formData ||
-          formData?.title.toString().trim() == '' ||
-          formData?.description.toString().trim() === '' ||
-          !complaintPicture ||
-          formData?.type.toString().trim() ==='' || (!COMPLAINT_TYPE_ENUM.includes(formData.type.toString().trim()))||
-          formData?.urgency.toString().trim()=='' || (!COMPLAINT_URGENCY_ENUM.includes(formData?.urgency.toString().trim()))
-
-        ) {
-          setStep1Error(true);
-        } else {
-          setStep1Error(false);
-        }
-      } else if(activeStep == 1) {
-        if (
-          !formData||(formData?.pinCode.toString().length > 0 &&
-          formData?.pinCode.toString().length != 6) ||
-          formData?.city.toString().trim().length == 0 ||
-          formData?.locality.toString().trim().length == 0 ||
-          formData?.district.toString().trim().length == 0 ||
-          formData?.state.toString().trim().length == 0
-          
-        ) {
-          setStep2Error(true);
-        } else {
-          setStep2Error(false);
-        }
+    if (activeStep == 0) {
+      if (
+        !formData ||
+        formData?.title.toString().trim() == '' ||
+        formData?.description.toString().trim() === '' ||
+        !complaintPicture ||
+        formData?.type.toString().trim() === '' ||
+        !COMPLAINT_TYPE_ENUM.includes(formData.type.toString().trim()) ||
+        formData?.urgency.toString().trim() == '' ||
+        !COMPLAINT_URGENCY_ENUM.includes(formData?.urgency.toString().trim())
+      ) {
+        setStep1Error(true);
+      } else {
+        setStep1Error(false);
       }
-    }, [formData, complaintPicture]);
+    } else if (activeStep == 1) {
+      if (
+        !formData ||
+        (formData?.pinCode.toString().length > 0 &&
+          formData?.pinCode.toString().length != 6) ||
+        formData?.city.toString().trim().length == 0 ||
+        formData?.locality.toString().trim().length == 0 ||
+        formData?.district.toString().trim().length == 0 ||
+        formData?.state.toString().trim().length == 0
+      ) {
+        setStep2Error(true);
+      } else {
+        setStep2Error(false);
+      }
+    }
+  }, [formData, complaintPicture]);
 
   const handleChange = (e) =>
     setFormData({
@@ -104,7 +144,7 @@ function ComplaintRegister({ handleClose }) {
         );
       case 1:
         return (
-          <Step2Complaint formData={formData} handleChange={handleChange}/>
+          <Step2Complaint formData={formData} handleChange={handleChange} />
         );
       default:
         throw new Error('unknown step');
@@ -208,14 +248,7 @@ function ComplaintRegister({ handleClose }) {
           ))}
         </Stepper>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (activeStep == steps.length - 1) {
-              handleSubmit();
-            }
-          }}
-        >
+        <form>
           {getStepContent(activeStep)}
           {error && <Typography color="error">{error}</Typography>}
           <Box
@@ -223,15 +256,14 @@ function ComplaintRegister({ handleClose }) {
               display: 'flex',
               flexDirection: 'row',
               gap: '0.5rem',
-              justifyContent:"space-between",
+              justifyContent: 'space-between',
             }}
           >
             <Box
-                sx={{
-                    display:"flex",
-                    flexDirection:"row",
-                    
-                }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+              }}
             >
               <Button
                 color="inherit"
@@ -239,8 +271,8 @@ function ComplaintRegister({ handleClose }) {
                 onClick={handleBack}
                 sx={{
                   mr: 1,
-                  
                 }}
+                type='button'
               >
                 Back
               </Button>
@@ -248,28 +280,33 @@ function ComplaintRegister({ handleClose }) {
               <Box sx={{ flex: '1 1 1' }}>
                 {activeStep === steps.length - 1 ? (
                   <Button
-                    type="submit"
+                    type="button"
                     variant="contained"
-                    disabled={loading || step2Error}
+                    disabled={loading || step2Error||addressLoading}
                     loading={loading}
                     loadingPosition="end"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (activeStep == steps.length - 1) {
+                        handleSubmit();
+                      }
+                    }}
                   >
                     {loading ? 'Registering...' : 'Finish'}
                   </Button>
                 ) : (
-                  <Button onClick={handleNext} variant="contained"
+                  <Button
+                    onClick={handleNext}
+                    variant="contained"
                     disabled={step1Error}
+                    type='button'
                   >
                     Next
                   </Button>
                 )}
               </Box>
             </Box>
-            <Button
-                onClick={handleClose}
-            >
-                close
-            </Button>
+            <Button onClick={handleClose}>close</Button>
           </Box>
         </form>
       </Paper>

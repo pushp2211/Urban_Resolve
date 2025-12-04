@@ -21,23 +21,6 @@ function Step2Complaint({formData, handleChange}) {
             onChange={handleChange}
         />
         <TextField
-            name='city'
-            label='City'
-            variant='outlined'
-            required
-            value={formData.city}
-            onChange={handleChange}
-        />
-        <TextField
-            name='district'
-            label='District'
-            variant='outlined'
-            required
-            value={formData.district}
-            onChange={handleChange}
-        />
-        
-        <TextField
             name='pinCode'
             label='Pin Code'
             variant='outlined'
@@ -48,12 +31,45 @@ function Step2Complaint({formData, handleChange}) {
             helperText = {(formData.pinCode.toString().length>0 && formData.pinCode.toString().length != 6) ? "Pin code must be of 6 digits" : ""}
         />
         <TextField
+            name='city'
+            label='City'
+            variant='outlined'
+            required
+            value={formData.city}
+            onChange={handleChange}
+            slotProps={{
+          input:{
+            readOnly:true
+          }
+        }}
+        />
+        <TextField
+            name='district'
+            label='District'
+            variant='outlined'
+            required
+            value={formData.district}
+            onChange={handleChange}
+            slotProps={{
+          input:{
+            readOnly:true
+          }
+        }}
+        />
+        
+        
+        <TextField
             name='state'
             label='State'
             variant='outlined'
             required
             value={formData.state}
             onChange={handleChange}
+            slotProps={{
+          input:{
+            readOnly:true
+          }
+        }}
         />
     </Stack>
   )
