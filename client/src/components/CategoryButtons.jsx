@@ -20,9 +20,9 @@ function CategoryButtons() {
   const filters = [
     {label:'This Month', key:'dateRange', value:'this_month'},
     {label:'My City',key:'city', value:user.address?.city},
-    {label:'My pinCode',key:'pinCode',  value:user.address?.pinCode},
+    {label:'My Pincode',key:'pinCode',  value:user.address?.pinCode},
     {label:'Pending',key:'status',  value:COMPLAINT_STATUS.PENDING},
-    {label:'In progress',key:'status',  value:COMPLAINT_STATUS.IN_PROGRESS},
+    {label:'In Progress',key:'status',  value:COMPLAINT_STATUS.IN_PROGRESS},
     {label:'Resolved',key:'status',  value:COMPLAINT_STATUS.RESOLVED},
     {label:'Rejected',key:'status',  value:COMPLAINT_STATUS.REJECTED},
   ]
@@ -93,10 +93,19 @@ function CategoryButtons() {
               borderRadius:"2rem"
             }}
           >
+            <MenuItem onClick={()=>(setSearchParams({}))}
+                sx={{
+                  fontSize:"0.89rem",
+                  textAlign:"center"
+                }}
+              >
+                None
+              </MenuItem>
             {filters.map((filter, idx) => (
               <MenuItem key={idx} value={filter.value} onClick={()=>handleClick(filter.key, filter.value)}
                 sx={{
-                  fontSize:"0.89rem"
+                  fontSize:"0.89rem",
+                  textAlign:"center"
                 }}
               >
                 {filter.label}
