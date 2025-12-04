@@ -19,7 +19,10 @@ export default function InfoPieChart({ data}) {
     <Box
       sx={{
         width:"17rem",
-        height:"17rem"
+        height:"17rem",
+        '& .recharts-wrapper *:focus': {
+          outline: 'none !important',
+        },
       }}
     >
       <ResponsiveContainer width="100%" height="100%">

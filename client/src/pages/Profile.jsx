@@ -194,12 +194,13 @@ function Profile() {
             // gap:1,
             // alignItems:"center",
             // justifyContent:"center"
+            textAlign:"center"
           }}
         >
           <Typography color='text.secondary' variant='overline'
             sx={{
               fontSize:"1rem",
-              
+              textAlign:"center"
             }}
             // align='center'
           >
@@ -214,7 +215,8 @@ function Profile() {
             <Typography
               variant='overline'
               sx={{
-                fontWeight:"medium"
+                fontWeight:"medium",
+                textAlign:"center"
               }}
             >
               {user?.address?.locality}, {user?.address?.city}, {user?.address?.district}
@@ -222,7 +224,8 @@ function Profile() {
             <Typography
               variant='overline'
               sx={{
-                fontWeight:"medium"
+                fontWeight:"medium",
+                textAlign:"center"
               }}
             >
               {user?.address?.state}{",  "}{user?.address?.pinCode}
