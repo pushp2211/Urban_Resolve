@@ -33,7 +33,7 @@ function LandingNav({scrollControl, refs}) {
         }}
     >
         <Box>
-            <Avatar alt="Cindy Baker" src="../public/Logo.svg" 
+            <Avatar alt="Cindy Baker" src="/Logo.svg" 
                 sx={{
                     bgcolor:"whitesmoke"
                 }}

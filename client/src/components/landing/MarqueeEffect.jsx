@@ -11,16 +11,16 @@ function MarqueeEffect() {
   const theme = useTheme();
   const curTheme = theme.palette.mode;
   const images = [
-    { title: 'Dashboard', path: '/Homepage.png', description: '' },
+    { title: 'Dashboard', path: '/Homepage.png', description: 'A dynamic and intuitive control center that brings together recent activities, and quick-access tools, helping users track complaint progress and overall system health at a glance.' },
     {
       title: 'Complaint Details',
       path: '/Complaint_detailed_card.png',
-      description: '',
+      description: 'A dedicated and structured view that showcases every aspect of a complaint, timestamps, and assigned staff, enabling seamless tracking and clearer communication.',
     },
-    { title: 'Filters', path: '/Filters.png', description: '' },
-    { title: 'Live Notifications', path: '/Notifications.png', description: '' },
-    { title: 'Profile Page', path: '/Profile_page.png', description: '' },
-    { title: 'Live status', path: '/Status.png', description: '' },
+    { title: 'Filters', path: '/Filters.png', description: 'An efficient filtering system that allows users to narrow down complaints based on address, current month or status, ensuring faster discovery and smoother workflow management.' },
+    { title: 'Live Notifications', path: '/Notifications.png', description: 'A real-time alert system that instantly updates users about complaint status changes, staff actions, and important system activities, ensuring no critical event goes unnoticed.' },
+    { title: 'Profile Page', path: '/Profile_page.png', description: 'A personalized space where users can manage their identity, view account information, update details, and maintain a secure presence within the system.' },
+    { title: 'Live status', path: '/Status.png', description: 'A continuously updating interface that displays the current state of submitted complaints, allowing citizens to follow their issue’s journey from submission to resolution.' },
   ];
   return (
     <Marquee pauseOnHover={true}  gradientWidth={50}
@@ -58,8 +58,7 @@ function MarqueeEffect() {
                 {e.title}
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                Lizards are a widespread group of squamate reptiles, with over
-                6,000 species, ranging across all continents except Antarctica
+                {e.description}
               </Typography>
             </CardContent>
           </CardActionArea>
