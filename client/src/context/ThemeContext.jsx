@@ -6,7 +6,8 @@ const ThemeToggleContext = createContext();
 export const useThemeToggle = () => useContext(ThemeToggleContext);
 
 export function CustomThemeProvider({ children }) {
-  const [mode, setMode] = useState("light");
+  const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const [mode, setMode] = useState(isDarkMode?"dark":"light");
 
   const toggleTheme = () => {
     setMode(prev => (prev === "light" ? "dark" : "light"));
