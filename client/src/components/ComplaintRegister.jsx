@@ -285,7 +285,7 @@ function ComplaintRegister({ handleClose }) {
                     disabled={loading || step2Error||addressLoading}
                     loading={loading}
                     loadingPosition="end"
-                    onSubmit={(e) => {
+                    onClick={(e) => {
                       e.preventDefault();
                       if (activeStep == steps.length - 1) {
                         handleSubmit();
