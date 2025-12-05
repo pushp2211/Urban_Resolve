@@ -27,8 +27,8 @@ function FilterBar() {
       gap:1
     }}
    >
-    <ReportModalButton/>
-    <NotificationButton/>
+    {/* <ReportModalButton/>
+    <NotificationButton/> */}
    </Box>
     </Box>
 

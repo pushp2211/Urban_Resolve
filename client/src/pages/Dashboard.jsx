@@ -54,8 +54,18 @@ function Dashboard() {
           Every Issue Matters. Every Voice Counts.
           
         </Typography>
+        
         </Box>
-          
+          <Box
+            sx={{
+              display:"flex",
+              flexDirection:"row",
+              gap:1
+            }}
+          >
+            <ReportModalButton/>
+            <NotificationButton/>
+          </Box>
       </Container>
       <Outlet/>
     </Box>

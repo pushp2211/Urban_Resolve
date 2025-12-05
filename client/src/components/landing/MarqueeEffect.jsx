@@ -28,7 +28,6 @@ function MarqueeEffect() {
       style={{
         
       }}
-      // gradientColor = "#313647"
     >
       {images.map((e, id) => (
         <Card

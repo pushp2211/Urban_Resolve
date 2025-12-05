@@ -15,7 +15,6 @@ function ComplaintStats() {
         resolved: "Resolved",
         total: "Registered"
     }
-    // const userData = Array.of(complaintData);
     useEffect(()=>{
         const fetchStats = async()=>{
             setError("");

@@ -23,7 +23,7 @@ export function CustomThemeProvider({ children }) {
           MuiCssBaseline: {
             styleOverrides: {
               body: {
-                backgroundColor: mode === "dark" ? "#121212" : "#fafafa",
+                backgroundColor: mode === "dark" ? "#121212" : "#f5f5f5",
               },
             },
           },

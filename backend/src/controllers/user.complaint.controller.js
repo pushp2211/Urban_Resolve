@@ -30,6 +30,7 @@ const createUserComplaint = asyncHandler(async (req, res) => {
     city,
     pinCode,
     state,
+    urgency
   };
   if (
     Object.values(requiredFields).some((field) => !field || field.trim() === '')
