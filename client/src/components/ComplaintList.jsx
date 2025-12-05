@@ -90,6 +90,7 @@ function ComplaintList({ filter = {} }) {
       try {
         setLoading(true);
         setError('');
+        showLoading();
 
         const response = await apiClient.get(`/service?${query.toString()}`);
         // console.log(response);
