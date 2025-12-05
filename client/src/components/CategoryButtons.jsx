@@ -174,6 +174,7 @@ function CategoryButtons() {
           </MenuItem>
           {filters.map((filter, idx) => (
             <MenuItem
+              id={idx}
               key={idx}
               value={filter.value}
               onClick={() => {
@@ -216,6 +217,7 @@ function CategoryButtons() {
         >
           {status.map((status, idx) => (
             <MenuItem
+            id={idx}
               key={idx}
               value={status.label}
               onClick={() => handleClick(status.key, status.value)}
@@ -256,6 +258,7 @@ function CategoryButtons() {
         >
           {urgency.map((urgency, idx) => (
             <MenuItem
+              id={idx}
               key={idx}
               value={urgency.label}
               onClick={() => handleClick(urgency.key, urgency.value)}
