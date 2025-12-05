@@ -77,7 +77,7 @@ function CategoryButtons() {
       searchParams.get('dateRange') ||
         searchParams.get('city') ||
         searchParams.get('pinCode') ||
-        ''
+        'All'
     );
   }, [searchParams]);
 
@@ -145,7 +145,7 @@ function CategoryButtons() {
           },
         }}
       >
-        <InputLabel id="filter-select-label">Filter</InputLabel>
+        <InputLabel id="filter-select-label">Specific</InputLabel>
         <Select
           labelId="filter-select-label"
           id="filter-select"
@@ -160,7 +160,10 @@ function CategoryButtons() {
           }}
         >
           <MenuItem
-            onClick={() => setSearchParams({})}
+            onClick={() => {
+              setSearchParams({});
+              setGenFilter("All");
+            }}
             sx={{
               fontSize: '0.89rem',
               textAlign: 'center',
@@ -173,7 +176,10 @@ function CategoryButtons() {
             <MenuItem
               key={idx}
               value={filter.value}
-              onClick={() => handleClick(filter.key, filter.value)}
+              onClick={() => {
+                setSearchParams({});
+                handleClick(filter.key, filter.value)
+              }}
               sx={{
                 fontSize: '0.89rem',
                 textAlign: 'center',

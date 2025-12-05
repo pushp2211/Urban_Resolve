@@ -59,15 +59,15 @@ function ComplaintList({ filter = {} }) {
   }, []);
 
   useEffect(() => {
-    console.log(searchParams.toString())
+    // console.log(searchParams.toString())
     const query = new URLSearchParams(searchParams);
 
     query.set('page', page);
 
-    if (page == 1) {
-      showLoading();
-      setTimeout(() => {}, [1500]);
-    }
+    // if (page == 1) {
+    //   showLoading();
+    //   setTimeout(() => {}, [1500]);
+    // }
     // if (city) query.set('city', city);
     // if (locality) query.set('locality', locality);
     // if (pinCode) query.set('pinCode', pinCode);
@@ -83,7 +83,7 @@ function ComplaintList({ filter = {} }) {
         }
       });
     }
-    console.log(query.toString())
+    // console.log(query.toString())
     // console.log(query.get('submittedBy'));
 
     const fetchComplaints = async () => {
