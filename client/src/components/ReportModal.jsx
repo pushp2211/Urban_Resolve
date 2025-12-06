@@ -29,7 +29,7 @@ function ReportModal({ open, handleReportModalClose }) {
   const handleFetchReport = async () => {
     // console.log("111")
     if (!pinCode && !state) {
-      setError('Enter atleast on of the details to get the report');
+      setError('Enter atleast one of the details to get the report');
       return;
     }
     setPdfUrl('');
