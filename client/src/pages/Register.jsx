@@ -208,7 +208,9 @@ function Register() {
 
       if (response.status === 201) {
         alert(
-          'Registration Successful, after verifying your email you can now log in'
+          `Registration Successful, after verifying your email ${formData.email} you can now log in
+           "DON'T FORGET TO CHECK YOUR SPAM FOLDER"
+          `
         );
         navigate('/login');
       }
