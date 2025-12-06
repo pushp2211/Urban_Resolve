@@ -2,12 +2,14 @@ import React from 'react'
 import { useAuth } from '../context/AuthContext'
 import ComplaintList from '../components/ComplaintList';
 import { Box } from '@mui/material';
+import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 function MyAssignedComplaints() {
     const {user} = useAuth();
 
     const filter = {
-        assignedTo : user._id
+        assignedTo : user._id,
     }
+    
   return (
     <Box
         sx={{

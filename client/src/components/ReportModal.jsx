@@ -1,50 +1,76 @@
-import React, {useState, useEffect} from 'react';
-import { Modal, Box, Paper, Button, TextField, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Modal,
+  Box,
+  Paper,
+  Button,
+  TextField,
+  Typography,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useLoading } from '../context/LoadingContext';
+import { Autocomplete } from '@mui/material';
+import { INDIAN_STATES } from '../../utils/indianStates';
 
 import apiClient from '../api/axios';
-import { IconButton, Tooltip } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material';
 function ReportModal({ open, handleReportModalClose }) {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [error, setError] = useState('');
   const { showLoading, hideLoading } = useLoading();
-  const [locality, setLocality] = useState('');
-  useEffect(()=>{
-    setTimeout(()=>{
-        setError("");
-    }, [5000])
-  }, [error])
+  const [pinCode, setPinCode] = useState('');
+  const [state, setState] = useState('');
+  useEffect(() => {
+    setTimeout(() => {
+      setError('');
+    }, 5000);
+    // return () => clearTimeout(timer);
+  }, [error]);
   const handleFetchReport = async () => {
-    if (!locality) return;
+    // console.log("111")
+    if (!pinCode && !state) {
+      setError('Enter atleast on of the details to get the report');
+      return;
+    }
     setPdfUrl('');
     setError('');
     showLoading();
-    setTimeout(() => {}, [1500]);
+    const params = new URLSearchParams();
+    if (pinCode) params.set('pinCode', pinCode);
+    if (state) params.set('state', state);
+    console.log(params);
     try {
-      const response = await apiClient.get('/data/report', {
-        params: {
-          locality,
-        },
-        responseType: 'blob',
-      });
-      if (response.status !== 200) {
-        setError('error while getting report');
-      }
+      const response = await apiClient.get(
+        `/data/report?${params.toString()}`,
+        {
+          responseType: 'blob',
+        }
+      );
+      // if (response.status !== 200) {
+      //   setError('error while getting report');
+      // }
       const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
       const url = URL.createObjectURL(pdfBlob);
-    //   setPdfUrl(url);
+      //   setPdfUrl(url);
       window.open(url, '_blank');
       setTimeout(() => URL.revokeObjectURL(url), 10000);
     } catch (error) {
-        if(error.status === 404){
-            setError("no complaints found in this locality");
+      console.log(error);
+
+      // If backend sent a JSON error inside blob
+      if (error.response && error.response.data instanceof Blob) {
+        const text = await error.response.data.text(); // convert blob → text
+        try {
+          const json = JSON.parse(text); // text → JSON
+          setError(json.message || 'Something went wrong');
+        } catch {
+          setError(text); // Sometimes backend sends plain text
         }
-        else{
-            setError('error while getting report');
-        }
-      
-      console.log(error, 'error while getting report');
+      } else {
+        setError(error.message || 'Something went wrong');
+      }
+
+      console.log('error while getting report');
     } finally {
       hideLoading();
     }
@@ -58,61 +84,87 @@ function ReportModal({ open, handleReportModalClose }) {
         backdropFilter: 'blur(10px)',
       }}
       open={open}
-      onClose={(e)=>handleReportModalClose(e)}
+      onClose={(e) => handleReportModalClose(e)}
     >
       <Paper
         sx={{
-            padding:"2rem",
-            borderRadius:"2rem",
-            display:"flex",
-            flexDirection:"column",
-            gap:2,
-            minWidth:"20rem",
-            minHeight:"16rem"
+          padding: '2rem',
+          borderRadius: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          minWidth: '20rem',
+          minHeight: '16rem',
         }}
       >
-        
-      <Box  
-        sx={{
-          display:"flex",
-          flexDirection:"row",
-          justifyContent:"space-between",
-          alignItems:"center"
-        }}
-        
-      >
-        <Typography>Complaint Report Viewer</Typography>
-        <Tooltip title="Close">
-          <IconButton>
-            <CloseIcon
-              onClick={handleReportModalClose}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography></Typography>
+
+          <Typography variant="button">Complaint Report</Typography>
+          <Tooltip title="Close">
+            <IconButton>
+              <CloseIcon onClick={handleReportModalClose} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <TextField
+          label="Enter the pin code here"
+          variant="standard"
+          onChange={(e) => setPinCode(e.target.value)}
+        />
+        <Autocomplete
+          disablePortal
+          options={INDIAN_STATES}
+          onChange={(e, newValue) => {
+            setState(newValue);
+          }}
+          sx={{ width: 300 }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="State"
+              variant="standard"
+              // onChange={(e)=>setState(e.target.value)}
+              error={state != '' && !INDIAN_STATES.includes(state)}
             />
-          </IconButton>
-        </Tooltip>
-      </Box>
-      <TextField label="Enter the locality here" variant="standard"
-        onChange={(e)=>setLocality(e.target.value)}
-      />
-      <Button onClick={handleFetchReport}
-      > generate report
-      </Button>
+          )}
+        />
+        <Button onClick={handleFetchReport}> generate report</Button>
+        <Typography variant="caption">
+          Enter state or pincode, to get the report in pdf format
+        </Typography>
 
+        {error && (
+          <Typography
+            variant="caption"
+            color="error"
+            sx={{
+              textAlign: 'center',
+            }}
+          >
+            {error}
+          </Typography>
+        )}
 
-      
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      {pdfUrl && (
-        <div style={{ marginTop: '20px' }}>
-          <iframe
-            src={pdfUrl}
-            title="Complaint Report"
-            width="100%"
-            height="700px"
-            style={{ border: '1px solid #ddd' }}
-          />
-        </div>
-      )}
+        {pdfUrl && (
+          <div style={{ marginTop: '20px' }}>
+            <iframe
+              src={pdfUrl}
+              title="Complaint Report"
+              width="100%"
+              height="700px"
+              style={{ border: '1px solid #ddd' }}
+            />
+          </div>
+        )}
       </Paper>
     </Modal>
   );

@@ -1,6 +1,5 @@
 import PDFDocument from 'pdfkit';
 
-// Helper function to draw a pie chart with correct spacing.
 
 function drawPieChart(doc, chartData, chartX, chartY, radius, title) {
   // Position the title above the chart and center it
@@ -60,13 +59,13 @@ function drawPieChart(doc, chartData, chartX, chartY, radius, title) {
 }
 
 
-// Main exported function to generate the full PDF report.
 
 export function generateComplaintReportPDF(
   complaints,
   statusCounts,
   typeCounts,
-  locality,
+  pinCode,
+  state,
   res
 ) {
   const doc = new PDFDocument({ margin: 50 });
@@ -76,22 +75,37 @@ export function generateComplaintReportPDF(
   doc
     .fontSize(20)
     .font('Helvetica-Bold')
-    .text(`Complaint Report for Locality: ${locality}`, { align: 'center' });
+    .text(`Complaint Report`, { align: 'center' });
+    doc.moveDown(1.5)
+    if(pinCode){
+      doc
+    .fontSize(12)
+    .font('Helvetica-Bold')
+    .text(`Postal Code: ${pinCode}`, { align: 'left' });
+    }
+    doc.moveDown(1)
+    if(state){
+      doc
+    .fontSize(12)
+    .font('Helvetica-Bold')
+    .text(`State: ${state}`, { align: 'left' });
+    doc.moveDown(1)
+    }
   doc
     .fontSize(12)
     .font('Helvetica')
     .text(`Generated on: ${new Date().toLocaleDateString()}`, {
-      align: 'center',
+      align: 'left',
     });
-  doc.moveDown(3);
+  doc.moveDown(13);
 
   // Pie Charts Section
-  drawPieChart(doc, statusCounts, 200, 220, 70, 'Complaints by Status');
-  drawPieChart(doc, typeCounts, 200, 450, 70, 'Complaints by Type');
+  drawPieChart(doc, statusCounts, 250, 280, 70, 'Status');
+  drawPieChart(doc, typeCounts, 280, 500, 70, 'Type');
 
-  // Horizontal line separator
-  doc.moveTo(50, 600).lineTo(550, 600).stroke();
-  doc.moveDown(3);
+  doc.moveDown(25);
+  doc.x = 50;   //reset x
+
 
   // Complaints Table Section Header
   doc
@@ -100,7 +114,7 @@ export function generateComplaintReportPDF(
     .text(`Detailed Complaints List`, { align: 'center' });
   doc.moveDown(2); //  Added more vertical spacing here
 
-  // Define centered positions and widths for the table
+  // centered positions and widths for the table
   const tableTopY = doc.y;
   const tableStartX = 60;
   const columnSpacing = 15;
@@ -117,7 +131,7 @@ export function generateComplaintReportPDF(
     submittedBy: 120,
   };
 
-  // Draw Table Headers
+  // Table Headers
   doc.fontSize(10).font('Helvetica-Bold');
   doc.text('Title / Description', columnPositions.title, tableTopY, {
     width: columnWidths.title,
@@ -132,7 +146,7 @@ export function generateComplaintReportPDF(
     width: columnWidths.submittedBy,
   });
 
-  // Draw the single line ONLY under the header text
+  //single line ONLY under the header text
   const headerBottomY = doc.y;
   doc.moveTo(50, headerBottomY).lineTo(550, headerBottomY).stroke();
   doc.moveDown(1.5);
@@ -142,12 +156,11 @@ export function generateComplaintReportPDF(
   for (const complaint of complaints) {
     if (doc.y > 650) {
       doc.addPage();
-      // You can optionally redraw headers on the new page here
     }
 
     const rowY = doc.y;
 
-    // Draw main row content
+    // main row content
     doc.text(complaint.title, columnPositions.title, rowY, {
       width: columnWidths.title,
     });
@@ -174,7 +187,7 @@ export function generateComplaintReportPDF(
       })
     );
 
-    // Draw description line
+    // description line
     doc.fontSize(8);
     const descriptionText = complaint.description.substring(0, 100) + '...';
     const descriptionHeight = doc.heightOfString(descriptionText, {

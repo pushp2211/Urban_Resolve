@@ -6,19 +6,27 @@ import { COMPLAINT_STATUS } from "../enum/ComplaintStatus.js";
 import { COMPLAINT_TYPE } from "../enum/ComplaintType.js";
 
 export const generateLocalityReport = asyncHandler(async (req, res) => {
-    const { locality } = req.query;
-
-    if (!locality) {
-        throw new apiError(400, "Locality is a required query parameter.");
+    const { pinCode, state } = req.query;
+    // console.log(req.query);
+    if(!pinCode && !state){
+        throw new apiError(400, "atleast one of the state or pin code is required to fetch the complaint report")
+    }
+    const filter = {};
+    const finalState = String(state).toLowerCase();
+    if(pinCode){
+        filter["address.pinCode"] = pinCode;
+    }
+    if(state){
+        filter["address.state"] = finalState;
     }
 
     
-    const complaints = await Complaint.find({ "address.locality": locality })
+    const complaints = await Complaint.find(filter)
         .populate("submittedBy", "fullName email")
         .sort({ createdAt: -1 });
 
     if (complaints.length === 0) {
-        throw new apiError(404, `No complaints found for locality: ${locality}`);
+        throw new apiError(404, `No complaints found at entered pincode and state`);
     }
 
    
@@ -44,8 +52,8 @@ export const generateLocalityReport = asyncHandler(async (req, res) => {
 
   
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=report_${locality}_${new Date().toISOString().slice(0,10)}.pdf`);
+    res.setHeader('Content-Disposition', `attachment; filename=report_${pinCode?pinCode:""}_${state? state: ""}_${new Date().toISOString().slice(0,10)}.pdf`);
 
     
-    generateComplaintReportPDF(complaints, statusCounts, typeCounts, locality, res);
+    generateComplaintReportPDF(complaints, statusCounts, typeCounts, pinCode, state, res);
 });
