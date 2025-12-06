@@ -54,11 +54,10 @@ function CategoryButtons() {
     { label: 'High', key: 'urgency', value: COMPLAINT_URGENCY.HIGH },
   ];
   const handleClick = useCallback((key, value) => {
-    console.log(searchParams.toString(), "hhhh");
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
 
-      if (!value) {
+      if (value==="All" || value==="") {
         params.delete(key);
       } else {
         params.set(key, value);
@@ -153,7 +152,8 @@ function CategoryButtons() {
           label="Filter"
           onChange={(e) => {
             handleChange(e);
-            // handleClick("")
+            // handleClick("filter", filter.value)
+            
           }}
           sx={{
             borderRadius: '2rem',
@@ -209,7 +209,7 @@ function CategoryButtons() {
           label="Status"
           onChange={(e) => {
             handleStatusChange(e);
-            // handleClick('status', e.target.value);
+            handleClick('status', e.target.value);
           }}
           sx={{
             borderRadius: '2rem',
@@ -220,7 +220,7 @@ function CategoryButtons() {
             id={idx}
               key={idx}
               value={status.label}
-              onClick={() => handleClick(status.key, status.value)}
+              // onClick={() => handleClick(status.key, status.value)}
               sx={{
                 fontSize: '0.89rem',
                 textAlign: 'center',
@@ -250,7 +250,7 @@ function CategoryButtons() {
           label="Urgency"
           onChange={(e) => {
             handleUrgencyChange(e);
-            // handleClick('urgency', e.target.value);
+            handleClick('urgency', e.target.value);
           }}
           sx={{
             borderRadius: '2rem',
@@ -261,7 +261,7 @@ function CategoryButtons() {
               id={idx}
               key={idx}
               value={urgency.label}
-              onClick={() => handleClick(urgency.key, urgency.value)}
+              // onClick={() => handleClick(urgency.key, urgency.value)}
               sx={{
                 fontSize: '0.89rem',
                 textAlign: 'center',

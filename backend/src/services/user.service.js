@@ -67,7 +67,7 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res) => {
     filter.assignedTo = new mongoose.Types.ObjectId(assignedTo);
   }
   const skip = (parseInt(page) - 1) * parseInt(limit);
-  console.log('RAW QUERY:', req.query);
+  // console.log('RAW QUERY:', req.query);
   // console.log(filter);
   const pipeline = [
     { $match: filter },

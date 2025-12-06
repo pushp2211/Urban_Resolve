@@ -54,71 +54,94 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
   const [staffAssignError, setStaffAssignError] = useState('');
   const [staffAssignLoading, setStaffAssignLoading] = useState(false);
   const [showSnack, setShowSnack] = useState(false);
-  const [snackMessage, setSnackMessage] = useState("")
- 
+  const [snackMessage, setSnackMessage] = useState('');
 
-  const [validComplaintStatus, setValidComplaintStatus] = useState([]);
-  const [statusError, setStatusError] = useState("");
+  const initialStatus = complaint.status;
+
+  let defaultValidStatuses = [];
+  if (initialStatus === COMPLAINT_STATUS.IN_PROGRESS) {
+    defaultValidStatuses = [
+      COMPLAINT_STATUS.IN_PROGRESS,
+      COMPLAINT_STATUS.RESOLVED,
+    ];
+  } else if (initialStatus === COMPLAINT_STATUS.PENDING) {
+    defaultValidStatuses = [
+      COMPLAINT_STATUS.PENDING,
+      COMPLAINT_STATUS.REJECTED,
+    ];
+  } else {
+    defaultValidStatuses = [initialStatus];
+  }
+
+  const [validComplaintStatus, setValidComplaintStatus] =
+    useState(defaultValidStatuses);
+
+  const [statusError, setStatusError] = useState('');
   const [statusLoading, setStatusLoading] = useState(false);
-  const [curComplaintStatus, setComplaintCurStatus] = useState(complaint.status)
+  const [curComplaintStatus, setComplaintCurStatus] = useState(
+    complaint.status
+  );
 
   useEffect(() => {
-    if (complaint?.status === COMPLAINT_STATUS.IN_PROGRESS) {
-      setValidComplaintStatus([COMPLAINT_STATUS.IN_PROGRESS,COMPLAINT_STATUS.RESOLVED]);
+    if (curComplaintStatus === COMPLAINT_STATUS.IN_PROGRESS) {
+      setValidComplaintStatus([
+        COMPLAINT_STATUS.IN_PROGRESS,
+        COMPLAINT_STATUS.RESOLVED,
+      ]);
+    } else if (curComplaintStatus === COMPLAINT_STATUS.PENDING) {
+      setValidComplaintStatus([
+        COMPLAINT_STATUS.PENDING,
+        COMPLAINT_STATUS.REJECTED,
+      ]);
+    } else {
+      setValidComplaintStatus([curComplaintStatus]);
     }
-    if (complaint.status === COMPLAINT_STATUS.PENDING) {
-      setValidComplaintStatus([COMPLAINT_STATUS.PENDING,COMPLAINT_STATUS.REJECTED]);
-    }
-    // if(complaint.status === COMPLAINT_STATUS.)
-  }, [complaint?.status, curComplaintStatus]);
+  }, [curComplaintStatus]);
 
-  const handleChange = async(event) => {
-    if(event.target.value=="") return;
+  const handleChange = async (event) => {
+    if (event.target.value == '') return;
     event.stopPropagation();
     const id = complaint._id;
     console.log(event.target.value);
     // const status = complaint.status;
     const newStatus = event.target.value;
-    setStatusError("");
+    setStatusError('');
     setStatusLoading(true);
     try {
-
-      const response = await apiClient.put(`/admin/updateStatus/${id}`, {status:newStatus});
-      if(response.status !== 200){
-        setStatusError("Encountered an error while updating the status");
+      const response = await apiClient.put(`/admin/updateStatus/${id}`, {
+        status: newStatus,
+      });
+      if (response.status !== 200) {
+        setStatusError('Encountered an error while updating the status');
         return;
       }
       // console.log(response);
-      
+
       const upDatedComplaint = response?.data?.data;
       complaint.status = upDatedComplaint.status;
-      setComplaintCurStatus(complaint.status);
+      setComplaintCurStatus(upDatedComplaint.status);
       onAssign(upDatedComplaint);
-      setSnackMessage("Status updated successfully");
-      setShowSnack(true)
+      setSnackMessage('Status updated successfully');
+      setShowSnack(true);
 
-      triggerNotification(
-        {
-          recipient_id:complaint.submittedBy,
-          message:`Your complaint (topic: ${complaint.title}) status has been changed to ${complaint.status}`,
-          complaint_id:complaint._id
-        }
-      )
-      
+      triggerNotification({
+        recipient_id: complaint.submittedBy,
+        message: `Your complaint (topic: ${complaint.title}) status has been changed to ${complaint.status}`,
+        complaint_id: complaint._id,
+      });
     } catch (error) {
       setStaffAssignError('Unable to update, please try again.');
       console.error('Error updating status:', error);
-    }
-    finally{
+    } finally {
       setStatusLoading(false);
     }
   };
-  useEffect(()=>{
-    setTimeout(()=>{
-      setSnackMessage("");
-      setShowSnack(false)
-    }, [3000])
-  }, [snackMessage, showSnack])
+  useEffect(() => {
+    setTimeout(() => {
+      setSnackMessage('');
+      setShowSnack(false);
+    }, [3000]);
+  }, [snackMessage, showSnack]);
 
   const getEligibleStaffList = async (event) => {
     setListOpen(true);
@@ -179,26 +202,22 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
       const updatedComplaint = response.data.data;
       complaint.status = updatedComplaint.status;
       onAssign(updatedComplaint);
-      triggerNotification(
-        {
-          recipient_id:staffId,
-          message:`You have been assigned a complaint from locality ${updatedComplaint.address?.locality} (Topic: ${updatedComplaint.title}, Urgency: ${updatedComplaint.urgency})`,
-          complaint_id:updatedComplaint._id
-        }
-      )
-      triggerNotification(
-        {
-          recipient_id:complaint.submittedBy,
-          message:`Your complaint (topic: ${complaint.title}) has been cassigned to staff, we'll be happy to solve as soon as possible`,
-          complaint_id:complaint._id
-        }
-      )
-      setSnackMessage("complaint assigned successfully");
+      triggerNotification({
+        recipient_id: staffId,
+        message: `You have been assigned a complaint from locality ${updatedComplaint.address?.locality} (Topic: ${updatedComplaint.title}, Urgency: ${updatedComplaint.urgency})`,
+        complaint_id: updatedComplaint._id,
+      });
+      triggerNotification({
+        recipient_id: complaint.submittedBy,
+        message: `Your complaint (topic: ${complaint.title}) has been cassigned to staff, we'll be happy to solve as soon as possible`,
+        complaint_id: complaint._id,
+      });
+      setSnackMessage('complaint assigned successfully');
       setShowSnack(true);
       setListOpen(false);
       setLoading(false);
     } catch (error) {
-      setSnackMessage("Unable to assign, please try again.");
+      setSnackMessage('Unable to assign, please try again.');
       setShowSnack(true);
       setStaffAssignError('Unable to assign, please try again.');
       console.error('Error assigning staff:', error);
@@ -231,10 +250,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
         borderRadius: '2rem',
         paddingX: '1rem',
         paddingY: '1rem',
-        maxHeight:"95svh",
-        overflowY:"scroll",
-        overflowX:"hidden",
-        
+        maxHeight: '95svh',
+        overflowY: 'scroll',
+        overflowX: 'hidden',
       }}
     >
       <Box
@@ -270,17 +288,13 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           >
             <Box
               sx={{
-                display:{
-                  xs:'flex',
-                  
+                display: {
+                  xs: 'flex',
                 },
-                justifyContent:"flex-end",
-                alignItems:"center"
-
+                justifyContent: 'flex-end',
+                alignItems: 'center',
               }}
-              
             >
-              
               {/* <Button
                 onClick={onClose}
                 color='warning'
@@ -322,33 +336,33 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               </Box>
               <Button
                 onClick={onClose}
-                color='warning'
+                color="warning"
                 sx={{
                   // justifySelf:'flex-end'
-                  display:{
-                    lg:"none"
-                  }
+                  display: {
+                    lg: 'none',
+                  },
                 }}
               >
                 Close
               </Button>
-              
             </Box>
             <Box
               sx={{
-                display:"flex",
-                justifyContent:"space-between",
-                alignItems:"center",
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
             >
-              <Typography variant='button' color='#ffa726'>{complaint.title}</Typography>
+              <Typography variant="button" color="#ffa726">
+                {complaint.title}
+              </Typography>
               <Chip
                 label={complaint?.status}
                 color={getStatusColor(complaint?.status)}
                 size="small"
               />
             </Box>
-            
           </Box>
         </Container>
         <Container>
@@ -360,9 +374,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               overflow: 'hidden',
               borderRadius: 1,
               marginY: {
-                lg:'0.4rem',
-                xs:"0.3rem"
-              }
+                lg: '0.4rem',
+                xs: '0.3rem',
+              },
             }}
           >
             <Box
@@ -390,7 +404,6 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           </Typography>
         </Container>
         <Container>
-          
           <Typography>{complaint.description}</Typography>
         </Container>
       </Box>
@@ -402,9 +415,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           justifyContent: 'center',
           flexGrow: 1,
           gap: {
-            lg:2,
-            sm:1,
-            xs:1,
+            lg: 2,
+            sm: 1,
+            xs: 1,
           },
           marginRight: '1rem',
         }}
@@ -416,11 +429,11 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
             // alignItems:"center",
             width: '100%',
             flexDirection: 'column',
-            gap:{
-              lg:2,
-              xs:1,
-              sm:1
-            }
+            gap: {
+              lg: 2,
+              xs: 1,
+              sm: 1,
+            },
           }}
         >
           <Box
@@ -431,13 +444,13 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               backgroundColor:
                 theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
               paddingX: {
-              lg:'1rem',
-              xs:"0.5rem"
-            },
-            paddingY: {
-              lg:'1rem',
-              xs:"0.5rem"
-            },
+                lg: '1rem',
+                xs: '0.5rem',
+              },
+              paddingY: {
+                lg: '1rem',
+                xs: '0.5rem',
+              },
               borderRadius: '1rem',
             }}
           >
@@ -452,13 +465,13 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               backgroundColor:
                 theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
               paddingX: {
-              lg:'1rem',
-              xs:"0.5rem"
-            },
-            paddingY: {
-              lg:'1rem',
-              xs:"0.5rem"
-            },
+                lg: '1rem',
+                xs: '0.5rem',
+              },
+              paddingY: {
+                lg: '1rem',
+                xs: '0.5rem',
+              },
               borderRadius: '1rem',
             }}
           >
@@ -466,108 +479,116 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
             {complaint.assignedTo && (
               <Typography>{complaint.assignedTo?.fullName}</Typography>
             )}
-            {!complaint?.assignedTo && <Typography>Not assigned yet</Typography>}
+            {!complaint?.assignedTo && (
+              <Typography>Not assigned yet</Typography>
+            )}
           </Box>
         </Box>
-        {user?.role === ROLES?.ADMIN && !complaint?.assignedTo && complaint?.status!==COMPLAINT_STATUS.REJECTED && (
+        {user?.role === ROLES?.ADMIN &&
+          !complaint?.assignedTo &&
+          complaint?.status !== COMPLAINT_STATUS.REJECTED && (
+            <Box
+              sx={{
+                backgroundColor:
+                  theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+                paddingX: {
+                  lg: '1rem',
+                  xs: '0.5rem',
+                },
+                paddingY: {
+                  lg: '1rem',
+                  xs: '0.5rem',
+                },
+                borderRadius: '1rem',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '8%',
+              }}
+            >
+              Assign to
+              <Button
+                onClick={getEligibleStaffList}
+                variant="contained"
+                loading={loading}
+                disabled={listOpen}
+                sx={{
+                  marginLeft: '0.4rem',
+                  textTransform: 'none',
+                }}
+              >
+                Click here ..
+              </Button>
+              {!loading && (
+                <Dialog
+                  open={listOpen}
+                  onClose={() => setListOpen(false)}
+                  maxWidth="lg"
+                >
+                  <DialogTitle>Select a Staff Member</DialogTitle>
+                  <StaffListDialog
+                    staffList={staffList}
+                    onSelectStaff={setSelectedStaff}
+                    assignComplaint={handleSelectStaff}
+                  />
+                </Dialog>
+              )}
+            </Box>
+          )}
+        {(user.role === ROLES.ADMIN || user.role === ROLES.STAFF) && (
           <Box
             sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 1,
               backgroundColor:
                 theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
               paddingX: {
-              lg:'1rem',
-              xs:"0.5rem"
-            },
-            paddingY: {
-              lg:'1rem',
-              xs:"0.5rem"
-            },
+                lg: '1rem',
+                xs: '0.5rem',
+              },
+              paddingY: {
+                lg: '1rem',
+                xs: '0.5rem',
+              },
               borderRadius: '1rem',
-              display: 'flex',
-              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: "space-between",
-              gap: '8%',
+              justifyContent: 'space-between',
             }}
           >
-            Assign to
-            <Button
-              onClick={getEligibleStaffList}
-              variant="contained"
-              loading={loading}
-              disabled={listOpen}
-              sx={{
-                marginLeft: '0.4rem',
-                textTransform: 'none',
-              }}
+            Change status
+            <FormControl
+              sx={{ m: 1, minWidth: 120 }}
+              size="small"
+              disabled={
+                statusLoading ||
+                curComplaintStatus === COMPLAINT_STATUS.REJECTED ||
+                curComplaintStatus === COMPLAINT_STATUS.RESOLVED ||
+                (user.role === ROLES.STAFF && user._id !== assignedTo?._id)
+              }
             >
-              Click here ..
-            </Button>
-            {!loading && (
-              <Dialog
-                open={listOpen}
-                onClose={() => setListOpen(false)}
-                maxWidth="lg"
+              <InputLabel id="demo-select-small-label">Status</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={curComplaintStatus}
+                label="Status"
+                onChange={handleChange}
               >
-                <DialogTitle>Select a Staff Member</DialogTitle>
-                <StaffListDialog
-                  staffList={staffList}
-                  onSelectStaff={setSelectedStaff}
-                  assignComplaint={handleSelectStaff}
-                />
-              </Dialog>
-            )}
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {validComplaintStatus.map((value) => (
+                  <MenuItem value={value}>{value}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
         )}
-        {(user.role === ROLES.ADMIN || user.role ===ROLES.STAFF) && <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 1,
-            backgroundColor:
-              theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-            paddingX: {
-              lg:'1rem',
-              xs:"0.5rem"
-            },
-            paddingY: {
-              lg:'1rem',
-              xs:"0.5rem"
-            },
-            borderRadius: '1rem',
-            alignItems:"center",
-            justifyContent:"space-between"
-          }}
-        >
-          Change status
-          <FormControl
-            sx={{ m: 1, minWidth: 120 }}
-            size="small"
-            disabled = {statusLoading || curComplaintStatus===COMPLAINT_STATUS.REJECTED || curComplaintStatus===COMPLAINT_STATUS.RESOLVED
-
-              || (user.role===ROLES.STAFF && user._id !== assignedTo?._id)
-            }
-          >
-            <InputLabel id="demo-select-small-label">Status</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              value={curComplaintStatus}
-              label="Status"
-              onChange={handleChange}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {validComplaintStatus.map((value) => (
-                <MenuItem value={value}>{value}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>}
       </Box>
 
-      {showSnack && <Snack openStatus={showSnack} message={snackMessage}/>}
+      {showSnack && <Snack openStatus={showSnack} message={snackMessage} />}
     </Box>
   );
 }

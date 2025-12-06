@@ -43,7 +43,7 @@ function Notifications() {
         if (response.status !== 200) {
           setNotificationError('error while fetching notifications');
         }
-        console.log(response.data);
+        // console.log(response.data);
         setNotifications(response.data);
       } catch (error) {
         setNotificationError('Error occured while fetching the notifications');

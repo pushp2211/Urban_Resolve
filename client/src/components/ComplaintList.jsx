@@ -56,7 +56,7 @@ function ComplaintList({ filter = {} }) {
       newParams.set('page', '1');
       return newParams;
     });
-  }, []);
+    }, []);
 
   useEffect(() => {
     // console.log(searchParams.toString())
