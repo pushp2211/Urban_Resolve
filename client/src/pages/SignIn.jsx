@@ -88,13 +88,14 @@ function SignIn() {
           width: {
             lg: '24rem',
             sm: '22rem',
-            xs:"20rem"
+            xs:"21rem"
           },
           marginX: 2,
+          paddingY:4,
         }}
         component={'form'}
         elevation={3}
-        className="p-5 w-full max-w-md bg-[#f5f5f7]"
+        // className="p-5 w-full max-w-md bg-[#f5f5f7]"
         onSubmit={handleSubmit}
       >
         <Typography
