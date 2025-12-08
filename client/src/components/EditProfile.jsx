@@ -15,8 +15,17 @@ import EditIcon from '@mui/icons-material/Edit';
 import apiClient from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { fetchAddressDetails } from '../../utils/pincodeToAddress';
+import { useTheme, alpha } from "@mui/material/styles";
 
 function EditProfile({ open, onClose }) {
+
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
+  const glassDarkBg = alpha(theme.palette.background.paper, 0.25);
+  const lightBg = theme.palette.background.paper;
+  const sectionBg = alpha(theme.palette.text.primary, 0.07);
+
   const [editable, setEditable] = useState({
     fullName: false,
     email: false,
@@ -49,15 +58,10 @@ function EditProfile({ open, onClose }) {
         setError('Pincode must be exactly 6 digits');
         return;
       }
-      if (!formData.pinCode || formData.pinCode.length === 0){
-        setFormData({
-          ...formData,
-          city: '',
-          district: '',
-          state: '',
-        });
+      if (!formData.pinCode) {
+        setFormData({ ...formData, city: '', district: '', state: '' });
         return;
-      };
+      }
 
       try {
         setAddressLoading(true);
@@ -77,6 +81,7 @@ function EditProfile({ open, onClose }) {
           district: District,
           state: State,
         });
+
       } catch (err) {
         setError('Could not fetch address. Try again.');
       } finally {
@@ -122,7 +127,9 @@ function EditProfile({ open, onClose }) {
       onClose={onClose}
       sx={{
         backdropFilter: "blur(6px)",
-        backgroundColor: "rgba(0, 0, 0, 0.45)",
+        backgroundColor: isDark 
+          ? alpha("#000", 0.45)
+          : alpha("#000", 0.2),
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -132,34 +139,29 @@ function EditProfile({ open, onClose }) {
       <Box
         sx={{
           width: { xs: "92%", sm: 450 },
-          bgcolor: "rgba(30, 30, 30, 0.75)",
-          backdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.08)",
           borderRadius: 4,
-          boxShadow: "0 20px 45px rgba(0,0,0,0.35)",
+          boxShadow: theme.shadows[12],
           p: 4,
           maxHeight: "90vh",
           overflowY: "auto",
-          animation: "popIn 0.20s ease-out",
-          color: "white",
+          animation: "popIn 0.22s ease-out",
+          bgcolor: isDark ? glassDarkBg : lightBg,
+          backdropFilter: isDark ? "blur(22px)" : "none",
+          border: `1px solid ${alpha(theme.palette.divider, 0.18)}`,
+
           "@keyframes popIn": {
             from: { transform: "scale(0.92)", opacity: 0 },
             to: { transform: "scale(1)", opacity: 1 },
           },
         }}
       >
-        {/* Title */}
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: 700, textAlign: "center", mb: 2 }}
-        >
+        <Typography variant="h5" sx={{ fontWeight: 700, textAlign: "center", mb: 2 }}>
           Edit Profile
         </Typography>
 
-        <Divider sx={{ mb: 3, borderColor: "rgba(255,255,255,0.15)" }} />
+        <Divider sx={{ mb: 3 }} />
 
         <Stack spacing={2}>
-          {/* Editable Fields */}
           {[
             { label: "Full Name", field: "fullName" },
             { label: "Email", field: "email" },
@@ -173,7 +175,7 @@ function EditProfile({ open, onClose }) {
                 display: "flex",
                 alignItems: "center",
                 gap: 1.5,
-                background: "rgba(255,255,255,0.05)",
+                background: sectionBg,
                 p: 1.2,
                 borderRadius: 2,
               }}
@@ -189,8 +191,19 @@ function EditProfile({ open, onClose }) {
                 variant="filled"
                 sx={{
                   "& .MuiFilledInput-root": {
-                    background: "rgba(255,255,255,0.08)",
-                    color: "white",
+                    background: isDark
+                      ? alpha(theme.palette.common.white, 0.05)
+                      : alpha(theme.palette.grey[200], 1),
+                    "&:hover": {
+                      background: isDark
+                        ? alpha(theme.palette.common.white, 0.08)
+                        : alpha(theme.palette.grey[300], 1),
+                    },
+                    "&.Mui-focused": {
+                      background: isDark
+                        ? alpha(theme.palette.common.white, 0.1)
+                        : theme.palette.common.white,
+                    },
                   },
                 }}
               />
@@ -199,12 +212,14 @@ function EditProfile({ open, onClose }) {
                 onClick={() => handleToggle(field)}
                 size="small"
                 sx={{
-                  bgcolor: editable[field] ? "primary.main" : "rgba(255,255,255,0.15)",
-                  color: "#fff",
+                  bgcolor: editable[field]
+                    ? theme.palette.primary.main
+                    : alpha(theme.palette.text.primary, 0.15),
+                  color: theme.palette.common.white,
                   "&:hover": {
                     bgcolor: editable[field]
-                      ? "primary.dark"
-                      : "rgba(255,255,255,0.25)",
+                      ? theme.palette.primary.dark
+                      : alpha(theme.palette.text.primary, 0.25),
                   },
                 }}
               >
@@ -213,97 +228,69 @@ function EditProfile({ open, onClose }) {
             </Box>
           ))}
 
-          {/* Show loader */}
           {adressLoading && (
             <Stack direction="row" justifyContent="center">
-              <CircularProgress size={22} color="inherit" />
+              <CircularProgress size={22} />
             </Stack>
           )}
 
-          {/* City / District / State as Compact Chips */}
-{(formData.city || formData.state) && (
-  <Box
-    sx={{
-      mt: 2,
-      p: 2,
-      borderRadius: 3,
-      background: "rgba(255,255,255,0.08)",
-    }}
-  >
-    <Typography
-      variant="subtitle2"
-      sx={{ mb: 1, opacity: 0.8, fontSize: "0.8rem" }}
-    >
-      Auto-detected Address:
-    </Typography>
+          {(formData.city || formData.state) && (
+            <Box
+              sx={{
+                mt: 2,
+                p: 2,
+                borderRadius: 3,
+                background: sectionBg,
+              }}
+            >
+              <Typography variant="subtitle2" sx={{ mb: 1, opacity: 0.8 }}>
+                Auto-detected Address:
+              </Typography>
 
-    <Stack
-      direction="row"
-      spacing={1}
-      sx={{
-        overflowX: "auto",
-        whiteSpace: "nowrap",
-        pb: 1,
-        "&::-webkit-scrollbar": { display: "none" },
-      }}
-    >
-      <Chip
-        label={`City: ${formData.city}`}
-        color="primary"
-        variant="filled"
-        sx={{
-          height: 26,
-          fontSize: "0.7rem",
-          px: 1,
-          borderRadius: "14px",
-        }}
-      />
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  overflowX: "auto",
+                  whiteSpace: "nowrap",
+                  pb: 1,
+                  "&::-webkit-scrollbar": { display: "none" },
+                }}
+              >
+                {["city", "district", "state"].map((f) => (
+                  <Chip
+                    key={f}
+                    label={`${f.charAt(0).toUpperCase() + f.slice(1)}: ${
+                      formData[f]
+                    }`}
+                    color="primary"
+                    variant="filled"
+                    sx={{
+                      height: 26,
+                      fontSize: "0.7rem",
+                      px: 1,
+                      borderRadius: "14px",
+                    }}
+                  />
+                ))}
+              </Stack>
+            </Box>
+          )}
 
-      <Chip
-        label={`District: ${formData.district}`}
-        color="primary"
-        variant="filled"
-        sx={{
-          height: 26,
-          fontSize: "0.7rem",
-          px: 1,
-          borderRadius: "14px",
-        }}
-      />
-
-      <Chip
-        label={`State: ${formData.state}`}
-        color="primary"
-        variant="filled"
-        sx={{
-          height: 26,
-          fontSize: "0.7rem",
-          px: 1,
-          borderRadius: "14px",
-        }}
-      />
-    </Stack>
-  </Box>
-)}
-
-
-          {/* Error */}
           {error && (
-            <Typography color="error" textAlign="center" sx={{ mt: 1 }}>
+            <Typography color="error" textAlign="center">
               {error}
             </Typography>
           )}
 
-          <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.1)" }} />
+          <Divider sx={{ my: 2 }} />
 
-          {/* Buttons */}
           <Stack direction="row" spacing={2} justifyContent="flex-end">
             <Button
               variant="outlined"
               color="error"
               onClick={onClose}
               disabled={loading}
-              sx={{ borderRadius: 3, px: 2 }}
             >
               Cancel
             </Button>
@@ -312,7 +299,6 @@ function EditProfile({ open, onClose }) {
               variant="contained"
               onClick={handleSubmit}
               disabled={loading || adressLoading}
-              sx={{ borderRadius: 3, px: 3 }}
             >
               {loading ? "Saving…" : "Save Changes"}
             </Button>
