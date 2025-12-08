@@ -82,6 +82,16 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+userSchema.methods.updatePassword = async function (newPassword){
+  if (!newPassword || newPassword.length < 8) {
+    throw new Error("Password must be at least 8 characters");
+  }
+  this.password = newPassword;
+  await this.save();
+  return this;
+
+}
+
 
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(

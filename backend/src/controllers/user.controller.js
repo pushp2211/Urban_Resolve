@@ -10,6 +10,7 @@ import { Complaint } from '../models/complaint.model.js';
 import { COMPLAINT_STATUS, COMPLAINT_STATUS_ENUM } from '../enum/ComplaintStatus.js';
 import crypto from "crypto";
 import { sendEmail } from '../utils/sendEmail.js';
+import bcrypt from 'bcrypt';
 const generateAccessAndRefreshToken = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -274,84 +275,91 @@ const userProfile = asyncHandler(async (req, res) => {
         .json(new apiResponse(200, data, 'User profile fetched successfully.'));
 });
 
+// const updatePassword = asyncHandler(async(req, res)=>{
+//     const
+// })
+
 const editProfile = asyncHandler(async (req, res) => {
-    const userId = req.user?._id;
+  const userId = req.user?._id;
 
-    if (!userId) {
-        throw new apiError(401, "Not authorized, no user ID found");
+  if (!userId) {
+    throw new apiError(401, "Not authorized");
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new apiError(404, "User not found");
+  }
+
+  const {
+    currentPassword,
+    newPassword,
+    fullName,
+    email,
+    locality,
+    district,
+    city,
+    pinCode,
+    state,
+  } = req.body;
+
+  if (!currentPassword) {
+    throw new apiError(400, "Enter your current password to modify profile");
+  }
+
+  const isValidPassword = await user.isPasswordCorrect(currentPassword);
+  if (!isValidPassword) {
+    throw new apiError(403, "Incorrect current password");
+  }
+
+  if (email) user.email = email.toLowerCase();
+  if (fullName) user.fullName = fullName;
+
+  if (locality || district || city || pinCode || state) {
+    user.address = {
+      ...user.address.toObject(),
+      ...(locality && { locality }),
+      ...(district && { district }),
+      ...(city && { city }),
+      ...(pinCode && { pinCode }),
+      ...(state && { state }),
+    };
+  }
+
+  if (newPassword) {
+    if (newPassword.length < 8) {
+      throw new apiError(422, "New password must be at least 8 characters long");
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-        throw new apiError(404, "User not found");
+    if (newPassword === currentPassword) {
+      throw new apiError(400, "New password cannot be same as current password");
     }
 
-    
+    user.password = newPassword;
+  }
 
-    const {
-        fullName,
-        email,
-        password,
-        locality,
-        district,
-        city,
-        pinCode,
-        state,
-    } = req.body;
+  const profilePictureLocalPath = req.files?.profilePicture?.[0]?.path;
 
-    
+  if (profilePictureLocalPath) {
+    const profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
+    const optimizedUrl = getOptimizedUrl(profilePicture.url);
 
-    if(password){
-        const isValidPassword = user.isPasswordCorrect(password);
-        if(!isValidPassword){
-        throw new apiError(403, "Incorrect verification password");
-        }
+    if (!profilePicture) {
+      throw new apiError(500, "Error uploading profile picture");
     }
 
-    if (email) user.email = email.toLowerCase();
+    user.profilePicture = optimizedUrl;
+  }
 
-    // Update password if provided
+  const updatedUser = await user.save();
 
-    if (password) {
-        if (password.length < 8) {
-            throw new apiError(422, "Password must be at least 8 characters long");
-        }
-        user.password = await bcrypt.hash(password, 10);
-    }
+  const responseUser = await User.findById(updatedUser._id).select(
+    "-password -refreshToken"
+  );
 
-    if(fullName){
-        user.fullName = fullName
-    }
-
-    if (locality || district || city || pinCode || state) {
-        user.address = {
-            ...user.address.toObject(),
-            ...(locality && { locality }),
-            ...(district && { district }),
-            ...(city && { city }),
-            ...(pinCode && { pinCode }),
-            ...(state && { state }),
-        };
-    }
-    // Handle profile picture upload if a new file is provided
-    const profilePictureLocalPath = req.files?.profilePicture?.[0]?.path;
-    if (profilePictureLocalPath) {
-        const profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
-        const optimisedProfilePictureUrl = getOptimizedUrl(profilePicture.url)
-        if (!profilePicture) {
-            throw new apiError(500, "Error uploading profile picture");
-        }
-        user.profilePicture = optimisedProfilePictureUrl;
-    }
-
-    const updatedUser = await user.save();
-
-    const responseUser = await User.findById(updatedUser._id).select(
-        "-password -refreshToken"
-    );
-
-    return res.status(200).json(
-        new apiResponse(200, responseUser, "User profile updated successfully")
-    );
+  return res.status(200).json(
+    new apiResponse(200, responseUser, "Profile updated successfully")
+  );
 });
+
 export { registerUser, loginUser, logoutUser, userProfile, editProfile };
