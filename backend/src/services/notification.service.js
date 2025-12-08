@@ -1,7 +1,7 @@
 import Notification from '../models/notification.model.js';
 import cron from 'node-cron';
 import { apiError } from '../utils/apiError.js';
-
+import { getLastCleanUp, setLastCleanUp } from '../utils/cleanupTimeStamp.js';
 
 export const sendNotification = async (notificationData) => {
   const notification = new Notification(notificationData);
@@ -25,7 +25,7 @@ export const getNotifications = async (userId) => {
 
 
 export const markAsRead = async (notificationId, userId) => {
-  const updatedNotification = Notification.findOneAndUpdate(
+  const updatedNotification = await Notification.findOneAndUpdate(
     { _id: notificationId, recipient_id: userId },
     { read_status: true },
     { new: true }
@@ -36,8 +36,17 @@ export const markAsRead = async (notificationId, userId) => {
   return updatedNotification;
 };
 
-const deleteOldReadNotifications = async () => {
+export const deleteOldReadNotifications = async () => {
   try {
+    const lastCleanUp = await getLastCleanUp();
+    const now = Date.now();
+
+    if(lastCleanUp && now-lastCleanUp.getTime()< 24 * 60 * 60 * 1000){
+      console.log("cleanup skipped since last cleanup was within 24 hours");
+      return;
+    }
+    await setLastCleanUp();
+
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     const result = await Notification.deleteMany({
@@ -50,6 +59,7 @@ const deleteOldReadNotifications = async () => {
         `Cron job: Deleted ${result.deletedCount} old, read notifications.`
       );
     }
+
   } catch (error) {
     console.error(
       'Error in scheduled job for deleting old notifications:',

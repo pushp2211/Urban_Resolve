@@ -15,7 +15,7 @@ function Step2Register({ formData, handleChange }) {
       <TextField
         name="locality"
         label="Locality"
-        variant="outlined"
+        variant='standard'
         required
         value={formData.locality}
         onChange={handleChange}
@@ -23,7 +23,7 @@ function Step2Register({ formData, handleChange }) {
       <TextField
         name="pinCode"
         label="Pin Code"
-        variant="outlined"
+        variant='standard'
         required
         value={formData.pinCode}
         onChange={handleChange}
@@ -41,7 +41,7 @@ function Step2Register({ formData, handleChange }) {
       <TextField
         name="city"
         label="City"
-        variant="outlined"
+        variant='standard'
         required
         value={formData.city}
         onChange={handleChange}
@@ -54,7 +54,7 @@ function Step2Register({ formData, handleChange }) {
       <TextField
         name="district"
         label="District"
-        variant="outlined"
+        variant='standard'
         required
         value={formData.district}
         onChange={handleChange}
@@ -68,7 +68,7 @@ function Step2Register({ formData, handleChange }) {
       <TextField
         name="state"
         label="State"
-        variant="outlined"
+        variant='standard'
         required
         value={formData.state}
         onChange={handleChange}

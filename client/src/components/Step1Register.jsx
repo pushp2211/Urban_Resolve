@@ -40,27 +40,28 @@ function Step1Register({
       }}
     >
       <TextField
+
         required
         name="fullName"
         label="Full Name"
-        variant="outlined"
         value={formData.fullName}
         onChange={handleChange}
+        variant='standard'
       />
       <TextField
         required
         name="email"
         label="Email"
-        variant="outlined"
         value={formData.email}
         onChange={handleChange}
+        variant='standard'
       />
       <TextField
         type={show ? 'text' : 'password'}
         required
         name="password"
         label="Password"
-        variant="outlined"
+        variant='standard'
         value={formData.password}
         onChange={handleChange}
         slotProps={{
@@ -85,8 +86,8 @@ function Step1Register({
         type={showPass2 ? 'text' : 'password'}
         required
         name="password"
-        label="Password"
-        variant="outlined"
+        label="Confirm Password"
+        variant='standard'
         value={verifyPass}
         onChange={(e) => {
           setVerifyPass(e.target.value);

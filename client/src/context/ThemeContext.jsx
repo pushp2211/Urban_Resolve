@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useMemo } from "react";
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const ThemeToggleContext = createContext();
@@ -6,12 +6,18 @@ const ThemeToggleContext = createContext();
 export const useThemeToggle = () => useContext(ThemeToggleContext);
 
 export function CustomThemeProvider({ children }) {
-  const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const [mode, setMode] = useState(isDarkMode?"dark":"light");
+  const savedTheme = localStorage.getItem('UrbanResolveTheme');
+  const isDarkMode =  window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const [mode, setMode] = useState(savedTheme !== "undefined" ? savedTheme : (isDarkMode?"dark":"light"));
 
   const toggleTheme = () => {
     setMode(prev => (prev === "light" ? "dark" : "light"));
   };
+
+  useEffect(()=>{
+    localStorage.setItem('UrbanResolveTheme', mode);
+  }, [mode]);
+  
 
   const theme = useMemo(
     () =>

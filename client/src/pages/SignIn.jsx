@@ -59,10 +59,24 @@ function SignIn() {
       sx={
         {
           // backgroundColor:'white',
+          minHeight:'100svh',
+          display:"flex",
+          justifyContent:"center",
+          alignItems:"center",
+          flexDirection:"column",
+          gap:2
         }
       }
-      className="min-h-screen flex justify-center items-center"
+      // className="min-h-screen flex justify-center items-center"
     >
+      <Typography variant='overline'
+        sx={{
+          fontWeight:"bold",
+          fontSize:"1rem"
+        }}
+      >
+        Urban Resolve
+      </Typography>
       <Paper
         sx={{
           borderRadius: '0.8rem',
@@ -72,8 +86,9 @@ function SignIn() {
           alignItems: 'center',
           gap: '1rem',
           width: {
-            lg: '30rem',
-            sm: '20rem',
+            lg: '24rem',
+            sm: '22rem',
+            xs:"20rem"
           },
           marginX: 2,
         }}
@@ -87,12 +102,16 @@ function SignIn() {
             textAlign: 'center',
             fontWeight: 'bold',
             fontSize: '1.5rem',
-            marginBottom: '1.5rem',
+            display:"flex",
+            flexDirection:"column"
+            // marginBottom: '1.5rem',
           }}
         >
-          Sign In
+          Welcome Back
+          <Typography variant='caption'>
+            Login with your email
+          </Typography>
         </Typography>
-
         <TextField
           required
           label="Email"

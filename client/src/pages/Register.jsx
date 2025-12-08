@@ -229,20 +229,31 @@ function Register() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        flexDirection:"column"
       }}
     >
+      <Typography variant='overline'
+        sx={{
+          fontWeight:"bold",
+          fontSize:"1rem"
+        }}
+      
+      >
+        Urban Resolve
+      </Typography>
       <Paper
         elevation={3}
         sx={{
           borderRadius: '1rem',
-          padding: '3rem',
+          padding: '2rem',
           width: {
-            lg: '30rem',
+            lg: '27rem',
             sm: '27rem',
+            
           },
-          margin: '1rem',
+          margin: '0.5rem',
           minHeight: {
-            lg: '38rem',
+            lg: '35rem',
             sm: '34rem',
           },
         }}
@@ -254,9 +265,18 @@ function Register() {
             marginBottom: '1.2rem',
             fontWeight: 'bold',
             textAlign: 'center',
+            display:"flex",
+            flexDirection:"column"
+
           }}
         >
-          Create an Account
+          Create an account
+          {activeStep==0 && <Typography variant='caption'>
+            Sign up with your email
+          </Typography>}
+          {activeStep==1 && <Typography variant='caption'>
+            Enter your address details
+          </Typography>}
         </Typography>
 
         <Stepper
@@ -341,9 +361,14 @@ function Register() {
           variant="caption"
           sx={{
             fontSize: '0.85rem',
+            width:"100%",
+            textAlign:"center",
+            display:"flex",
+            gap:1,
+            justifyContent:"center"
           }}
         >
-          Already have an account?{' '}
+          Already have an account?
           <Link component={routerLink} to="/login">
             Sign in
           </Link>
