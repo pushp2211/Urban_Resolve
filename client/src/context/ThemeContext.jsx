@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useMemo, useEffect } from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const ThemeToggleContext = createContext();
 
@@ -7,30 +7,29 @@ export const useThemeToggle = () => useContext(ThemeToggleContext);
 
 export function CustomThemeProvider({ children }) {
   const savedTheme = localStorage.getItem('UrbanResolveTheme');
-  const isDarkMode =  window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const [mode, setMode] = useState(
-    ()=>{
-      // savedTheme !== "undefined" ? savedTheme : (isDarkMode?"dark":"light")
-      if(savedTheme && savedTheme!="undefined" && (savedTheme==="light" || savedTheme==="dark")){
-        return savedTheme;
-      }
-      else{
-        if(isDarkMode){
-          return "dark";
-        }
-        else return "light";
-      }
+  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const [mode, setMode] = useState(() => {
+    // savedTheme !== "undefined" ? savedTheme : (isDarkMode?"dark":"light")
+    if (
+      savedTheme &&
+      savedTheme != 'undefined' &&
+      (savedTheme === 'light' || savedTheme === 'dark')
+    ) {
+      return savedTheme;
+    } else {
+      if (isDarkMode) {
+        return 'dark';
+      } else return 'light';
     }
-  );
+  });
 
   const toggleTheme = () => {
-    setMode(prev => (prev === "light" ? "dark" : "light"));
+    setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     localStorage.setItem('UrbanResolveTheme', mode);
   }, [mode]);
-  
 
   const theme = useMemo(
     () =>
@@ -38,11 +37,14 @@ export function CustomThemeProvider({ children }) {
         palette: {
           mode,
         },
+        typography: {
+          fontFamily: "'Inter', sans-serif", // 👈 your custom font
+        },
         components: {
           MuiCssBaseline: {
             styleOverrides: {
               body: {
-                backgroundColor: mode === "dark" ? "#121212" : "#f5f5f5",
+                backgroundColor: mode === 'dark' ? '#121212' : '#f5f5f5',
               },
             },
           },

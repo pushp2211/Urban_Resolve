@@ -87,8 +87,8 @@ function SignIn() {
           gap: '1rem',
           width: {
             lg: '24rem',
-            sm: '22rem',
-            xs:"21rem"
+            sm: '23rem',
+            xs:"22rem"
           },
           marginX: 2,
           paddingY:4,
@@ -190,7 +190,7 @@ function SignIn() {
         >
           Don't have an account?{' '}
           <Link to="/register" className="text-blue-400 hover:underline ">
-            Register Here
+            Register
           </Link>
         </Typography>
       </Paper>

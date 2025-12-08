@@ -16,7 +16,7 @@ import Step1Register from '../components/Step1Register';
 import Step2Register from '../components/Step2Register';
 import { sendNotification } from '../api/notificationApi';
 import { fetchAddressDetails } from '../../utils/pincodeToAddress';
-const steps = ['Your Credentials', 'Address Details'];
+const steps = ['Credentials', 'Address Details'];
 
 function Register() {
   const navigate = useNavigate();
@@ -247,8 +247,8 @@ function Register() {
           borderRadius: '1rem',
           padding: '2rem',
           width: {
-            lg: '27rem',
-            sm: '27rem',
+            lg: '26rem',
+            sm: '25rem',
             
           },
           margin: '0.5rem',
@@ -365,7 +365,8 @@ function Register() {
             textAlign:"center",
             display:"flex",
             gap:1,
-            justifyContent:"center"
+            justifyContent:"center",
+            marginY:1
           }}
         >
           Already have an account?
