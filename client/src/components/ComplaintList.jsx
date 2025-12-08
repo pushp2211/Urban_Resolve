@@ -88,9 +88,14 @@ function ComplaintList({ filter = {} }) {
 
     const fetchComplaints = async () => {
       try {
-        setLoading(true);
+        if(page!==1){
+          setLoading(true);
+        }
+        if(page===1){
+          showLoading();
+        }
         setError('');
-        showLoading();
+        
 
         const response = await apiClient.get(`/service?${query.toString()}`);
         // console.log(response);
