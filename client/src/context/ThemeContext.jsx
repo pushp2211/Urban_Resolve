@@ -8,7 +8,20 @@ export const useThemeToggle = () => useContext(ThemeToggleContext);
 export function CustomThemeProvider({ children }) {
   const savedTheme = localStorage.getItem('UrbanResolveTheme');
   const isDarkMode =  window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const [mode, setMode] = useState(savedTheme !== "undefined" ? savedTheme : (isDarkMode?"dark":"light"));
+  const [mode, setMode] = useState(
+    ()=>{
+      // savedTheme !== "undefined" ? savedTheme : (isDarkMode?"dark":"light")
+      if(savedTheme && savedTheme!="undefined" && (savedTheme==="light" || savedTheme==="dark")){
+        return savedTheme;
+      }
+      else{
+        if(isDarkMode){
+          return "dark";
+        }
+        else return "light";
+      }
+    }
+  );
 
   const toggleTheme = () => {
     setMode(prev => (prev === "light" ? "dark" : "light"));
