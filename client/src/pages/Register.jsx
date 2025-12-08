@@ -58,6 +58,9 @@ function Register() {
   }, [formData.password, verifyPass])
 
   useEffect(() => {
+    if(formData.pinCode.length != 6){
+        return;
+      }
     const fetchAddressDetail = async () => {
       setError('');
       if(activeStep!=1) return;
@@ -70,9 +73,7 @@ function Register() {
       // if(!response.status !== "Success"){
       //   setError("Invalid pincode");
       // }
-      if(formData.pinCode.length != 6){
-        return;
-      }
+      
       if(data.Status !== "Success"){
         setError("Enter a valid pincode");
         return;

@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Fab, Box, Modal, Typography, TextField, Button } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Fab, Box, Modal} from '@mui/material';
+
 import EditIcon from '@mui/icons-material/Edit';
 import ComplaintRegister from './ComplaintRegister';
+import {Grow} from '@mui/material';
 export default function FabRegisterComplaint() {
   const [open, setOpen] = React.useState(false);
 
@@ -41,7 +42,16 @@ export default function FabRegisterComplaint() {
         aria-labelledby="complaint-modal-title"
         sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
-        <ComplaintRegister  handleClose={handleClose}/>
+        <Grow in={open} timeout={200}>
+          <Box
+            sx={{
+              outline:"none",
+              border:"none"
+            }}
+          >
+          <ComplaintRegister  handleClose={handleClose}/>
+          </Box>
+        </Grow>
       </Modal>
     </>
   );
