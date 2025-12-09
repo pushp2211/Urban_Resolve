@@ -24,7 +24,12 @@ import { LoadingProvider, useLoading } from './context/LoadingContext.jsx';
 import GlobalLoading from './components/GlobalLoading.jsx';
 import VerifyEmail from './pages/VerifyEmail.jsx';
 import LandingPage from './pages/LandingPage.jsx';
-import { CssBaseline } from '@mui/material';
+
+import ResetPassword from './pages/ResetPassword.jsx';
+
+import { CssBaseline } from '@mui/material'; //for theme sync
+import ForgotPassword from './pages/ForgotPassword.jsx';
+
 function App() {
   const {user} = useAuth();
   const { globalLoading } = useLoading();
@@ -57,10 +62,14 @@ function App() {
           </Route>
           
         </Route>
-        <Route path='/urban-resolve' element={<LandingPage/>}></Route>
+        
+        <Route path='/urban-resolve' element={<LandingPage/>} />
         <Route path="/login" element={<SignIn />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path='/reset-password/:resetToken' element={<ResetPassword/> }/>
         <Route path="/register" element={<Register />} />
-        <Route path="/verify-email" element={<VerifyEmail />}></Route>
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        
         
       </Routes>
       </FilterProvider>

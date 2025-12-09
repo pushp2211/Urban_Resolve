@@ -3,6 +3,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { ROLES } from '../enum/roles.js';
 import { ROLES_ENUM } from '../enum/roles.js';
+import crypto from 'crypto';
+
 // Defines the valid roles in your system.
 
 const userSchema = new Schema(
@@ -61,16 +63,15 @@ const userSchema = new Schema(
       type: Date,
       index: { expireAfterSeconds: 3600 },
     },
+    resetPasswordToken: { type: String },
+    resetPasswordExpiry: { type: Date },
   },
-
   {
     timestamps: true,
   }
 );
 
-
 userSchema.pre('save', async function (next) {
-  
   if (!this.isModified('password')) return next();
 
   this.password = await bcrypt.hash(this.password, 10);
@@ -78,20 +79,31 @@ userSchema.pre('save', async function (next) {
 });
 
 
+userSchema.methods.generateResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.resetPasswordToken = crypto
+  .createHash("sha256")
+  .update(resetToken)
+  .digest("hex")
+
+  this.resetPasswordExpiry = Date.now()+ 15*60*1000;
+
+  return resetToken;
+};
+
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.updatePassword = async function (newPassword){
+userSchema.methods.updatePassword = async function (newPassword) {
   if (!newPassword || newPassword.length < 8) {
-    throw new Error("Password must be at least 8 characters");
+    throw new Error('Password must be at least 8 characters');
   }
   this.password = newPassword;
   await this.save();
   return this;
-
-}
-
+};
 
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
@@ -99,7 +111,7 @@ userSchema.methods.generateAccessToken = function () {
       _id: this._id,
       email: this.email,
       fullName: this.fullName,
-      role: this.role, 
+      role: this.role,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {

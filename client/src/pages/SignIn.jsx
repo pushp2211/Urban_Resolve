@@ -157,6 +157,16 @@ function SignIn() {
           }}
           autoComplete='current-password'
         />
+        <Box
+          sx={{
+            alignSelf:"end",
+            marginX:"2.4rem"
+          }}
+        >
+          <Link to='/forgot-password'  className="text-blue-400 hover:underline text-xs">
+            Forgot Pasword
+          </Link>
+        </Box>
 
         <Button
           loading={loading}
@@ -165,7 +175,7 @@ function SignIn() {
           variant="contained"
           size="large"
           sx={{
-            marginTop: '2rem',
+
           }}
         >
           Log In

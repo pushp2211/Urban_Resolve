@@ -11,6 +11,7 @@ export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [verified, setVerified] = useState(false);
+  const [error, setError] = useState("");
     const navigate = useNavigate();
     useEffect(()=>{
         setTimeout(()=>{
@@ -18,7 +19,7 @@ export default function VerifyEmail() {
             if(verified === true){
                 navigate("/login");
             }
-        }, [4000])
+        }, 3000)
         
     }, [verified]);
 //   useEffect(() => {
@@ -26,12 +27,13 @@ export default function VerifyEmail() {
 //     verify();
 //   }, [searchParams]);
     const verifyHandle = async () => {
+        setError("");
         setLoading(true);
       const token = searchParams.get("token");
       const email = searchParams.get("email");
 
       if (!token || !email) {
-        setLoading("Invalid verification link.");
+        setError("Invalid verification link.");
         return;
       }
       setVerified(false);
@@ -44,8 +46,7 @@ export default function VerifyEmail() {
         console.log(response);
         setVerified(true);
       } catch (err) {
-        const msg =
-          err.response?.data?.message || "Verification failed or link expired.";
+          setError(err.response?.data?.message || "Verification failed or link expired.");
       }
       finally{
         setLoading(false);
@@ -103,7 +104,7 @@ export default function VerifyEmail() {
                 backgroundColor:theme.palette.mode === "dark"?"white":"black",
                 
             }}
-            loading={loading}
+            loading={loading && !error.length>0}
             loadingIndicator="Verifying…"
         >
             Click Here to Verify Your Email
@@ -111,6 +112,9 @@ export default function VerifyEmail() {
       {verified && <Typography variant="button"
 
       >Redirecting to login...</Typography>}
+      {error.length>0 && <Typography variant="caption" color="red"
+
+      >{error}</Typography>}
     </Paper>
   );
 }
