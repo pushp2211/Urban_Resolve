@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 //for reset password
 import { useNavigate } from 'react-router-dom';
 
+
 function ResetPassword() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -42,9 +43,10 @@ function ResetPassword() {
     }
     setError('');
     setLoading(true);
+    setSuccess(false);
 
     if (!resetToken) {
-      setError('Invalid reset link');
+      setError('Invalid reset url address');
       return;
     }
     try {
@@ -233,9 +235,9 @@ function ResetPassword() {
             gap: 1,
           }}
         >
-          Login here
+          Remember your password?
           <Link to="/login" className="text-blue-400 hover:underline ">
-            Login
+            Sign in
           </Link>
         </Typography>
       </Paper>

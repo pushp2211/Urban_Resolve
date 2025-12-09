@@ -6,7 +6,7 @@ import { ToggleUpvote,getUpvote } from '../controllers/complaint.controller.js';
 import { getUserStats, getComplaintStats } from '../services/admin.service.js';
 import { resetPassword } from '../services/user.service.js';
 import { forgotPassword } from '../services/user.service.js';
-
+import rateLimiter from '../utils/rateLimitter.js';
 const router=Router();
 
 router.route('/').get(
@@ -19,7 +19,7 @@ router.get("/complaints/:complaintId/upvote", verifyJWT, getUpvote);
 router.get("/user/stats", verifyJWT, getUserStats);
 router.get("/complaint/stats", verifyJWT, getComplaintStats);
 
-router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password",rateLimiter, forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
 export default router;
