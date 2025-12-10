@@ -101,7 +101,7 @@ function ForgotPassword() {
         </Typography>
         <TextField
           required
-          label="email"
+          label="Email"
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
