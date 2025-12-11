@@ -7,7 +7,6 @@ import complaintRouter from './routes/complaint.routes.js';
 import adminRouter from './routes/admin.routes.js';
 import serviceRouter from './routes/service.routes.js';
 import reportRouter from './routes/report.routes.js';
-import { verifyJWT } from './middlewares/auth.middleware.js';
 import notificationRouter from './routes/notification.routes.js';
 import verificationRouter from './routes/verifyEmail.routes.js';
 

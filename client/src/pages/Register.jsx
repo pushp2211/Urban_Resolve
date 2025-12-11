@@ -16,6 +16,7 @@ import Step1Register from '../components/Step1Register';
 import Step2Register from '../components/Step2Register';
 import { sendNotification } from '../api/notificationApi';
 import { fetchAddressDetails } from '../../utils/pincodeToAddress';
+import LogoAndName from '../Logo/LogoAndName';
 const steps = ['Credentials', 'Address Details'];
 
 function Register() {
@@ -233,15 +234,7 @@ function Register() {
         flexDirection:"column"
       }}
     >
-      <Typography variant='overline'
-        sx={{
-          fontWeight:"bold",
-          fontSize:"1rem"
-        }}
-      
-      >
-        Urban Resolve
-      </Typography>
+      <LogoAndName/>
       <Paper
         elevation={3}
         sx={{

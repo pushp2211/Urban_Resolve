@@ -3,14 +3,11 @@ import { apiError } from '../utils/apiError.js';
 import { apiResponse } from '../utils/apiResponse.js';
 import { User } from '../models/user.model.js';
 import { getOptimizedUrl, uploadOnCloudinary } from '../utils/cloudinary.js';
-import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
 import { ROLES, ROLES_ENUM } from '../enum/roles.js';
 import { Complaint } from '../models/complaint.model.js';
 import { COMPLAINT_STATUS, COMPLAINT_STATUS_ENUM } from '../enum/ComplaintStatus.js';
 import crypto from "crypto";
 import { sendEmail } from '../utils/sendEmail.js';
-import bcrypt from 'bcrypt';
 const generateAccessAndRefreshToken = async (userId) => {
     try {
         const user = await User.findById(userId);

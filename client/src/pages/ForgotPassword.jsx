@@ -8,6 +8,7 @@ import { Link} from 'react-router-dom';
 import apiClient from '../api/axios';
 //for reset password
 import { useNavigate } from 'react-router-dom';
+import LogoAndName from '../Logo/LogoAndName';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -55,14 +56,7 @@ function ForgotPassword() {
       }
       // className="min-h-screen flex justify-center items-center"
     >
-      <Typography variant='overline'
-        sx={{
-          fontWeight:"bold",
-          fontSize:"1rem"
-        }}
-      >
-        Urban Resolve
-      </Typography>
+      <LogoAndName/>
       <Paper
         sx={{
           borderRadius: '0.8rem',

@@ -4,7 +4,6 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { apiError } from '../utils/apiError.js';
 import { apiResponse } from '../utils/apiResponse.js';
 import { ROLES } from '../enum/roles.js';
-import mongoose from 'mongoose';
 import { COMPLAINT_STATUS } from '../enum/ComplaintStatus.js';
 
 const getUserStats = asyncHandler(async (req, res) => {

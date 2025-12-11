@@ -4,16 +4,22 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import apiClient from '../api/axios';
 import { IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 //for reset password
 import { useNavigate } from 'react-router-dom';
-
-
+import PasswordChangeSuccessful from '../components/PasswordChangeSuccessful';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import Grow from '@mui/material/Grow';
+import {useTheme} from '@mui/material';
+import LogoAndName from '../Logo/LogoAndName';
 function ResetPassword() {
+
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark'? true: false;
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -61,7 +67,6 @@ function ResetPassword() {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('user');
         setSuccess(true);
-        setTimeout(() => navigate('/login'), 3000);
       }
     } catch (error) {
       console.log(error);
@@ -81,18 +86,9 @@ function ResetPassword() {
         flexDirection: 'column',
         gap: 2,
       }}
-      // className="min-h-screen flex justify-center items-center"
     >
-      <Typography
-        variant="overline"
-        sx={{
-          fontWeight: 'bold',
-          fontSize: '1rem',
-        }}
-      >
-        Urban Resolve
-      </Typography>
-      <Paper
+      <LogoAndName/>
+      {!success && <Paper
         sx={{
           borderRadius: '0.8rem',
           display: 'flex',
@@ -214,17 +210,7 @@ function ResetPassword() {
             {error}
           </Typography>
         )}
-        {success && (
-          <Typography
-            variant="caption"
-            sx={{
-              color: 'green',
-              textAlign: 'center',
-            }}
-          >
-            Password reset successful, redirecting to login
-          </Typography>
-        )}
+        
 
         <Typography
           variant="caption"
@@ -240,7 +226,55 @@ function ResetPassword() {
             Sign in
           </Link>
         </Typography>
-      </Paper>
+      </Paper>}
+      {success && 
+        <Box
+          sx={{
+            display:"flex",
+            flexDirection:"column",
+            gap:1,
+            alignItems:"center",
+            justifyContent:"center"
+          }}
+        >
+          <Grow
+            in={success}
+            timeout={600}
+          >
+            <VerifiedIcon 
+            sx={{
+              fontSize:"9rem",
+              color:"green",
+            }}
+          />
+          </Grow>
+          <Typography
+            sx={{
+              fontSize:"1.3rem"
+            }}
+          >
+            Password changed!
+          </Typography>
+          <Typography variant='caption'
+            sx={{
+              opacity:0.7
+            }}
+          >
+            Your password has been changed successfully.
+          </Typography>
+          <Button
+            variant='contained'
+            sx={{
+              backgroundColor: isDark? "whitesmoke" : "black"
+            }}
+            onClick={()=>{
+              navigate('/login');
+            }}
+          >
+            Sign In
+          </Button>
+          </Box>
+      }
     </Box>
   );
 }

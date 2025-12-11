@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Paper, Typography } from "@mui/material";
 // import {theme} from "../theme";
 import { useTheme } from '@mui/material/styles';
+import LogoAndName from "../Logo/LogoAndName";
 export default function VerifyEmail() {
     const theme = useTheme();
   const [searchParams] = useSearchParams();
@@ -56,15 +57,16 @@ export default function VerifyEmail() {
   return (
     <Paper style={{ padding: "3.5rem", textAlign: "center", minHeight:"100svh", display:"flex",
         flexDirection:"column",
-        gap:45,
+        gap:25,
         alignItems:"center",
         justifyContent:"center"
         // marginY:"20rem"
      }}>
+        <LogoAndName/>
         <Typography
             sx={{
                 fontSize:{
-                    xs:"2.5rem",
+                    xs:"2rem",
                     md:"3rem"
                 }
             }}
@@ -74,8 +76,8 @@ export default function VerifyEmail() {
         <Typography variant="h3"
             sx={{
                 fontSize:{
-                    xs:"2rem",
-                    md:"2.5rem"
+                    xs:"1.5rem",
+                    md:"2rem"
                 },
                 fontStyle:"italic"
             }}

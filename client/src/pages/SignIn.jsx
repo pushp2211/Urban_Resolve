@@ -11,6 +11,7 @@ import {Visibility, VisibilityOff} from '@mui/icons-material'
 //for login
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import LogoAndName from '../Logo/LogoAndName';
 
 function SignIn() {
   const [email, setEmail] = useState('');
@@ -69,14 +70,8 @@ function SignIn() {
       }
       // className="min-h-screen flex justify-center items-center"
     >
-      <Typography variant='overline'
-        sx={{
-          fontWeight:"bold",
-          fontSize:"1rem"
-        }}
-      >
-        Urban Resolve
-      </Typography>
+      <LogoAndName/>
+      
       <Paper
         sx={{
           borderRadius: '0.8rem',
@@ -200,7 +195,7 @@ function SignIn() {
         >
           Don't have an account?{' '}
           <Link to="/register" className="text-blue-400 hover:underline ">
-            Register
+            Sign up
           </Link>
         </Typography>
       </Paper>
