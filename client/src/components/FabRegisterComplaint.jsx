@@ -40,7 +40,10 @@ export default function FabRegisterComplaint() {
         open={open}
         onClose={handleClose}
         aria-labelledby="complaint-modal-title"
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(2px)',
+              backgroundColor: 'rgba(0,0,0,0.3)',
+         }}
       >
         <Grow in={open} timeout={200}>
           <Box

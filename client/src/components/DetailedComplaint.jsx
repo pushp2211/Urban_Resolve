@@ -15,13 +15,15 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import apiClient from '../api/axios';
 import StaffListDialog from './StaffListDialog.jsx';
-// import {theme }from '../theme.js';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 
-import CloseIcon from '@mui/icons-material/Close';
+// import {theme }from '../theme.js';
+// import InputLabel from '@mui/material/InputLabel';
+// import MenuItem from '@mui/material/MenuItem';
+// import FormControl from '@mui/material/FormControl';
+// import Select from '@mui/material/Select';
+
+// import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 import { triggerNotification } from '../../utils/notificationService.js';
 import Snack from './Snack.jsx';
 
@@ -41,6 +43,7 @@ const getStatusColor = (status) => {
   }
 };
 function DetailedComplaint({ complaint, onAssign, onClose }) {
+  console.log(complaint)
   // console.log(theme);
   const theme = useTheme();
   const { user } = useAuth();
@@ -136,6 +139,14 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
       setStatusLoading(false);
     }
   };
+  const navigate = useNavigate();
+  const navigateToResolutionRequestPage = ()=>{
+    const complaintId = complaint._id;
+    if(!complaintId){
+      setSnackMessage("complaint Id not found");
+    }
+    navigate(`/complaint/resolution-request/${complaintId}`);
+  }
   useEffect(() => {
     setTimeout(() => {
       setSnackMessage('');
@@ -152,7 +163,8 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
     setLoading(true);
 
     try {
-      const response = await apiClient.get(`/admin/staffList/${complaint._id}`);
+      const complaintDistrict = complaint?.address?.district
+      const response = await apiClient.get(`/admin/staffList?district=${complaintDistrict}`);
       if (response.status != 200) {
         setEligibleError('error while fetching try again', response.status);
         return;
@@ -485,7 +497,6 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           </Box>
         </Box>
         {user?.role === ROLES?.ADMIN &&
-          !complaint?.assignedTo &&
           complaint?.status !== COMPLAINT_STATUS.REJECTED && (
             <Box
               sx={{
@@ -507,9 +518,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                 gap: '8%',
               }}
             >
-              Assign to
+              Manage this complaint
               <Button
-                onClick={getEligibleStaffList}
+                onClick={()=>navigate(`/admin/assign-complaint/${complaint?._id}`)}
                 variant="contained"
                 loading={loading}
                 disabled={listOpen}
@@ -536,12 +547,11 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               )}
             </Box>
           )}
-        {(user.role === ROLES.ADMIN || user.role === ROLES.STAFF) && (
+        {(user.role === ROLES.STAFF) && user._id === complaint?.assignedTo?._id && complaint.status!== COMPLAINT_STATUS.RESOLVED &&(
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'row',
-              gap: 1,
+              flexDirection: 'column',
               backgroundColor:
                 theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
               paddingX: {
@@ -554,11 +564,11 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               },
               borderRadius: '1rem',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justifyContent: 'center',
             }}
           >
-            Change status
-            <FormControl
+            
+            {/* <FormControl
               sx={{ m: 1, minWidth: 120 }}
               size="small"
               disabled={
@@ -583,7 +593,15 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                   <MenuItem value={value}>{value}</MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </FormControl> */}
+            <Button
+              onClick={navigateToResolutionRequestPage}
+            >
+              Resolve
+            </Button>
+            <Typography variant='caption'>
+              To submit resolution request click the above button
+            </Typography>
           </Box>
         )}
       </Box>

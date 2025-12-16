@@ -66,6 +66,10 @@ function Step1Complaint({
         variant="outlined"
         value={formData.title}
         onChange={handleChange}
+        slotProps={{
+          htmlInput: { maxLength: 30 }
+        }}
+        helperText={`${formData.title.length}/30 characters`}
       />
       <TextField
         required
@@ -74,6 +78,12 @@ function Step1Complaint({
         variant="outlined"
         value={formData.description}
         onChange={handleChange}
+        multiline
+        rows={4}
+        slotProps={{
+          htmlInput: { maxLength: 250 }
+        }}
+        helperText={`${formData.description.length}/250 characters`}
       />
       <TextField
         required

@@ -9,6 +9,14 @@ function Snack({ message, openStatus }) {
     }
   }, [openStatus])
 
+  useEffect(()=>{
+    if(openStatus){
+      setTimeout(()=>{
+        setOpen(false);
+      }, 4000);
+    }
+  }, [openStatus])
+
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') return; // Optional safeguard
     setOpen(false);

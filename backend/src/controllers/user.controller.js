@@ -359,4 +359,56 @@ const editProfile = asyncHandler(async (req, res) => {
   );
 });
 
-export { registerUser, loginUser, logoutUser, userProfile, editProfile };
+const getAllUsers = asyncHandler(async (req, res) => {
+  const { role, state, district, pinCode, email, page = 1, limit = 10 } = req.query;
+
+  const filter = {};
+
+  // Apply role filter
+  if (role) {
+    filter.role = role;
+  }
+
+  // Apply email filter with case-insensitive regex
+  if (email) {
+    filter.email = { $regex: new RegExp(email, 'i') };
+  }
+
+  // Apply address filters with case-insensitive regex
+  if (state) {
+    filter['address.state'] = { $regex: new RegExp(`^${state}$`, 'i') };
+  }
+  if (district) {
+    filter['address.district'] = { $regex: new RegExp(`^${district}$`, 'i') };
+  }
+  if (pinCode) {
+    filter['address.pinCode'] = pinCode;
+  }
+
+  const skip = (page - 1) * limit;
+
+  const users = await User.find(filter)
+    .select('-password -refreshToken -emailVerificationToken -emailVerificationExpiry')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(parseInt(limit));
+
+  const totalCount = await User.countDocuments(filter);
+  const totalPages = Math.ceil(totalCount / limit);
+
+  return res.status(200).json(
+    new apiResponse(
+      200,
+      {
+        users,
+        currentPage: parseInt(page),
+        totalPages,
+        totalCount,
+        limit: parseInt(limit),
+      },
+      'Users fetched successfully'
+    )
+  );
+});
+
+export { registerUser, loginUser, logoutUser, userProfile, editProfile, getAllUsers };

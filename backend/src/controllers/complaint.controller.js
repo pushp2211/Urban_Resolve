@@ -69,3 +69,29 @@ export const getUpvote=asyncHandler(async(req,res)=>{
         }, "Total Upvote Fetched successfully")
     );
 })
+
+export const getComplaint = asyncHandler(async(req, res)=>{
+    const {id} = req.params;
+    
+    if(!id){
+        throw new apiError(400, "Complaint ID is required");
+    }
+    
+    // Validate MongoDB ObjectId format
+    if(!id.match(/^[0-9a-fA-F]{24}$/)){
+        throw new apiError(400, "Invalid complaint ID format");
+    }
+    
+    const complaint = await Complaint.findById(id)
+        .populate("submittedBy", "fullName email profilePicture address")
+        .populate("assignedTo", "fullName email profilePicture address");
+
+    if(!complaint){
+        throw new apiError(404, "Complaint not found");
+    }
+
+    return res.status(200)
+    .json(
+        new apiResponse(200, complaint, "Complaint fetched successfully")
+    )
+})

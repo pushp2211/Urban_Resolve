@@ -7,6 +7,7 @@ import {
   deleteUserComplaint,
   getUserComplaintsDashboard,
 } from '../controllers/user.complaint.controller.js';
+import { getComplaint } from '../controllers/complaint.controller.js';
 
 const router = Router();
 router.route('/uploadComplaint').post(
@@ -27,5 +28,7 @@ router
 router
   .route('/deleteUserComplaint/:complaintId')
   .delete(verifyJWT, deleteUserComplaint);
+
+router.route('/getOneComplaint/:id').get(verifyJWT, getComplaint);
 
 export default router;

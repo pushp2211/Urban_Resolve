@@ -5,7 +5,7 @@ import { COMPLAINT_URGENCY,COMPLAINT_URGENCY_ENUM } from "../enum/ComplaintUrgen
 import { apiError } from "../utils/apiError.js";
 import { apiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 export const getAssignedComplaints = asyncHandler(async (req, res) => {
     const staffId = req.user._id;
 
@@ -101,9 +101,9 @@ export const updateComplaintStatus=asyncHandler(async(req,res)=>{
                 break;
 
             case COMPLAINT_STATUS.IN_PROGRESS:
-                if (newStatus === COMPLAINT_STATUS.RESOLVED) isTransitionAllowed = true;
+                // if (newStatus === COMPLAINT_STATUS.RESOLVED) isTransitionAllowed = true;
+                throw new apiError(400, "Please submit a resolution request with photos instead");
                 break;
-                
         }
 
         if (!isTransitionAllowed) {
@@ -114,4 +114,60 @@ export const updateComplaintStatus=asyncHandler(async(req,res)=>{
         await complaint.save();
 
         res.status(200).json(new apiResponse(200,complaint,"Status Updated Succesfully"));
+});
+
+export const submitResolutionRequest = asyncHandler(async(req, res)=>{
+    const complaintId = req.params.id;
+    const {notes} = req.body;
+    const staffId = req.user._id;
+    
+    if(!complaintId){
+        throw new apiError(400, "Complaint ID is required");
+    }
+
+    const complaint = await Complaint.findById(complaintId);
+
+    if(!complaint){
+        throw new apiError(404, "Complaint not found");
+    }
+
+    if(!complaint.assignedTo || complaint.assignedTo.toString()!==staffId.toString()){
+        throw new apiError(403, "You are not authorized to submit resolution for this complaint");
+    }
+
+    if(complaint.status !== COMPLAINT_STATUS.IN_PROGRESS){
+        throw new apiError(400, "Can only submit resolution for complaints in progress");
+    }
+
+    const photoFiles = req.files;
+    if(!photoFiles || photoFiles.length<2){
+        throw new apiError(400, "At least 2 photos are required for resolution request");
+    }
+
+    const photoUrls = [];
+    for(const file of photoFiles){
+        const uploadResult = await uploadOnCloudinary(file.path);
+        if(uploadResult){
+            photoUrls.push(uploadResult.url);
+        }
+    }
+
+    if(photoUrls.length < 2){
+        throw new apiError(500, "Failed to upload required photos");
+    }
+
+    complaint.resolutionRequest = {
+        photos : photoUrls,
+        submittedBy: staffId,
+        submittedAt: new Date(),
+        notes: notes || ""
+    };
+
+    complaint.status = COMPLAINT_STATUS.PENDING_REVIEW;
+
+    await complaint.save();
+
+    return res
+    .status(200)
+    .json(new apiResponse(200, complaint, "Resolution request submitted successfully"));
 });

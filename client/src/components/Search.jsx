@@ -73,7 +73,6 @@ function Search({setSearchValue, searchResult, loading, error, handleSearch, sea
           sx={{
             borderRadius:10,
           }}
-        //   InputProps={{ disableUnderline: true }}
         />
         <IconButton onClick={handleSearch} color="" size="large">
           <SearchIcon />

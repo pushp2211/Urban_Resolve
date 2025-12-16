@@ -105,6 +105,10 @@ const getComplaintStats = asyncHandler(async (req, res) => {
           { $match: { status: COMPLAINT_STATUS.IN_PROGRESS } },
           { $count: 'count' },
         ],
+        totalPendingReview: [
+          { $match: { status: COMPLAINT_STATUS.PENDING_REVIEW } },
+          { $count: 'count' },
+        ],
       },
     },
   ]);
@@ -119,17 +123,20 @@ const getComplaintStats = asyncHandler(async (req, res) => {
   const totalPending = stats.totalPending[0]?.count || 0;
   const totalRejected = stats.totalRejected[0]?.count || 0;
   const totalInProgress = stats.totalInProgress[0]?.count || 0;
+  const totalPendingReview = stats.totalPendingReview[0]?.count || 0;
 
   const response = {
     total:
       totalResolved +
       totalPending +
       totalRejected +
-      totalInProgress,
+      totalInProgress +
+      totalPendingReview,
     resolved: totalResolved,
     pending: totalPending,
     rejected: totalRejected,
     inProgress: totalInProgress,
+    pendingReview: totalPendingReview,
   };
 
   return res

@@ -5,7 +5,8 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { verifyRole } from "../middlewares/role.middleware.js";
 import { ROLES } from "../enum/roles.js";
-import { assignComplaint, getStaffList, updateStatus, updateUserRole ,getUser} from "../controllers/admin.complaint.controller.js";
+import { assignComplaint, getUserList, updateStatus, updateUserRole ,getUser, reviewResolutionRequest, getPendingReviewComplaints} from "../controllers/admin.complaint.controller.js";
+import { getStaffByDistrict } from "../controllers/staff.controller.js";
 
 const router = Router();
 
@@ -27,15 +28,43 @@ router.route("/updateStatus/:id").put(
     updateStatus
 )
 
-router.route("/staffList/:id").get(
+router.route("/staffList").get(
     verifyJWT,
     verifyRole(ROLES.ADMIN),
-    getStaffList
+    getUserList
 )
 
-router.route("/searchUser").get(
+router.route("/userList").get(
+    verifyJWT,
+    verifyRole(ROLES.ADMIN),
+    getUserList
+)
+
+router.route("/user").get(
     verifyJWT,
     verifyRole(ROLES.ADMIN),
     getUser
 );
+
+router.patch(
+    "/complaints/:id/review-resolution",
+    verifyJWT,
+    verifyRole(ROLES.ADMIN),
+    reviewResolutionRequest
+);
+
+router.get(
+    "/complaints/pending-review",
+    verifyJWT,
+    verifyRole(ROLES.ADMIN),
+    getPendingReviewComplaints
+);
+
+router.get(
+    "/staff-by-district",
+    verifyJWT,
+    verifyRole(ROLES.ADMIN),
+    getStaffByDistrict
+);
+
 export default router;

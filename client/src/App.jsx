@@ -12,6 +12,7 @@ import Highlights from './pages/Highlights';
 import MyComplaints from './pages/MyComplaints';
 import Profile from './pages/Profile';
 import Management from './pages/Management';
+import ReviewRequests from './pages/ReviewRequests.jsx';
 import Home from './pages/Home';
 import { Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@emotion/react';
@@ -29,7 +30,9 @@ import ResetPassword from './pages/ResetPassword.jsx';
 
 import { CssBaseline } from '@mui/material'; //for theme sync
 import ForgotPassword from './pages/ForgotPassword.jsx';
-
+import ResolutionRequest from './pages/ResolutionRequest.jsx';
+import ManageUsers from './pages/ManageUsers.jsx';
+import AssignComplaint from './pages/AssignComplaint.jsx';
 function App() {
   const {user} = useAuth();
   const { globalLoading } = useLoading();
@@ -58,7 +61,11 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="notifications" element={<Notifications />} />
             {user?.role === ROLES.STAFF && <Route path="assigned-complaints" element={<MyAssignedComplaints />} />}
-            {user?.role ===ROLES.ADMIN && <Route path='management' element={<Management/>}/>}
+            {user?.role === ROLES.STAFF && <Route path="/complaint/resolution-request/:id" element={<ResolutionRequest />} />}
+            {user?.role === ROLES.ADMIN && <Route path="management" element={<Management/>} />}
+            {user?.role === ROLES.ADMIN && <Route path="management/resolutions" element={<ReviewRequests/>} />}
+            {user?.role === ROLES.ADMIN && <Route path="management/users" element={<ManageUsers/>} />}
+            {user?.role === ROLES.ADMIN && <Route path="admin/assign-complaint/:id" element={<AssignComplaint/>} />}
           </Route>
           
         </Route>

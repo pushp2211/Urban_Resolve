@@ -58,6 +58,10 @@ const complaintSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
+    assignedAt:{
+        type: Date,
+        default:null
+    },
     deadline: {
         type: Date
     },
@@ -68,7 +72,43 @@ const complaintSchema = new mongoose.Schema({
                 ref: "User"
             }
         ]
+    },
+    resolutionRequest: {
+        photos:[
+            {
+                type:String
+            }
+        ],
+        submittedBy:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        },
+        submittedAt:{
+            type:Date
+        },
+        notes:{
+            type:String
+        }
+    },
+    resolutionReview:{
+        reviewedBy:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        },
+        reviewedAt: {
+            type:Date,
+        },
+        approved:{
+            type:Boolean
+        },
+        rejectionReason: {
+            type:String
+        }
+    },
+    resolvedAt:{
+        type: Date,
+        default: null
     }
-}, { timestamps: true }); 
+}, { timestamps: true });
 
 export const Complaint = mongoose.model("Complaint", complaintSchema);

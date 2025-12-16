@@ -213,7 +213,7 @@ function ComplaintRegister({ handleClose }) {
         elevation={3}
         sx={{
           borderRadius: '1rem',
-          padding: '3rem',
+          padding: '2rem',
           width: {
             lg: '30rem',
             sm: '25rem',

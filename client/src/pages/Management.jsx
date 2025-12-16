@@ -1,482 +1,346 @@
-import { Box, Container, Button } from '@mui/material';
+import { Box, Container, Button, Card, CardContent } from '@mui/material';
 import { Typography } from '@mui/material';
-import React, { useEffect, useState, useMemo } from 'react';
-// import {theme} from '../theme';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
-import Search from '../components/Search';
-import UserManageModal from '../components/UserManageModal';
+import { useNavigate } from 'react-router-dom';
+import GroupIcon from '@mui/icons-material/Group';
+import GavelIcon from '@mui/icons-material/Gavel';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+
 import apiClient from '../api/axios';
-import FilterListAltIcon from '@mui/icons-material/FilterListAlt';
-import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
-import AdminFilterModal from '../components/AdminFilterModal';
 import { useLoading } from '../context/LoadingContext';
+import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
+
 function Management() {
   const theme = useTheme();
-  const {showLoading, hideLoading} = useLoading()
-  // setSearchValue, searchResult, loading, error, handleSearch, searchValue
-  const [searchValue, setSearchValue] = useState('');
-  const [searchResult, setSearchResult] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  const [complaintStatsLoading, setComplaintStatsLoading] = useState(false);
-  const [complaintStatsError, setComplaintStatsError] = useState('');
-  const [complaintDistrict, setComplaintDistrict] = useState('');
-  const [complaintCity, setComplaintCity] = useState('');
-  const [complaintState, setComplaintState] = useState('');
-  const [fetchedComplaintStats, setFetchedComplaintStats] = useState(null);
-
-  const [userStatsLoading, setUserStatsLoading] = useState(false);
-  const [userStatsError, setUserStatsError] = useState('');
-  const [userDistrict, setUserDistrict] = useState('');
-  const [userCity, setUserCity] = useState('');
-  const [userState, setUserState] = useState('');
-  const [fetchedUserStats, setFetchedUserStats] = useState(null);
-
-  const [userPanelOpen, setUserPanelOpen] = useState(false);
-
-  const handleOnUserClick = () => {
-    setUserPanelOpen(true);
-  };
-
-  const handleOnUserPanelClose = () => {
-    setUserPanelOpen(false);
-  };
-
-  useEffect(() => {
-    if (!searchValue) {
-      setSearchResult([]);
-      return;
-    }
-
-    const controller = new AbortController();
-
-    const fetchData = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const response = await apiClient.get(
-          `/admin/searchUser?email=${searchValue}`,
-          { signal: controller.signal }
-        );
-        setSearchResult([]);
-        setSearchResult([response.data.data]);
-        // console.log(response.data.data)
-      } catch (error) {
-        if (error.name === 'CanceledError' || error.name === 'AbortError') {
-          // ignore aborted requests
-        } else {
-          console.error(error);
-          setError('User not found');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const debounce = setTimeout(fetchData, 500);
-
-    return () => {
-      controller.abort();
-      clearTimeout(debounce);
-    };
-    
-  }, [searchValue]);
-
-  const userStats = [
-    { label: 'Total Registered User', value: fetchedUserStats?.total },
-    { label: 'Staffs', value: fetchedUserStats?.staffs },
-    { label: 'Admins', value: fetchedUserStats?.admins },
-  ];
-
-  const userFilterOptions = useMemo(
-    () => [
-      { label: 'City', valueSet: setUserCity },
-      { label: 'District', valueSet: setUserDistrict },
-      { label: 'State', valueSet: setUserState },
-    ],
-    [] // setters never change, so empty dependency list is fine
-  );
-
-  const [userFilterOpen, setUserFilterOpen] = useState(false);
-  const handleUserFilterClose = () => {
-    setUserFilterOpen(false);
-  };
-  const handleUserFilterOpen = () => {
-    setUserFilterOpen(true);
-  };
-
-  const handleUserFilterChange = (label, value) => {
-    userFilterOptions.forEach((element, index) => {
-      if (element.label === label) {
-        element.valueSet(value);
-      }
-    });
-  };
-
-  const handleClearUserFilter = ()=>{
-    setUserCity("");
-    setUserDistrict("");
-    setUserState("");
-  }
+  const navigate = useNavigate();
+  const { showLoading, hideLoading } = useLoading();
   
-
-  const complaintFilterOptions = useMemo(
-    () => [
-      { label: 'City', valueSet: setComplaintCity },
-      { label: 'District', valueSet: setComplaintDistrict },
-      { label: 'State', valueSet: setComplaintState },
-    ],
-    [] // setters never change, so empty dependency list is fine
-  );
-
-  const [complaintFilterOpen, setComplaintFilterOpen] = useState(false);
-  const handleComplaintFilterClose = () => {
-    setComplaintFilterOpen(false);
-  };
-  const handleComplaintFilterOpen = () => {
-    setComplaintFilterOpen(true);
-  };
-
-  const handleComplaintFilterChange = (label, value) => {
-    complaintFilterOptions.forEach((element, index) => {
-      if (element.label === label) {
-        element.valueSet(value);
-      }
-    });
-  };
-
-  const handleClearComplaintFilter = ()=>{
-    setComplaintCity("");
-    setComplaintDistrict("");
-    setComplaintState("");
-  }
-  const complaintStats = [
-    { label: 'Total Active Complaints', value: fetchedComplaintStats?.total },
-    { label: 'Resolved', value: fetchedComplaintStats?.resolved },
-    { label: 'In Progress', value: fetchedComplaintStats?.inProgress },
-    { label: 'Pending', value: fetchedComplaintStats?.pending },
-    { label: 'Rejected', value: fetchedComplaintStats?.rejected },
-  ];
+  const [userStats, setUserStats] = useState(null);
+  const [complaintStats, setComplaintStats] = useState(null);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const fetchComplaintStats = async () => {
-      setComplaintStatsError('');
-
+    const fetchStats = async () => {
       try {
         showLoading();
-        setComplaintStatsLoading(true);
-        const params = new URLSearchParams();
-        if (complaintCity?.length > 0) {
-          params.append('city', complaintCity);
-        }
-        if (complaintDistrict?.length > 0) {
-          params.append('district', complaintDistrict);
-        }
-        if (complaintState?.length > 0) {
-          params.append('state', complaintState);
-        }
-
-        const response = await apiClient.get(
-          `/service/complaint/stats?${params.toString()}`,
-          { signal: controller.signal }
-        );
-        // console.log(response);
-        // console.log("response loaded");
-        setFetchedComplaintStats(response?.data?.data);
+        const [userResponse, complaintResponse] = await Promise.all([
+          apiClient.get('/service/user/stats'),
+          apiClient.get('/service/complaint/stats')
+        ]);
+        
+        setUserStats(userResponse.data.data);
+        setComplaintStats(complaintResponse.data.data);
       } catch (error) {
-        if (error.name === 'CanceledError' || error.name === 'AbortError') {
-          // ignore aborted requests
-        } else {
-          console.log(error, 'error while fetching complaint stats');
-          setComplaintStatsError(
-            'error occured while fetching the complaint stats'
-          );
-        }
+        console.error('Error fetching stats:', error);
       } finally {
-        setComplaintStatsLoading(false);
         hideLoading();
       }
     };
-    const debounce = setTimeout(fetchComplaintStats, 500);
-    // fetchComplaintStats();
-    return () => {
-      controller.abort();
-      clearTimeout(debounce);
-    };
-  }, [complaintDistrict, complaintCity, complaintState]);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const fetchUserStats = async () => {
-      setUserStatsError('');
+    fetchStats();
+  }, []);
 
-      try {
-        showLoading();
-        setUserStatsLoading(true);
-        const params = new URLSearchParams();
-        if (userCity?.length > 0) {
-          params.append('city', userCity);
-        }
-        if (userDistrict?.length > 0) {
-          params.append('district', userDistrict);
-        }
-        if (userState?.length > 0) {
-          params.append('state', userState);
-        }
+  const handleManageUsers = () => {
+    navigate('/management/users');
+  };
 
-        const response = await apiClient.get(
-          `/service/user/stats?${params.toString()}`,
-          { signal: controller.signal }
-        );
-        // console.log(response);
-        // console.log("response loaded");
-        setFetchedUserStats(response?.data?.data);
-      } catch (error) {
-        if (error.name === 'CanceledError' || error.name === 'AbortError') {
-          // ignore aborted requests
-        } else {
-          console.log(error, 'error while fetching user stats');
-          setUserStatsError('error occured while fetching the user stats');
-        }
-      } finally {
-        setUserStatsLoading(false);
-        hideLoading();
-      }
-    };
-    const debounce = setTimeout(fetchUserStats, 500);
-    // fetchComplaintStats();
-    return () => {
-      controller.abort();
-      clearTimeout(debounce);
-    };
-  }, [userDistrict, userCity, userState]);
+  const handleReviewRequests = () => {
+    navigate('/management/resolutions');
+  };
 
   return (
     <Container
       sx={{
         display: 'flex',
-        flexDirection: {
-          xs: 'column',
-          sm: 'column',
-          md: 'row',
-          lg: 'row',
-        },
-        gap: {
-          xs: 1,
-          sm: 1,
-          md: 2,
-        },
-        justifyContent: {
-          xs: 'flex-start',
-          sm: 'flex-start',
-          md: 'space-evenly',
-          lg: 'space-evenly',
-        },
-        alignItems: 'center',
+        flexDirection: 'column',
+        gap: 3,
+        paddingY: 4,
         minHeight: '78svh',
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          flexGrow: 1,
-          flexDirection: 'column',
-        }}
-      >
-        <Box
-          sx={{
-            borderRadius: '2rem',
-            backgroundColor:
-              theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-            paddingY: 2,
-            paddingX: 1,
-            marginY: 2,
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'row',
-            flexGrow: 1,
-            justifyContent: 'space-evenly',
-            minWidth: {
-              xs: '20rem',
-              sm: '24rem',
-              md: 'auto',
-            },
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            {userStats.map((element, index) => (
-              <Typography
-                key={element.label}
-                sx={{
-                  // marginY:1
-                  fontSize: '0.9rem',
-                }}
-                variant="overline"
-              >
-                {element.label} : {element.value}
-              </Typography>
-            ))}
-          </Box>
-          <Box 
-            sx={{
-              display:"flex",
-              flexDirection:"column",
-              // gap:1
-            }}
-          >
-            <Button
-              sx={{
-                alignSelf: '',
-              }}
-              onClick={handleUserFilterOpen}
-              
-            >
-              <FilterListAltIcon color='' />
-              Filter
-            </Button>
-            <Button
-            variant='standard'
-              sx={{
-                alignSelf: '',
-                color: theme.palette.mode === "dark" ? "#fff" : "#000"
-              }}
-              onClick={handleClearUserFilter}
-            >
-              <FilterAltOffIcon />
-              Clear
-            </Button>
-          </Box>
-          <AdminFilterModal
-            filterOptions={userFilterOptions}
-            openFilter={userFilterOpen}
-            handleFilterClose={handleUserFilterClose}
-            handleFilterChange={handleUserFilterChange}
-          />
-        </Box>
-        <Box
-          sx={{
-            borderRadius: '2rem',
-            backgroundColor:
-              theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-            paddingY: 2,
-            paddingX: 1,
-            marginY: 2,
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-evenly',
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            {complaintStats.map((element, index) => (
-              <Typography
-                key={element.label}
-                sx={{
-                  // marginY:1
-                  fontSize: '0.9rem',
-                }}
-                variant="overline"
-              >
-                {element.label} : {element.value}
-              </Typography>
-            ))}
-          </Box>
-          <Box
-            sx={{
-              display:"flex",
-              flexDirection:"column"
-            }}
-          >
-            <Button
-            sx={{
-              alignSelf: '',
-              
-            }}
-            onClick={handleComplaintFilterOpen}
-          >
-            <FilterListAltIcon />
-            Filter
-          </Button>
-          <Button
-              sx={{
-                alignSelf: '',
-                color: theme.palette.mode === "dark" ? "#fff" : "#000"
-              }}
-              onClick={handleClearComplaintFilter}
-            >
-              <FilterAltOffIcon />
-              Clear
-            </Button>
-          </Box>
-          <AdminFilterModal
-            filterOptions={complaintFilterOptions}
-            openFilter={complaintFilterOpen}
-            handleFilterClose={handleComplaintFilterClose}
-            handleFilterChange={handleComplaintFilterChange}
-          />
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          flexGrow: 1,
-          borderRadius: '2rem',
-          backgroundColor:
-            theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-          paddingY: 2,
-          paddingX: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          alignItems: 'center',
-          minHeight: {
-            lg: '25rem',
-            xs: '20rem',
-          },
-          // width:"100%"
-        }}
-      >
-        <Typography
-          sx={{
-            width: '100%',
-            textAlign: 'center',
-            fontWeight: 'bold',
-            fontSize: '1.2rem',
-          }}
-          // variant='h7'
-        >
-          SEARCH TO GET USER PROFILE AND <br /> MANAGE THEIR ROLE
+      {/* User Stats Section */}
+      <Box>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+          User Statistics
         </Typography>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: 'repeat(1, 1fr)',
+              sm: 'repeat(3, 1fr)',
+            },
+            gap: 2,
+            marginTop: 2
+          }}
+        >
+          <Card
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+            }}
+          >
+            <CardContent>
+              <Typography variant="overline" color="text.secondary">
+                Total Users Registered
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                {userStats?.total || 0}
+              </Typography>
+            </CardContent>
+          </Card>
 
-        <Search
-          searchResult={searchResult}
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-          loading={loading}
-          error={error}
-          handleOnClick={handleOnUserClick}
-        />
+          <Card
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+            }}
+          >
+            <CardContent>
+              <Typography variant="overline" color="text.secondary">
+                Staff
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                {userStats?.staffs || 0}
+              </Typography>
+            </CardContent>
+          </Card>
+
+          <Card
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+            }}
+          >
+            <CardContent>
+              <Typography variant="overline" color="text.secondary">
+                Admins
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                {userStats?.admins || 0}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
       </Box>
-      {userPanelOpen && searchResult[0] && (
-        <UserManageModal
-          open={userPanelOpen}
-          handleOnClose={handleOnUserPanelClose}
-          user={searchResult[0]}
-        />
-      )}
+
+      {/* Complaint Stats Section */}
+      <Box sx={{ marginTop: 4 }}>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+          Complaint Statistics
+        </Typography>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: 'repeat(2, 1fr)',
+              sm: 'repeat(3, 1fr)',
+              md: 'repeat(6, 1fr)',
+            },
+            gap: 2,
+            marginTop: 2
+          }}
+        >
+          <Card
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+            }}
+          >
+            <CardContent>
+              <Typography variant="overline" color="text.secondary">
+                Total Complaints
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                {complaintStats?.total || 0}
+              </Typography>
+            </CardContent>
+          </Card>
+
+          <Card
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#fff3e0',
+            }}
+          >
+            <CardContent>
+              <Typography variant="overline" sx={{ color: '#ed6c02' }}>
+                {COMPLAINT_STATUS.PENDING}
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: '#ed6c02' }}>
+                {complaintStats?.pending || 0}
+              </Typography>
+            </CardContent>
+          </Card>
+
+          <Card
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#e3f2fd',
+            }}
+          >
+            <CardContent>
+              <Typography variant="overline" sx={{ color: '#0288d1' }}>
+                {COMPLAINT_STATUS.IN_PROGRESS}
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: '#0288d1' }}>
+                {complaintStats?.inProgress || 0}
+              </Typography>
+            </CardContent>
+          </Card>
+
+          <Card
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#e8f5e9',
+            }}
+          >
+            <CardContent>
+              <Typography variant="overline" sx={{ color: '#2e7d32' }}>
+                {COMPLAINT_STATUS.RESOLVED}
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: '#2e7d32' }}>
+                {complaintStats?.resolved || 0}
+              </Typography>
+            </CardContent>
+          </Card>
+
+          <Card
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#ffebee',
+            }}
+          >
+            <CardContent>
+              <Typography variant="overline" sx={{ color: '#c62828' }}>
+                {COMPLAINT_STATUS.REJECTED}
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: '#c62828' }}>
+                {complaintStats?.rejected || 0}
+              </Typography>
+            </CardContent>
+          </Card>
+
+          <Card
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#fff8e1',
+            }}
+          >
+            <CardContent>
+              <Typography variant="overline" sx={{ color: '#f57c00' }}>
+                {COMPLAINT_STATUS.PENDING_REVIEW}
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: '#f57c00' }}>
+                {complaintStats?.pendingReview || 0}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
+
+      {/* Actions Section */}
+      <Box>
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, marginBottom: 2 }}>
+          Quick Actions
+        </Typography>
+        
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: '1fr',
+              md: 'repeat(2, 1fr)',
+            },
+            gap: 3,
+          }}
+        >
+          {/* Manage Users Card */}
+          <Card
+            sx={{
+              borderRadius: 2,
+              border: `1px solid ${theme.palette.divider}`,
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              },
+            }}
+          >
+            <CardContent sx={{ padding: 4 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  marginBottom: 2,
+                }}
+              >
+                <GroupIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                  Manage Users
+                </Typography>
+              </Box>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 3 }}>
+                View and manage all registered users, staff members, and admins
+              </Typography>
+
+              <Button
+                variant="contained"
+                endIcon={<ArrowForwardIcon />}
+                onClick={handleManageUsers}
+                fullWidth
+                sx={{
+                  paddingY: 1.5,
+                  fontWeight: 600,
+                }}
+              >
+                View All Users
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Resolution Center Card */}
+          <Card
+            sx={{
+              borderRadius: 2,
+              border: `1px solid ${theme.palette.divider}`,
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 4,
+              },
+            }}
+          >
+            <CardContent sx={{ padding: 4 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  marginBottom: 2,
+                }}
+              >
+                <GavelIcon sx={{ fontSize: 40, color: theme.palette.success.main }} />
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                  Resolution Center
+                </Typography>
+              </Box>
+              
+              <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 3 }}>
+                Review and approve resolution requests submitted by staff members
+              </Typography>
+
+              <Button
+                variant="contained"
+                color="success"
+                endIcon={<ArrowForwardIcon />}
+                onClick={handleReviewRequests}
+                fullWidth
+                sx={{
+                  paddingY: 1.5,
+                  fontWeight: 600,
+                }}
+              >
+                Review Requests
+              </Button>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
     </Container>
   );
 }
