@@ -26,6 +26,7 @@ import ConfirmDialog from '../common/ConfirmDialog';
 import apiClient from '../../api/axios';
 import { triggerNotification } from '../../../utils/notificationService';
 import UserDetailsModal from './UserDetailsModal';
+import { useLoading } from '../../context/LoadingContext';
 function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
   const theme = useTheme();
   const [showRejectDialog, setShowRejectDialog] = useState(false);
@@ -37,6 +38,7 @@ function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [userLoading, setUserLoading] = useState(false);
 
+  const {showLoading, hideLoading} = useLoading();
   const getUrgencyColor = (urgency) => {
     switch (urgency) {
       case 'High':
@@ -53,6 +55,7 @@ function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
   const openProfile = async (email) => {
     if (!email) return;
     setUserLoading(true);
+    showLoading();
     try {
       const response = await apiClient.get('/admin/user', {
         params: { email }
@@ -63,6 +66,7 @@ function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
       console.error('Error fetching user details:', error);
     } finally {
       setUserLoading(false);
+      hideLoading();
     }
   }
 
