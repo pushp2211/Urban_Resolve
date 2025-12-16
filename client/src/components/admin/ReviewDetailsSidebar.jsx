@@ -25,7 +25,7 @@ import OriginalComplaintDetails from './OriginalComplaintDetails';
 import ConfirmDialog from '../common/ConfirmDialog';
 import apiClient from '../../api/axios';
 import { triggerNotification } from '../../../utils/notificationService';
-
+import UserDetailsModal from './UserDetailsModal';
 function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
   const theme = useTheme();
   const [showRejectDialog, setShowRejectDialog] = useState(false);
@@ -33,6 +33,9 @@ function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
   const [rejectionReason, setRejectionReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [userProfileOpen, setUserProfileOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(false);
 
   const getUrgencyColor = (urgency) => {
     switch (urgency) {
@@ -46,6 +49,27 @@ function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
         return 'default';
     }
   };
+
+  const openProfile = async (email) => {
+    if (!email) return;
+    setUserLoading(true);
+    try {
+      const response = await apiClient.get('/admin/user', {
+        params: { email }
+      });
+      setSelectedUser(response.data.data);
+      setUserProfileOpen(true);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    } finally {
+      setUserLoading(false);
+    }
+  }
+
+  const closeProfile = () => {
+    setUserProfileOpen(false);
+    setSelectedUser(null);
+  }
 
   const handleApprove = async () => {
     setLoading(true);
@@ -171,7 +195,7 @@ function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
               >
                 Original Complaint
               </Typography>
-              <OriginalComplaintDetails complaint={complaint} />
+              <OriginalComplaintDetails complaint={complaint} onUserClick={openProfile} />
             </Box>
 
             {/* Resolution Request Section */}
@@ -208,15 +232,40 @@ function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
                 >
                   Submitted by
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box 
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 2,
+                    cursor: 'pointer',
+                    borderRadius: 1,
+                    p: 1,
+                    mx: -1,
+                    transition: 'background-color 0.2s',
+                    '&:hover': {
+                      bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                    }
+                  }}
+                  onClick={() => openProfile(complaint?.assignedTo?.email)}
+                >
                   <Avatar sx={{ width: 44, height: 44, bgcolor: theme.palette.primary.main, fontWeight: 600 }}>
                     {complaint.assignedTo?.fullName?.[0]}
                   </Avatar>
-                  <Box sx={{ flex: 1 }}>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography variant="body1" fontWeight={600} sx={{ mb: 0.25 }}>
                       {complaint.assignedTo?.fullName}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      sx={{ 
+                        fontSize: '0.875rem',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        wordBreak: 'break-all',
+                      }}
+                    >
                       {complaint.assignedTo?.email}
                     </Typography>
                   </Box>
@@ -381,6 +430,15 @@ function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* User Details Modal */}
+      {selectedUser && (
+        <UserDetailsModal
+          open={userProfileOpen}
+          onClose={closeProfile}
+          user={selectedUser}
+        />
+      )}
     </>
   );
 }

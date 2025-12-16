@@ -39,11 +39,11 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
 
   const getRoleColor = (role) => {
     switch (role) {
-      case 'admin':
+      case ROLES.ADMIN :
         return 'error';
-      case 'staff':
+      case ROLES.STAFF :
         return 'primary';
-      case 'user':
+      case ROLES.USER :
         return 'success';
       default:
         return 'default';
@@ -206,11 +206,17 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
                   padding: 2.5,
                   paddingTop: 4,
                   textAlign: 'center',
-                  width:"100%",
                   height:"100%",
                   borderRadius:2,
-                  maxWidth:"15rem",
-                  minWidth:"12rem"
+                  width:{
+                      xs:"80svw",
+                      sm:"30rem",
+                      md:"18rem"
+                  },
+                  display:"flex",
+                  flexDirection:"column",
+                  alignItems:"center",
+                  justifyContent:"center"
                 }}
               >
                 <Avatar
@@ -233,7 +239,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
 
                 <Chip
                   icon={getRoleIcon(user.role)}
-                  label={user?.role || "user"}
+                  label={user?.role || "User"}
                   color={getRoleColor(user.role)}
                   size="small"
                   sx={{
@@ -245,7 +251,13 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
             </Grid>
             {/* Contact Information Card */}
             <Grid item xs={12} md={5}>
-              <Card elevation={1} sx={{ borderRadius: 2, height: '100%' }}>
+              <Card elevation={1} sx={{ borderRadius: 2, height: '100%',
+                width:{
+                      xs:"80svw",
+                      sm:"30rem",
+                      md:"19rem"
+                    }
+               }}>
                 <Box
                   sx={{
                     padding: 1.5,
@@ -282,7 +294,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
                           sx={{ color: 'primary.main', fontSize: 16 }}
                         />
                       </Box>
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Box sx={{ flex: 1, minWidth: 0,  }}>
                         <Typography
                           variant="caption"
                           color="text.secondary"
@@ -290,7 +302,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
                         >
                           Email Address
                         </Typography>
-                        <Typography variant="body2" fontWeight={500}>
+                        <Typography variant="body2" fontWeight={500} sx={{overflow:"scroll"}}>
                           {user.email}
                         </Typography>
                       </Box>
@@ -385,13 +397,20 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
 
             {/* Role Management Card */}
             <Grid item xs={12} md={5}>
-              <Card elevation={1} sx={{ borderRadius: 2, height: '100%' }}>
+              <Card elevation={1} sx={{ borderRadius: 2, height: '100%',
+                width:{
+                      xs:"80svw",
+                      sm:"30rem",
+                      md:"19rem"
+                    }
+               }}>
                 <Box
                   sx={{
                     padding: 1.5,
                     borderBottom: '1px solid',
                     borderColor: 'divider',
                     backgroundColor: 'rgba(168, 85, 247, 0.05)',
+                    
                   }}
                 >
                   <Typography variant="subtitle1" fontWeight={600}>
@@ -516,13 +535,22 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
             {/* Complaint Stats Section - Only for Staff */}
             {user.role === ROLES.STAFF && user.complaintStats && (
               <Grid item xs={12}>
-                <Card elevation={1} sx={{ borderRadius: 2 }}>
+                <Card elevation={1} sx={{ 
+                  borderRadius: 2,
+                  marginX:{
+                    xs:0,
+                    sm:1,
+                    md:2
+                  }
+
+                }}>
                   <Box
                     sx={{
                       padding: 1.0,
                       borderBottom: '1px solid',
                       borderColor: 'divider',
                       backgroundColor: 'rgba(34, 197, 94, 0.05)',
+                      
                     }}
                   >
                     <Typography variant="subtitle1" fontWeight={600}>
@@ -545,6 +573,10 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
                           flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'center',
+                          width:{
+                            xs:"100%",
+                            sm:""
+                          }
                         }}
                       >
                         <Typography variant="caption" sx={{ opacity: 1 }}>
@@ -592,7 +624,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
                               color: 'error.main',
                             },
                             {
-                              label: 'Avg Resolution',
+                              label: 'Avg Resolution time',
                               value: user.complaintStats.avgResolutionTime !== null 
                                 ? `${user.complaintStats.avgResolutionTime} days`
                                 : 'N/A',

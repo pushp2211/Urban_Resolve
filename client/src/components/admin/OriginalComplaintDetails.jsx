@@ -10,7 +10,7 @@ import { useTheme } from '@mui/material/styles';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
-function OriginalComplaintDetails({ complaint }) {
+function OriginalComplaintDetails({ complaint, onUserClick }) {
   const theme = useTheme();
 
   const getUrgencyColor = (urgency) => {
@@ -81,18 +81,42 @@ function OriginalComplaintDetails({ complaint }) {
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', marginBottom: 0.5 }}>
           Submitted by
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            cursor: onUserClick ? 'pointer' : 'default',
+            borderRadius: 1,
+            p: 0.5,
+            mx: -0.5,
+            transition: 'background-color 0.2s',
+            '&:hover': onUserClick ? {
+              bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+            } : {}
+          }}
+          onClick={() => onUserClick && onUserClick(complaint.submittedBy?.email)}
+        >
           <Avatar
             src={complaint.submittedBy?.avatar}
             sx={{ width: 32, height: 32 }}
           >
             {complaint.submittedBy?.fullName?.[0]}
           </Avatar>
-          <Box>
+          <Box sx={{ minWidth: 0, flex: 1 }}>
             <Typography variant="body2" fontWeight={500}>
               {complaint.submittedBy?.fullName}
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography 
+              variant="caption" 
+              color="text.secondary"
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                display: 'block'
+              }}
+            >
               {complaint.submittedBy?.email}
             </Typography>
           </Box>
