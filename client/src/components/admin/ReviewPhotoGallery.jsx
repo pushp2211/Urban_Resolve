@@ -85,9 +85,11 @@ function ReviewPhotoGallery({ photos = [] }) {
         onClose={handleClose}
         maxWidth="lg"
         fullWidth
-        PaperProps={{
-          sx: {
-            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        slotProps={{
+          paper: {
+            sx: {
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+            },
           },
         }}
       >
