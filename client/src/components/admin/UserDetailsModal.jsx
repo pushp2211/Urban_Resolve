@@ -133,7 +133,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
         <Box
         sx={{
           width: '90%',
-          maxWidth: 900,
+          maxWidth: 1000,
           maxHeight: '90vh',
           overflow: 'auto',
           backgroundColor: 'background.paper',
@@ -208,7 +208,9 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
                   textAlign: 'center',
                   width:"100%",
                   height:"100%",
-                  borderRadius:2
+                  borderRadius:2,
+                  maxWidth:"15rem",
+                  minWidth:"12rem"
                 }}
               >
                 <Avatar
@@ -250,6 +252,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
                     borderBottom: '1px solid',
                     borderColor: 'divider',
                     backgroundColor: 'rgba(99, 102, 241, 0.05)',
+                    // maxWidth:"15rem"
                   }}
                 >
                   <Typography variant="subtitle1" fontWeight={600}>
