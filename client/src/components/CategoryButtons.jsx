@@ -40,8 +40,10 @@ function CategoryButtons() {
       key: 'status',
       value: COMPLAINT_STATUS.IN_PROGRESS,
     },
+    { label: 'Pending Review', key: 'status', value: COMPLAINT_STATUS.PENDING_REVIEW },
     { label: 'Resolved', key: 'status', value: COMPLAINT_STATUS.RESOLVED },
     { label: 'Rejected', key: 'status', value: COMPLAINT_STATUS.REJECTED },
+    
   ];
   const urgency = [
     { label: 'All', key: 'urgency', value: '' },

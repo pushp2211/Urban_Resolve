@@ -15,7 +15,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import apiClient from '../api/axios';
 import StaffListDialog from './StaffListDialog.jsx';
-
+import { useLoading } from '../context/LoadingContext.jsx';
 // import {theme }from '../theme.js';
 // import InputLabel from '@mui/material/InputLabel';
 // import MenuItem from '@mui/material/MenuItem';
@@ -28,6 +28,9 @@ import { triggerNotification } from '../../utils/notificationService.js';
 import Snack from './Snack.jsx';
 
 import { useTheme } from '@mui/material/styles';
+
+import UserDetailsModal from './admin/UserDetailsModal.jsx';
+
 const getStatusColor = (status) => {
   switch (status) {
     case COMPLAINT_STATUS.PENDING:
@@ -42,8 +45,9 @@ const getStatusColor = (status) => {
       return 'default';
   }
 };
+
 function DetailedComplaint({ complaint, onAssign, onClose }) {
-  console.log(complaint)
+  console.log(complaint);
   // console.log(theme);
   const theme = useTheme();
   const { user } = useAuth();
@@ -58,6 +62,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
   const [staffAssignLoading, setStaffAssignLoading] = useState(false);
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState('');
+
+  const { showLoading, hideLoading } = useLoading();
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const initialStatus = complaint.status;
 
@@ -80,7 +87,13 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
     useState(defaultValidStatuses);
 
   const [statusError, setStatusError] = useState('');
-  const [statusLoading, setStatusLoading] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false); // for opening user profile
+  const [userModalOpen, setUserModalOpen] = useState(false);
+
+  const closeUserModal = () => {
+    setUserModalOpen(false);
+  };
+
   const [curComplaintStatus, setComplaintCurStatus] = useState(
     complaint.status
   );
@@ -101,52 +114,52 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
     }
   }, [curComplaintStatus]);
 
-  const handleChange = async (event) => {
-    if (event.target.value == '') return;
-    event.stopPropagation();
-    const id = complaint._id;
-    console.log(event.target.value);
-    // const status = complaint.status;
-    const newStatus = event.target.value;
-    setStatusError('');
-    setStatusLoading(true);
-    try {
-      const response = await apiClient.put(`/admin/updateStatus/${id}`, {
-        status: newStatus,
-      });
-      if (response.status !== 200) {
-        setStatusError('Encountered an error while updating the status');
-        return;
-      }
-      // console.log(response);
+  // const handleChange = async (event) => {
+  //   if (event.target.value == '') return;
+  //   event.stopPropagation();
+  //   const id = complaint._id;
+  //   console.log(event.target.value);
+  //   // const status = complaint.status;
+  //   const newStatus = event.target.value;
+  //   setStatusError('');
+  //   setStatusLoading(true);
+  //   try {
+  //     const response = await apiClient.put(`/admin/updateStatus/${id}`, {
+  //       status: newStatus,
+  //     });
+  //     if (response.status !== 200) {
+  //       setStatusError('Encountered an error while updating the status');
+  //       return;
+  //     }
+  //     // console.log(response);
 
-      const upDatedComplaint = response?.data?.data;
-      complaint.status = upDatedComplaint.status;
-      setComplaintCurStatus(upDatedComplaint.status);
-      onAssign(upDatedComplaint);
-      setSnackMessage('Status updated successfully');
-      setShowSnack(true);
+  //     const upDatedComplaint = response?.data?.data;
+  //     complaint.status = upDatedComplaint.status;
+  //     setComplaintCurStatus(upDatedComplaint.status);
+  //     onAssign(upDatedComplaint);
+  //     setSnackMessage('Status updated successfully');
+  //     setShowSnack(true);
 
-      triggerNotification({
-        recipient_id: complaint.submittedBy,
-        message: `Your complaint (topic: ${complaint.title}) status has been changed to ${complaint.status}`,
-        complaint_id: complaint._id,
-      });
-    } catch (error) {
-      setStaffAssignError('Unable to update, please try again.');
-      console.error('Error updating status:', error);
-    } finally {
-      setStatusLoading(false);
-    }
-  };
+  //     triggerNotification({
+  //       recipient_id: complaint.submittedBy,
+  //       message: `Your complaint (topic: ${complaint.title}) status has been changed to ${complaint.status}`,
+  //       complaint_id: complaint._id,
+  //     });
+  //   } catch (error) {
+  //     setStaffAssignError('Unable to update, please try again.');
+  //     console.error('Error updating status:', error);
+  //   } finally {
+  //     setStatusLoading(false);
+  //   }
+  // };
   const navigate = useNavigate();
-  const navigateToResolutionRequestPage = ()=>{
+  const navigateToResolutionRequestPage = () => {
     const complaintId = complaint._id;
-    if(!complaintId){
-      setSnackMessage("complaint Id not found");
+    if (!complaintId) {
+      setSnackMessage('complaint Id not found');
     }
     navigate(`/complaint/resolution-request/${complaintId}`);
-  }
+  };
   useEffect(() => {
     setTimeout(() => {
       setSnackMessage('');
@@ -154,89 +167,111 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
     }, [3000]);
   }, [snackMessage, showSnack]);
 
-  const getEligibleStaffList = async (event) => {
-    setListOpen(true);
-    event.stopPropagation();
-    event.preventDefault();
-    const adminId = user._id;
-    setEligibleError('');
-    setLoading(true);
-
-    try {
-      const complaintDistrict = complaint?.address?.district
-      const response = await apiClient.get(`/admin/staffList?district=${complaintDistrict}`);
-      if (response.status != 200) {
-        setEligibleError('error while fetching try again', response.status);
-        return;
-      }
-      let simplifiedArray = [];
-      // console.log(response.data.data);
-      if (response.data.data.length === 0) {
-        setEligibleError(
-          'no staff found in the district of the complaint address'
-        );
-      } else {
-        simplifiedArray = response.data.data.map((item) => ({
-          _id: item?._id,
-          fullName: item?.fullName,
-          profilePicture: item?.profilePicture,
-        }));
-        setStaffList(simplifiedArray);
-      }
-    } catch (error) {
-      setEligibleError('error while retrieving the list, try again later');
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSelectStaff = async (staff) => {
-    const id = complaint._id;
-    const staffId = staff._id;
-    if (!id || !staffId) {
-      setStaffAssignError('staff id not found');
+  const handleUserClick = async (userObj) => {
+    if (user && user.role !== ROLES.ADMIN) {
       return;
     }
-
-    setStaffAssignError('');
-    setLoading(true);
-    try {
-      const response = await apiClient.put(`/admin/assignComplaint/${id}`, {
-        staffId,
-      });
-      // console.log(Response);
-      if (response.status != 200) {
-        setStaffAssignError('unable to assign, try again');
-        return;
+    if (userObj && userObj._id) {
+      showLoading();
+      try {
+        // Fetch full user details with complaint stats
+        const response = await apiClient.get('/admin/user', {
+          params: { email: userObj.email },
+        });
+        setSelectedUser(response.data.data);
+        setUserModalOpen(true);
+      } catch (err) {
+        console.error('Failed to fetch user details:', err);
+        setError('Failed to load user details');
+      } finally {
+        hideLoading();
       }
-      // console.log(response);
-      const updatedComplaint = response.data.data;
-      complaint.status = updatedComplaint.status;
-      onAssign(updatedComplaint);
-      triggerNotification({
-        recipient_id: staffId,
-        message: `You have been assigned a complaint from locality ${updatedComplaint.address?.locality} (Topic: ${updatedComplaint.title}, Urgency: ${updatedComplaint.urgency})`,
-        complaint_id: updatedComplaint._id,
-      });
-      triggerNotification({
-        recipient_id: complaint.submittedBy,
-        message: `Your complaint (topic: ${complaint.title}) has been cassigned to staff, we'll be happy to solve as soon as possible`,
-        complaint_id: complaint._id,
-      });
-      setSnackMessage('complaint assigned successfully');
-      setShowSnack(true);
-      setListOpen(false);
-      setLoading(false);
-    } catch (error) {
-      setSnackMessage('Unable to assign, please try again.');
-      setShowSnack(true);
-      setStaffAssignError('Unable to assign, please try again.');
-      console.error('Error assigning staff:', error);
-    } finally {
-      setStaffAssignLoading(false);
     }
   };
+
+  // const getEligibleStaffList = async (event) => {
+  //   setListOpen(true);
+  //   event.stopPropagation();
+  //   event.preventDefault();
+  //   const adminId = user._id;
+  //   setEligibleError('');
+  //   setLoading(true);
+
+  //   try {
+  //     const complaintDistrict = complaint?.address?.district
+  //     const response = await apiClient.get(`/admin/staffList?district=${complaintDistrict}`);
+  //     if (response.status != 200) {
+  //       setEligibleError('error while fetching try again', response.status);
+  //       return;
+  //     }
+  //     let simplifiedArray = [];
+  //     // console.log(response.data.data);
+  //     if (response.data.data.length === 0) {
+  //       setEligibleError(
+  //         'no staff found in the district of the complaint address'
+  //       );
+  //     } else {
+  //       simplifiedArray = response.data.data.map((item) => ({
+  //         _id: item?._id,
+  //         fullName: item?.fullName,
+  //         profilePicture: item?.profilePicture,
+  //       }));
+  //       setStaffList(simplifiedArray);
+  //     }
+  //   } catch (error) {
+  //     setEligibleError('error while retrieving the list, try again later');
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const handleSelectStaff = async (staff) => {
+  //   const id = complaint._id;
+  //   const staffId = staff._id;
+  //   if (!id || !staffId) {
+  //     setStaffAssignError('staff id not found');
+  //     return;
+  //   }
+
+  //   setStaffAssignError('');
+  //   setLoading(true);
+  //   try {
+  //     const response = await apiClient.put(`/admin/assignComplaint/${id}`, {
+  //       staffId,
+  //     });
+  //     // console.log(Response);
+  //     if (response.status != 200) {
+  //       setStaffAssignError('unable to assign, try again');
+  //       return;
+  //     }
+  //     // console.log(response);
+  //     const updatedComplaint = response.data.data;
+  //     complaint.status = updatedComplaint.status;
+  //     onAssign(updatedComplaint);
+  //     triggerNotification({
+  //       recipient_id: staffId,
+  //       message: `You have been assigned a complaint from locality ${updatedComplaint.address?.locality} (Topic: ${updatedComplaint.title}, Urgency: ${updatedComplaint.urgency})`,
+  //       complaint_id: updatedComplaint._id,
+  //     });
+  //     triggerNotification({
+  //       recipient_id: complaint.submittedBy,
+  //       message: `Your complaint (topic: ${complaint.title}) has been cassigned to staff, we'll be happy to solve as soon as possible`,
+  //       complaint_id: complaint._id,
+  //     });
+  //     setSnackMessage('complaint assigned successfully');
+  //     setShowSnack(true);
+  //     setListOpen(false);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setSnackMessage('Unable to assign, please try again.');
+  //     setShowSnack(true);
+  //     setStaffAssignError('Unable to assign, please try again.');
+  //     console.error('Error assigning staff:', error);
+  //   } finally {
+  //     setStaffAssignLoading(false);
+  //   }
+  // };
 
   return (
     <Box
@@ -336,6 +371,10 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                   gap: 2,
                   justifyContent: 'center',
                   alignItems: 'center',
+                  cursor: 'pointer',
+                }}
+                onClick={() => {
+                  handleUserClick(complaint?.submittedBy);
                 }}
               >
                 <Avatar
@@ -464,10 +503,27 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                 xs: '0.5rem',
               },
               borderRadius: '1rem',
+              alignItems: 'center',
             }}
           >
-            <Typography>Reported by :</Typography>
-            <Typography>{complaint.submittedBy?.fullName}</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
+              <Typography variant="subtitle2" fontWeight={600} color="text.secondary">
+                📍 Location
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.3 }}>
+                <Typography variant="body1" fontWeight={500}>
+                  {complaint.address?.locality || 'N/A'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {[
+                    complaint.address?.district,
+                    complaint.address?.state,
+                  ].filter(Boolean).join(', ')}
+                  {(complaint.address?.pinCode || complaint.address?.pincode) && 
+                    ` - ${complaint.address?.pinCode || complaint.address?.pincode}`}
+                </Typography>
+              </Box>
+            </Box>
           </Box>
           <Box
             sx={{
@@ -485,11 +541,31 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                 xs: '0.5rem',
               },
               borderRadius: '1rem',
+              alignItems:"center"
             }}
           >
             <Typography>Assigned To :</Typography>
             {complaint.assignedTo && (
-              <Typography>{complaint.assignedTo?.fullName}</Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 1,
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleUserClick(complaint?.assignedTo);
+                }}
+              >
+                <Avatar
+                  alt={complaint.assignedTo?.fullName}
+                  src={complaint.assignedTo?.profilePicture}
+                />
+                <Typography>{complaint.assignedTo?.fullName}</Typography>
+              </Box>
             )}
             {!complaint?.assignedTo && (
               <Typography>Not assigned yet</Typography>
@@ -514,13 +590,15 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
                 gap: '8%',
               }}
             >
-              Manage this complaint
+              {/* Manage this complaint */}
               <Button
-                onClick={()=>navigate(`/admin/assign-complaint/${complaint?._id}`)}
+                onClick={() =>
+                  navigate(`/admin/assign-complaint/${complaint?._id}`)
+                }
                 variant="contained"
                 loading={loading}
                 disabled={listOpen}
@@ -529,46 +607,33 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                   textTransform: 'none',
                 }}
               >
-                Click here ..
+                Manage Complaint
               </Button>
-              {!loading && (
-                <Dialog
-                  open={listOpen}
-                  onClose={() => setListOpen(false)}
-                  maxWidth="lg"
-                >
-                  <DialogTitle>Select a Staff Member</DialogTitle>
-                  <StaffListDialog
-                    staffList={staffList}
-                    onSelectStaff={setSelectedStaff}
-                    assignComplaint={handleSelectStaff}
-                  />
-                </Dialog>
-              )}
             </Box>
           )}
-        {(user.role === ROLES.STAFF) && user._id === complaint?.assignedTo?._id && complaint.status!== COMPLAINT_STATUS.RESOLVED &&(
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              backgroundColor:
-                theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-              paddingX: {
-                lg: '1rem',
-                xs: '0.5rem',
-              },
-              paddingY: {
-                lg: '1rem',
-                xs: '0.5rem',
-              },
-              borderRadius: '1rem',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            
-            {/* <FormControl
+        {user.role === ROLES.STAFF &&
+          user._id === complaint?.assignedTo?._id &&
+          complaint.status === COMPLAINT_STATUS.RESOLVED && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                backgroundColor:
+                  theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+                paddingX: {
+                  lg: '1rem',
+                  xs: '0.5rem',
+                },
+                paddingY: {
+                  lg: '1rem',
+                  xs: '0.5rem',
+                },
+                borderRadius: '1rem',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {/* <FormControl
               sx={{ m: 1, minWidth: 120 }}
               size="small"
               disabled={
@@ -594,19 +659,22 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
                 ))}
               </Select>
             </FormControl> */}
-            <Button
-              onClick={navigateToResolutionRequestPage}
-            >
-              Resolve
-            </Button>
-            <Typography variant='caption'>
-              To submit resolution request click the above button
-            </Typography>
-          </Box>
-        )}
+              <Button onClick={navigateToResolutionRequestPage}>Resolve</Button>
+              <Typography variant="caption">
+                To submit resolution request click the above button
+              </Typography>
+            </Box>
+          )}
       </Box>
 
       {showSnack && <Snack openStatus={showSnack} message={snackMessage} />}
+      {userModalOpen && (
+        <UserDetailsModal
+          open={userModalOpen}
+          user={selectedUser}
+          onClose={closeUserModal}
+        />
+      )}
     </Box>
   );
 }

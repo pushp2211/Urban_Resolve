@@ -40,7 +40,7 @@ function ManageUsers() {
   const fetchUsers = async (page = 1) => {
     setLoading(true);
     setError('');
-    showLoading();
+    // showLoading();
 
     try {
       const queryParams = new URLSearchParams({
@@ -64,7 +64,7 @@ function ManageUsers() {
       setError(err.response?.data?.message || 'Failed to fetch users');
     } finally {
       setLoading(false);
-      hideLoading();
+      // hideLoading();
     }
   };
 

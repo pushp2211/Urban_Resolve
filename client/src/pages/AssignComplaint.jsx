@@ -126,7 +126,7 @@ function AssignComplaint() {
 
   if (complaintLoading) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
           <CircularProgress />
         </Box>
@@ -136,7 +136,7 @@ function AssignComplaint() {
 
   if (!complaint) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         <Alert severity="error">
           Complaint not found or you don't have permission to view it.
         </Alert>
@@ -148,87 +148,119 @@ function AssignComplaint() {
   }
 
   return (
-    <Container maxWidth="xl"
-        sx={{
-            py: 0,
-        }}
-    >
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
-          {error}
-        </Alert>
-      )}
+    <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 }, px: { xs: 2, sm: 3 } }}>
+        {/* Header Section */}
+        <Box sx={{ mb: 3 }}>
+          <Button
+            onClick={() => navigate(-1)}
+            sx={{ mb: 2, textTransform: 'none' }}
+          >
+            ← Back to Management
+          </Button>
+          <Typography variant="h5" fontWeight={600} sx={{ mb: 0.5 }}>
+            Assign Staff Member
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Select an available staff member to handle this complaint
+          </Typography>
+        </Box>
 
-      <Grid container spacing={3} justifyContent="space-around">
-        {/* Complaint Details - Left Half */}
-        <Grid item xs={12} md={6}>
-          <AdminComplaintCard complaint={complaint}/>
+        {error && (
+          <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }} onClose={() => setError('')}>
+            {error}
+          </Alert>
+        )}
+
+        <Grid container spacing={{ xs: 2, md: 3 }} sx={{
+          px:{
+            xs:1,
+            sm:1,
+            md:2
+          }
+        }}>
+        {/* Complaint Details - Left Side */}
+        <Grid item xs={12} lg={5} sx={
+          {
+            width:{
+              xs:"100%",
+              sm:"100%",
+              md:"100%",
+              // lg:"auto"
+            }
+          }
+        } >
+          <AdminComplaintCard complaint={complaint} />
         </Grid>
 
-        {/* Staff List - Right Half */}
-        <Grid item xs={12} md={6} sx={{ minWidth: { md: '500px' } }}>
-          <Paper 
-            elevation={1} 
-            sx={{ 
-              p: 2, 
+        {/* Staff Selection - Right Side */}
+        <Grid item xs={12} lg={7}
+          sx={{
+            width:{
+              xs:"100%",
+              sm:"100%",
+              md:"100%",
+              // lg:"auto"
+            }
+          }}
+        >
+          {/* Controls Header */}
+          <Box
+            sx={{
+              width: '100%',
               mb: 2,
+              p: { xs: 2, sm: 2.5 },
+              bgcolor: 'background.paper',
               borderRadius: 2,
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%)',
+              border: '1px solid',
+              borderColor: 'divider',
             }}
           >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-                <Box>
-                  <Typography variant="h6" fontWeight={700} color="primary.main">
-                    Available Staff
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {complaint.address.district} District
-                  </Typography>
-                </Box>
-                <FormControl size="small" sx={{ minWidth: 180 }}>
-                  <InputLabel>Sort By</InputLabel>
-                  <Select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    label="Sort By"
-                    sx={{ borderRadius: 2 }}
-                  >
-                    <MenuItem value="name">Name (A-Z)</MenuItem>
-                    <MenuItem value="avgResolutionTime">Fastest Resolution</MenuItem>
-                    <MenuItem value="workload">Lowest Workload</MenuItem>
-                  </Select>
-                </FormControl>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
+              <Box>
+                <Typography variant="h6" fontWeight={600}>
+                  Available Staff
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {complaint.address.district} District • {staffList.length} members
+                </Typography>
               </Box>
-              
-              <TextField
-                size="small"
-                placeholder="Search by email..."
-                value={emailSearch}
-                onChange={(e) => {
-                  setEmailSearch(e.target.value);
-                  setPage(1);
-                }}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon sx={{ fontSize: 20 }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                sx={{ 
-                  borderRadius: 2,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                  }
-                }}
-              />
+              <FormControl size="small" sx={{ minWidth: 160 }}>
+                <InputLabel>Sort By</InputLabel>
+                <Select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  label="Sort By"
+                >
+                  <MenuItem value="name">Name (A-Z)</MenuItem>
+                  <MenuItem value="avgResolutionTime">Fastest</MenuItem>
+                  <MenuItem value="workload">Least Busy</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
-          </Paper>
 
-          <Box sx={{ minHeight: { xs: '400px', md: '500px' } }}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search by email..."
+              value={emailSearch}
+              onChange={(e) => {
+                setEmailSearch(e.target.value);
+                setPage(1);
+              }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+          </Box>
+
+          {/* Staff List */}
+          <Box sx={{ width: '100%' }}>
             {loading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
                 <CircularProgress />
@@ -241,70 +273,76 @@ function AssignComplaint() {
               <>
                 <Box
                   sx={{
-                    maxHeight: { xs: 'none', md: 'calc(100vh - 300px)' },
-                    overflowY: { xs: 'visible', md: 'auto' },
-                    pr: { xs: 0, md: 1 },
-                  '&::-webkit-scrollbar': {
-                    width: '8px',
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    background: 'transparent',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: '4px',
-                    '&:hover': {
-                      background: 'rgba(255, 255, 255, 0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1.5,
+                    maxHeight: { xs: 'none', lg: 'calc(100vh - 350px)' },
+                    overflowY: { xs: 'visible', lg: 'auto' },
+                    pr: { lg: 1 },
+                    '&::-webkit-scrollbar': {
+                      width: '6px',
                     },
-                  },
-                }}
-              >
-                {staffList.map((staff) => (
-                  <StaffCard
-                    key={staff._id}
-                    staff={staff}
-                    onViewDetails={() => handleStaffClick(staff)}
-                    onAssign={() => handleAssign(staff._id)}
-                    assigning={assigning}
-                  />
-                ))}
-              </Box>
-
-              {totalPages > 1 && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                  <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={(e, value) => setPage(value)}
-                    color="primary"
-                  />
+                    '&::-webkit-scrollbar-track': {
+                      background: 'transparent',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      background: 'rgba(0, 0, 0, 0.2)',
+                      borderRadius: '3px',
+                      '&:hover': {
+                        background: 'rgba(0, 0, 0, 0.3)',
+                      },
+                    },
+                    
+                  }}
+                >
+                  {staffList.map((staff) => (
+                    <Box key={staff._id} sx={{ minHeight: '120px', flexShrink: 0 }}>
+                      <StaffCard
+                        staff={staff}
+                        onViewDetails={() => handleStaffClick(staff)}
+                        onAssign={() => handleAssign(staff._id)}
+                        assigning={assigning}
+                      />
+                    </Box>
+                  ))}
                 </Box>
-              )}
+
+                {totalPages > 1 && (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                    <Pagination
+                      count={totalPages}
+                      page={page}
+                      onChange={(e, value) => setPage(value)}
+                      color="primary"
+                      size="medium"
+                    />
+                  </Box>
+                )}
               </>
             )}
           </Box>
         </Grid>
       </Grid>
 
-      {/* User Details Modal */}
-      {selectedStaff && (
-        <UserDetailsModal
-          open={modalOpen}
-          user={selectedStaff}
-          onClose={() => {
-            setModalOpen(false);
-            setSelectedStaff(null);
-          }}
-          onUserUpdate={(updatedUser) => {
-            setStaffList(prevList =>
-              prevList.map(staff =>
-                staff._id === updatedUser._id ? { ...staff, ...updatedUser } : staff
-              )
-            );
-          }}
-        />
-      )}
-      <Snack openStatus={snackOpen} message={snackMessage}/>
+        {/* User Details Modal */}
+        {selectedStaff && (
+          <UserDetailsModal
+            open={modalOpen}
+            user={selectedStaff}
+            onClose={() => {
+              setModalOpen(false);
+              setSelectedStaff(null);
+            }}
+            onUserUpdate={(updatedUser) => {
+              setStaffList(prevList =>
+                prevList.map(staff =>
+                  staff._id === updatedUser._id ? { ...staff, ...updatedUser } : staff
+                )
+              );
+            }}
+          />
+        )}
+        <Snack openStatus={snackOpen} message={snackMessage} />
     </Container>
   );
 }

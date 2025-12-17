@@ -26,6 +26,7 @@ import apiClient from '../../api/axios';
 
 function AdminComplaintCard({ complaint, onUserClick }) {
   //   const [complaint, setComplaint] = useState(null);
+  console.log(complaint);
   const [error, setError] = useState('');
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -132,246 +133,266 @@ function AdminComplaintCard({ complaint, onUserClick }) {
     <>
       <Card
         sx={{
-          width: '100%',
+          height: '100%',
           borderRadius: 2,
-          boxShadow: 3,
-          maxHeight: 'calc(100vh - 155px)',
-          overflowY: 'auto',
-          '&::-webkit-scrollbar': {
-            width: '8px',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: 'transparent',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(255, 255, 255, 0.2)',
-            borderRadius: '4px',
-            '&:hover': {
-              background: 'rgba(255, 255, 255, 0.3)',
-            },
-          },
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: 'none',
+          position: 'sticky',
+          top: 16,
+          // width:"100%"
         }}
       >
-        <CardContent sx={{ p: 2 }}>
-          {/* User Info - Clickable */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              mb: 1.5,
-              cursor: 'pointer',
-              p: 0.75,
-              borderRadius: 1,
-              transition: 'background 0.2s',
-              '&:hover': {
-                bgcolor: 'action.hover',
-              },
-            }}
-            onClick={() => handleUserClick(complaint.submittedBy)}
-          >
-            <Avatar
-              alt={complaint.submittedBy?.fullName}
-              src={complaint.submittedBy?.profilePicture}
-              sx={{ width: 48, height: 48 }}
-            />
-            <Box sx={{ flex: 1, minWidth: 0 }}>
+        <CardContent
+          sx={{
+            p: 2.5,
+            display: 'flex',
+            flexDirection: {
+              xs: 'column',
+              md: 'row',
+              lg: 'row',
+            },
+            justifyContent: 'space-around',
+            alignItems: 'center',
+            gap: {
+              md: 5,
+            },
+            width: {
+              // md:"100%",
+              // ms:"auto"
+              // xs:"100%"
+            },
+          }}
+        >
+          {/* Header with Status Badges */}
+          <Box>
+            <Box sx={{ mb: 1,
+              display:"flex",
+              flexDirection:"row",
+              justifyContent:"space-between"
+             }}>
               <Typography
-                variant="subtitle1"
+                variant="h6"
                 fontWeight={600}
-                sx={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
+                sx={{ lineHeight: 1.3 }}
               >
-                {complaint.submittedBy?.fullName}
+                {complaint.title}
               </Typography>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  display: 'block',
-                }}
-              >
-                {complaint.submittedBy?.email}
-              </Typography>
-            </Box>
-            <Chip
-              label={complaint.status}
-              color={getStatusColor(complaint.status)}
-              size="small"
-              sx={{ fontWeight: 600 }}
-            />
-          </Box>
-
-          <Divider sx={{ mb: 1.5 }} />
-
-          {/* Complaint Title */}
-          <Typography variant="h6" fontWeight={700} gutterBottom>
-            {complaint.title}
-          </Typography>
-
-          {/* Images */}
-          {complaint.photoUrl && (
-            <Box
-              sx={{
-                width: '100%',
-                height: 180,
-                overflow: 'hidden',
-                borderRadius: 1.5,
-                boxShadow: 2,
-                bgcolor: 'background.paper',
-                mb: 1.5,
-              }}
-            >
-              <img
-                src={complaint.photoUrl}
-                alt={complaint.title || 'Complaint photo'}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                }}
-              />
-            </Box>
-          )}
-
-          {/* Description */}
-          <Box sx={{ display: 'flex', gap: 1, mb: 1.5 }}>
-            <DescriptionIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
-            <Typography variant="body2" color="text.secondary">
-              {complaint.description}
-            </Typography>
-          </Box>
-
-          <Divider sx={{ my: 1.5 }} />
-
-          {/* Details Grid */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {/* Type and Urgency */}
-            <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                <CategoryIcon sx={{ color: 'primary.main', fontSize: 18 }} />
-                <Typography variant="caption" color="text.secondary">
-                  Type:
-                </Typography>
+              <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
+                <Chip
+                  label={complaint.status}
+                  color={getStatusColor(complaint.status)}
+                  size="small"
+                  sx={{ fontWeight: 600, fontSize: '0.75rem' }}
+                />
+                <Chip
+                  label={complaint.urgency}
+                  color={getUrgencyColor(complaint.urgency)}
+                  size="small"
+                  variant="outlined"
+                  sx={{ fontWeight: 600, fontSize: '0.75rem' }}
+                />
                 <Chip
                   label={complaint.type}
                   size="small"
-                  color="primary"
                   variant="outlined"
-                  sx={{ height: 20, fontSize: '0.7rem' }}
+                  sx={{ fontSize: '0.75rem' }}
                 />
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                <PriorityHighIcon
-                  sx={{
-                    color:
-                      getUrgencyColor(complaint.urgency) === 'error'
-                        ? 'error.main'
-                        : 'warning.main',
-                    fontSize: 18,
+            </Box>
+
+            {/* Image */}
+            {complaint.photoUrl && (
+              <Box
+                sx={{
+                  width: '100%',
+                  height: 200,
+                  overflow: 'hidden',
+                  borderRadius: 1.5,
+                  bgcolor: 'background.default',
+                  mb: 2,
+                }}
+              >
+                <img
+                  src={complaint.photoUrl}
+                  alt={complaint.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
                   }}
                 />
-                <Typography variant="caption" color="text.secondary">
-                  Urgency:
+              </Box>
+            )}
+
+            {/* Description */}
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 2,
+                lineHeight: 1.6,
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {complaint.description}
+            </Typography>
+
+            <Divider sx={{ my: 2 }} />
+          </Box>
+
+          {/* User Info */}
+          <Box
+          sx={{
+            minWidth:"20rem",
+            // bgcolor:"red"
+          }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                mb: 2,
+                p: 1,
+                borderRadius: 1.5,
+                bgcolor: 'background.default',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                },
+
+              }}
+              onClick={() => handleUserClick(complaint.submittedBy)}
+            >
+              <Avatar
+                src={complaint.submittedBy?.profilePicture}
+                sx={{ width: 40, height: 40 }}
+              >
+                {complaint.submittedBy?.fullName?.[0]}
+              </Avatar>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  display="block"
+                  sx={{ fontSize: '0.7rem' }}
+                >
+                  Submitted by
                 </Typography>
-                <Chip
-                  label={complaint.urgency}
-                  size="small"
-                  color={getUrgencyColor(complaint.urgency)}
-                  sx={{ height: 20, fontSize: '0.7rem' }}
-                />
+                <Typography variant="body2" fontWeight={600} noWrap>
+                  {complaint.submittedBy?.fullName}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  noWrap
+                  display="block"
+                >
+                  {complaint.submittedBy?.email}
+                </Typography>
               </Box>
             </Box>
 
-            {/* Date */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <CalendarTodayIcon
-                sx={{ color: 'text.secondary', fontSize: 18 }}
-              />
-              <Typography variant="caption" color="text.secondary">
-                Submitted:
-              </Typography>
-              <Typography variant="caption" fontWeight={600}>
-                {formatDate(complaint.createdAt)}
-              </Typography>
-            </Box>
-
-            {/* Location */}
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.75 }}>
-              <LocationOnIcon
-                sx={{ color: 'error.main', fontSize: 18, mt: 0.25 }}
-              />
-              <Box>
+            {/* Details */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CalendarTodayIcon
+                  sx={{ fontSize: 16, color: 'text.secondary' }}
+                />
                 <Typography variant="caption" color="text.secondary">
-                  {complaint.address?.street && `${complaint.address.street}, `}
+                  {formatDate(complaint.createdAt)}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                <LocationOnIcon
+                  sx={{ fontSize: 16, color: 'text.secondary', mt: 0.25 }}
+                />
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ lineHeight: 1.5 }}
+                >
+                  {complaint.address?.locality &&
+                    `${complaint.address.locality}, `}
                   {complaint.address?.district}, {complaint.address?.state} -{' '}
                   {complaint.address?.pinCode}
                 </Typography>
               </Box>
             </Box>
-          </Box>
 
-          {/* Assigned To (if any) */}
-          {complaint.assignedTo && (
-            <>
-              <Divider sx={{ my: 1.5 }} />
-              <Box>
-                <Typography
-                  variant="caption"
-                  fontWeight={600}
-                  color="primary.main"
-                  gutterBottom
-                  display="block"
-                >
-                  Assigned To
-                </Typography>
+            {/* Assigned To */}
+            {complaint.assignedTo && (
+              <>
+                <Divider sx={{ my: 2 }} />
                 <Box
                   sx={{
                     display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    //   mb: 1.5,
-                    cursor: 'pointer',
-                    paddingX: 0.75,
-                    borderRadius: 1,
-                    transition: 'background 0.2s',
-                    '&:hover': {
-                      bgcolor: 'action.hover',
-                    },
-                  }}
-                  onClick={() => {
-                    handleUserClick(complaint?.assignedTo);
+                    flexDirection: 'column',
+                    gap: 1,
+                    justifyContent: 'center',
                   }}
                 >
-                  <Avatar
-                    src={complaint.assignedTo?.profilePicture}
-                    alt={complaint.assignedTo?.fullName}
-                    sx={{ width: 28, height: 28 }}
-                  />
-                  <Box>
-                    <Typography variant="caption" fontWeight={600}>
-                      {complaint.assignedTo?.fullName}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      display="block"
-                      sx={{ fontSize: '0.65rem' }}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      p: 1,
+                      borderRadius: 1.5,
+                      bgcolor: 'background.default',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        bgcolor: 'action.hover',
+                      },
+                    }}
+                    onClick={() => handleUserClick(complaint.assignedTo)}
+                  >
+                    <Avatar
+                      src={complaint.assignedTo?.profilePicture}
+                      sx={{ width: 32, height: 32 }}
                     >
-                      {complaint.assignedTo?.email}
+                      {complaint.assignedTo?.fullName?.[0]}
+                    </Avatar>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        display="block"
+                        sx={{ fontSize: '0.7rem' }}
+                      >
+                        Assigned to
+                      </Typography>
+                      <Typography variant="body2" fontWeight={600} noWrap>
+                        {complaint.assignedTo?.fullName}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        noWrap
+                        display="block"
+                      >
+                        {complaint.assignedTo?.email}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CalendarTodayIcon
+                      sx={{ fontSize: 16, color: 'text.secondary' }}
+                    />
+                    <Typography variant="caption" color="text.secondary">
+                      {formatDate(complaint?.assignedAt)}
                     </Typography>
                   </Box>
                 </Box>
-              </Box>
-            </>
-          )}
+              </>
+            )}
+          </Box>
         </CardContent>
       </Card>
 
@@ -384,12 +405,6 @@ function AdminComplaintCard({ complaint, onUserClick }) {
             setUserModalOpen(false);
             setSelectedUser(null);
           }}
-          //   onUserUpdate={(updatedUser) => {
-          //     setComplaint((prev) => ({
-          //       ...prev,
-          //       submittedBy: updatedUser,
-          //     }));
-          //   }}
         />
       )}
     </>
