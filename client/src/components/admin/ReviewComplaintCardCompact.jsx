@@ -152,7 +152,7 @@ function ReviewComplaintCardCompact({ complaint, onClick }) {
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Avatar
-                  src={complaint.submittedBy?.avatar}
+                  src={complaint.submittedBy?.profilePicture}
                   sx={{ width: 20, height: 20 }}
                 />
                 <Typography variant="caption" color="text.secondary" noWrap>
@@ -160,7 +160,9 @@ function ReviewComplaintCardCompact({ complaint, onClick }) {
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Avatar sx={{ width: 20, height: 20, bgcolor: theme.palette.primary.main }}>
+                <Avatar sx={{ width: 20, height: 20, bgcolor: theme.palette.primary.main }}
+                  src={complaint.assignedTo?.profilePicture}
+                >
                   {complaint.assignedTo?.fullName?.[0]}
                 </Avatar>
                 <Typography variant="caption" color="text.secondary" noWrap>

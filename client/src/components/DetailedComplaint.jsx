@@ -454,9 +454,6 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
             <Typography variant="button">Type: {complaint.type}</Typography>
           </Typography>
         </Container>
-        <Container>
-          <Typography>{complaint.description}</Typography>
-        </Container>
       </Box>
       {/* */}
       <Box
@@ -464,15 +461,33 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
+          alignItems:"center",
           flexGrow: 1,
           gap: {
             lg: 2,
             sm: 1,
             xs: 1,
           },
-          marginRight: '1rem',
+          width:{
+            xs:"100%",
+            sm:"100%",
+            md:"100%",
+            lg:"45%"
+          },
         }}
       >
+        <Box
+          sx={{
+            overflowX:"scroll"
+          }}
+        >
+          <Typography variant='overline'>
+            Description
+          </Typography>
+          <Typography variant='body2'
+          
+          >{complaint.description}</Typography>
+        </Box>
         <Box
           sx={{
             display: 'flex',
@@ -504,6 +519,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
               },
               borderRadius: '1rem',
               alignItems: 'center',
+              width:"100%"
             }}
           >
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>

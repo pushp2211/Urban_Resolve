@@ -434,9 +434,9 @@ export const getPendingReviewComplaints = asyncHandler(async (req, res) => {
     // Fetch complaints with pagination
     const complaints = await Complaint.find(filter)
         .sort(sortOptions)
-        .populate('submittedBy', 'fullName email avatar')
-        .populate('assignedTo', 'fullName email')
-        .populate('resolutionRequest.submittedBy', 'fullName email')
+        .populate('submittedBy', 'fullName email profilePicture')
+        .populate('assignedTo', 'fullName email profilePicture')
+        .populate('resolutionRequest.submittedBy', 'fullName email profilePicture')
         .skip((pageNum - 1) * limitNum)
         .limit(limitNum);
 

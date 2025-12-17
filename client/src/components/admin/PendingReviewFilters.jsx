@@ -25,12 +25,18 @@ function PendingReviewFilters({ filters, onFilterChange, onClearFilters }) {
   const [showFilters, setShowFilters] = useState(true);
   const [loadingPincode, setLoadingPincode] = useState(false);
   const [pincodeError, setPincodeError] = useState('');
-
+  const [pincode,setPincode] = useState('');
   const handleChange = (field, value) => {
     onFilterChange(field, value);
   };
 
   const handlePincodeChange = async (pincode) => {
+    setPincode(pincode);
+    if(pincode.length>0 && pincode.length !== 6){
+      setPincodeError("pincode must be of 6 digits");
+      return;
+    }
+    filters.pinCode = pincode;
     handleChange('pinCode', pincode);
     setPincodeError('');
 
@@ -129,7 +135,7 @@ function PendingReviewFilters({ filters, onFilterChange, onClearFilters }) {
             <TextField
               fullWidth
               label="Pincode"
-              value={filters.pinCode || ''}
+              value={pincode || ''}
               onChange={(e) => handlePincodeChange(e.target.value)}
               placeholder="Enter 6-digit pincode"
               size="small"

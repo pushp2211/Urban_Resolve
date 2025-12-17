@@ -78,7 +78,6 @@ function AssignComplaint() {
     setLoading(true);
     setError('');
     try {
-        showLoading();
       const response = await apiClient.get('/admin/staff-by-district', {
         params: {
           district: complaint.address.district,
@@ -94,7 +93,6 @@ function AssignComplaint() {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch staff list');
     } finally {
-        hideLoading();
       setLoading(false);
     }
   };

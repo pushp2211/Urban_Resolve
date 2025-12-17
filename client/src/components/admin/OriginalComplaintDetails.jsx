@@ -98,7 +98,7 @@ function OriginalComplaintDetails({ complaint, onUserClick }) {
           onClick={() => onUserClick && onUserClick(complaint.submittedBy?.email)}
         >
           <Avatar
-            src={complaint.submittedBy?.avatar}
+            src={complaint.submittedBy?.profilePicture}
             sx={{ width: 32, height: 32 }}
           >
             {complaint.submittedBy?.fullName?.[0]}
@@ -197,6 +197,7 @@ function OriginalComplaintDetails({ complaint, onUserClick }) {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Avatar
               sx={{ width: 28, height: 28, bgcolor: theme.palette.primary.main }}
+              src={complaint.assignedTo?.profilePicture}
             >
               {complaint.assignedTo?.fullName?.[0]}
             </Avatar>

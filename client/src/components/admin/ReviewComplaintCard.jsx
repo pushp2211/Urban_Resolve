@@ -23,6 +23,7 @@ import ReviewPhotoGallery from './ReviewPhotoGallery';
 import apiClient from '../../api/axios';
 
 function ReviewComplaintCard({ complaint, onReviewed }) {
+
   const theme = useTheme();
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
@@ -91,7 +92,7 @@ function ReviewComplaintCard({ complaint, onReviewed }) {
       setLoading(false);
     }
   };
-
+  
   return (
     <>
       <Card
@@ -129,7 +130,7 @@ function ReviewComplaintCard({ complaint, onReviewed }) {
           {/* User Info */}
           <Box sx={{ display: 'flex', gap: 2, marginBottom: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Avatar src={complaint.submittedBy?.avatar} sx={{ width: 32, height: 32 }}>
+              <Avatar src={complaint.submittedBy?.profilePicture} sx={{ width: 32, height: 32 }}>
                 {complaint.submittedBy?.fullName?.[0]}
               </Avatar>
               <Box>

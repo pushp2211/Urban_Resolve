@@ -40,7 +40,6 @@ function ReviewRequests() {
   const fetchComplaints = async (page = 1) => {
     setLoading(true);
     setError('');
-    showLoading();
 
     try {
       const params = {
@@ -64,7 +63,6 @@ function ReviewRequests() {
       setError(err.response?.data?.message || 'Failed to fetch pending review complaints');
     } finally {
       setLoading(false);
-      hideLoading();
     }
   };
 
