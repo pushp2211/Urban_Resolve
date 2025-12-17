@@ -181,11 +181,15 @@ function AdminComplaintCard({ complaint, onUserClick }) {
               <Typography
                 variant="h6"
                 fontWeight={600}
-                sx={{ lineHeight: 1.3 }}
+                sx={{ lineHeight: 1.3,
+                  maxWidth:"60%",
+                 }}
               >
                 {complaint.title}
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
+              <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap', 
+               paddingLeft:"1rem"  
+               }}>
                 <Chip
                   label={complaint.status}
                   color={getStatusColor(complaint.status)}
