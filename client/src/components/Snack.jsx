@@ -1,33 +1,44 @@
-import React, {useState, useEffect} from 'react';
-import { Snackbar } from '@mui/material';
-function Snack({ message, openStatus }) {
-
+import React, { useState, useEffect } from 'react';
+import { Snackbar, Alert } from '@mui/material';
+function Snack({ message, openStatus, severity, setOpenStatus }) {
   const [open, setOpen] = useState(false);
-  useEffect(()=>{
-    if(openStatus){
-        setOpen(true);
-    }
-  }, [openStatus])
+  
+  useEffect(() => {
+    setOpen(openStatus);
+  }, [openStatus]);
 
   useEffect(()=>{
-    if(openStatus){
-      setTimeout(()=>{
-        setOpen(false);
-      }, 4000);
+    if (openStatus && setOpenStatus) {
+      const timer = setTimeout(()=>{
+        setOpenStatus(false);
+      }, 3500);
+      return () => clearTimeout(timer);
     }
-  }, [openStatus])
+  }, [openStatus]);
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') return; // Optional safeguard
+    if (reason === 'clickaway') return;
     setOpen(false);
+    if (setOpenStatus) {
+      setOpenStatus(false);
+    }
   };
   return (
     <Snackbar
       open={open}
-      autoHideDuration={4000}
+      autoHideDuration={3500}
       onClose={handleClose}
-      message={message}
-    />
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+    >
+      <Alert
+        onClose={handleClose}
+        severity={severity || "info"}
+        variant="filled"
+        sx={{ width: '100%' }}
+      >
+        {message}
+      </Alert>
+    </Snackbar>
   );
 }
 

@@ -25,6 +25,9 @@ import StaffCard from '../components/StaffCard';
 import { getComplaint } from '../api/getComplaintDetail';
 import { useLoading } from '../context/LoadingContext';
 import Snack from '../components/Snack';
+import { triggerNotification } from '../../utils/notificationService';
+import { SNACK_SEVERITY } from '../../enum/snackSeverity';
+import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 function AssignComplaint() {
   const { id:complaintId } = useParams();
   const navigate = useNavigate();
@@ -45,6 +48,7 @@ function AssignComplaint() {
 
     const [snackOpen, setSnackOpen] = useState(false);
     const [snackMessage, setSnackMessage] = useState("");
+    const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO);
   useEffect(() => {
     if (complaintId) {
       fetchComplaint();
@@ -64,6 +68,7 @@ function AssignComplaint() {
     try {
       const response = await getComplaint(complaintId);
       setComplaint(response.data.data);
+      console.log(response.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch complaint details');
     } finally {
@@ -109,12 +114,26 @@ function AssignComplaint() {
       await apiClient.put(`/admin/assignComplaint/${complaint._id}`, {
         staffId
       });
-      setSnackOpen(true);
+      setSnackSeverity(SNACK_SEVERITY.SUCCESS)
       setSnackMessage("complaint assigned successfully");
+      setSnackOpen(true);
       fetchComplaint();
+      await triggerNotification({
+        recipient_id: staffId,
+        message : `You have been assigned a complaint from locality ${complaint.address.locality} titled as ${complaint.title} [Urgency: ${complaint.urgency}]`,
+        complaint_id:complaint._id
+      })
+      await triggerNotification({
+        recipient_id: complaint.submittedBy?._id || complaint.submittedBy,
+        message : `Your complaint titled as ${complaint.title} has been assigned to staff.`,
+        complaint_id:complaint._id
+      })
     //   alert("complaint assigned successfully");
     //   navigate(-1);
     } catch (err) {
+      setSnackSeverity(SNACK_SEVERITY.ERROR)
+      setSnackMessage(err.response?.data?.message || 'Failed to assign complaint');
+      setSnackOpen(true);
       setError(err.response?.data?.message || 'Failed to assign complaint');
     } finally {
         hideLoading();
@@ -184,14 +203,16 @@ function AssignComplaint() {
               sm:"100%",
               md:"100%",
               // lg:"auto"
-            }
+            },
           }
         } >
           <AdminComplaintCard complaint={complaint} />
         </Grid>
 
         {/* Staff Selection - Right Side */}
-        <Grid item xs={12} lg={7}
+        {complaint.status !== COMPLAINT_STATUS.RESOLVED && complaint.status !== COMPLAINT_STATUS.REJECTED
+          &&
+          <Grid item xs={12} lg={7}
           sx={{
             width:{
               xs:"100%",
@@ -320,6 +341,7 @@ function AssignComplaint() {
             )}
           </Box>
         </Grid>
+        }
       </Grid>
 
         {/* User Details Modal */}
@@ -340,7 +362,7 @@ function AssignComplaint() {
             }}
           />
         )}
-        <Snack openStatus={snackOpen} message={snackMessage} />
+        <Snack openStatus={snackOpen} message={snackMessage} severity={snackSeverity} setOpenStatus={setSnackOpen} />
     </Container>
   );
 }

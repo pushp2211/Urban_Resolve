@@ -29,11 +29,17 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { ROLES } from '../../../enum/roles';
 import apiClient from '../../api/axios';
+import Snack from '../Snack';
+import { SNACK_SEVERITY } from '../../../enum/snackSeverity';
+import { triggerNotification } from '../../../utils/notificationService';
 
 function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
   const [selectedRole, setSelectedRole] = useState(user?.role || '');
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState('');
+  const [showSnack, setShowSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState('');
+  const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO);
 
   if (!user) return null;
 
@@ -52,6 +58,9 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
 
   const handleRoleChange = async () => {
     if (selectedRole === user?.role) {
+      setSnackMessage('Role is already set to ' + selectedRole);
+      setSnackSeverity(SNACK_SEVERITY.INFO);
+      setShowSnack(true);
       return;
     }
 
@@ -64,12 +73,30 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
       });
 
       if (response.status === 200) {
-        onUserUpdate({ ...user, role: selectedRole });
-        // onClose();
+        const updatedUser = { ...user, role: selectedRole };
+        // onUserUpdate(updatedUser);
+        setSnackMessage('Role updated successfully to ' + selectedRole);
+        setSnackSeverity(SNACK_SEVERITY.SUCCESS);
+        setShowSnack(true);
+        setError('');
         user.role = selectedRole;
+        // Notify the user about role change (non-blocking)
+        try {
+          triggerNotification({
+            recipient_id: user._id,
+            message: `Your role has been updated to ${selectedRole}`,
+          });
+        } catch (notifError) {
+          console.error('Failed to send notification:', notifError);
+          // Don't show error to user since role update succeeded
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update user role');
+      const errorMsg = err.response?.data?.message || 'Failed to update user role';
+      setError(errorMsg);
+      setSnackMessage(errorMsg);
+      setSnackSeverity(SNACK_SEVERITY.ERROR);
+      setShowSnack(true);
     } finally {
       setUpdating(false);
     }
@@ -118,6 +145,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
   };
 
   return (
+    <>
     <Modal
       open={open}
       onClose={onClose}
@@ -715,7 +743,17 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
         </Box>
       </Box>
       </Grow>
+      
     </Modal>
+    {user && (
+        <Snack 
+          message={snackMessage} 
+          openStatus={showSnack} 
+          severity={snackSeverity}
+          setOpenStatus={setShowSnack}
+        />
+      )}
+      </>
   );
 }
 

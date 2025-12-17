@@ -16,6 +16,7 @@ import {
 import { ROLES, ROLES_ENUM } from '../../enum/roles';
 import apiClient from '../api/axios';
 import Snack from './Snack';
+import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 function UserManageModal({ open, handleOnClose, user }) {
   const theme = useTheme();
   console.log(user);
@@ -25,31 +26,31 @@ function UserManageModal({ open, handleOnClose, user }) {
   };
 
   const [roleSetLoading, setRoleSetLoading] = useState(false);
-    const [roleSetError, setRoleSetError] = useState(false);
-    const [roleSetSuccess, setRoleSetSuccess] = useState(false);
   const [currentUser, setCurrentUser] = useState(user);
+  const [showSnack, setShowSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState('');
+  const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO);
 
 useEffect(() => {
   setCurrentUser(user);
 }, [user]); 
+
   const handleMenuClose = () => {
     setMenuOpen(null);
   };
-  useEffect(()=>{
-    setTimeout(()=>{
-        setRoleSetError(false);
-        setRoleSetSuccess(false);
-    }, [2000])
-  }, [roleSetError, roleSetSuccess])
   const handleRoleChange = async (newRole) => {
   const curRole = user?.role;
   if (curRole === newRole) {
     console.log("No role change needed — same as current.");
+    setSnackMessage('Role is already set to ' + newRole);
+    setSnackSeverity(SNACK_SEVERITY.INFO);
+    setShowSnack(true);
+    handleMenuClose();
     return;
   }
 
-  setRoleSetError(false);  
   setRoleSetLoading(true); 
+  handleMenuClose();
 
   try {
     const response = await apiClient.patch(
@@ -57,25 +58,24 @@ useEffect(() => {
       { role: newRole },
     );
 
-    if (response.status === 200) {
-      console.log(`Role updated successfully to ${newRole}`);
-      setRoleSetSuccess(true);
-        console.log(response);
-        const updatedUser = response.data.data; // depends on your apiResponse format
-        setCurrentUser(updatedUser)
-        triggerNotification(
-        {
-          recipient_id:user._id,
-          message:`Your role status has been upgraded to ${newRole}`,
-        }
-      )
-    } else {
-      setRoleSetError("Error while changing the role.");
-      console.error("Unexpected response:", response);
-    }
+    console.log(`Role updated successfully to ${newRole}`, response);
+    const updatedUser = response.data.data;
+    setCurrentUser(updatedUser);
+    setSnackMessage('Role updated successfully');
+    setSnackSeverity(SNACK_SEVERITY.SUCCESS);
+    setShowSnack(true);
+    console.log('Snack state set:', { snackMessage: 'Role updated successfully', showSnack: true });
+    
+    triggerNotification({
+      recipient_id: user._id,
+      message: `Your role status has been upgraded to ${newRole}`,
+    });
   } catch (error) {
     console.error("Error updating role:", error);
-    setRoleSetError(error.response?.data?.message || "Failed to update role.");
+    setSnackMessage(error.response?.data?.message || "Failed to update role");
+    setSnackSeverity(SNACK_SEVERITY.ERROR);
+    setShowSnack(true);
+    console.log('Snack error state set:', { snackMessage: error.response?.data?.message || "Failed to update role", showSnack: true });
   } finally {
     setRoleSetLoading(false); 
   }
@@ -214,9 +214,13 @@ useEffect(() => {
             ))}
           </Menu>
         </Box>
-        {roleSetSuccess && <Snack message={"Role updated successfully"} openStatus={true}/>}
-        {roleSetError && <Snack message={"Error occured while updating role"} openStatus={true}/>}
       </Paper>
+      <Snack 
+        message={snackMessage} 
+        openStatus={showSnack} 
+        severity={snackSeverity} 
+        setOpenStatus={setShowSnack}
+      />
       
     </Modal>
   );

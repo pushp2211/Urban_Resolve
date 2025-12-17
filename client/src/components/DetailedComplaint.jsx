@@ -30,6 +30,7 @@ import Snack from './Snack.jsx';
 import { useTheme } from '@mui/material/styles';
 
 import UserDetailsModal from './admin/UserDetailsModal.jsx';
+import { SNACK_SEVERITY } from '../../enum/snackSeverity.js';
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -62,6 +63,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
   const [staffAssignLoading, setStaffAssignLoading] = useState(false);
   const [showSnack, setShowSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState('');
+  const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO);
 
   const { showLoading, hideLoading } = useLoading();
   const [selectedUser, setSelectedUser] = useState(null);
@@ -157,15 +159,11 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
     const complaintId = complaint._id;
     if (!complaintId) {
       setSnackMessage('complaint Id not found');
+      setSnackSeverity(SNACK_SEVERITY.ERROR)
+      setShowSnack(true);
     }
     navigate(`/complaint/resolution-request/${complaintId}`);
   };
-  useEffect(() => {
-    setTimeout(() => {
-      setSnackMessage('');
-      setShowSnack(false);
-    }, [3000]);
-  }, [snackMessage, showSnack]);
 
   const handleUserClick = async (userObj) => {
     if (user && user.role !== ROLES.ADMIN) {
@@ -683,7 +681,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           )}
       </Box>
 
-      {showSnack && <Snack openStatus={showSnack} message={snackMessage} />}
+      {showSnack && <Snack openStatus={showSnack} message={snackMessage} severity={snackSeverity} setOpenStatus={setShowSnack}/>}
       {userModalOpen && (
         <UserDetailsModal
           open={userModalOpen}

@@ -165,12 +165,19 @@ function AdminComplaintCard({ complaint, onUserClick }) {
           }}
         >
           {/* Header with Status Badges */}
-          <Box>
-            <Box sx={{ mb: 1,
-              display:"flex",
-              flexDirection:"row",
-              justifyContent:"space-between"
-             }}>
+          <Box
+            sx={{
+              maxWidth: '33rem',
+            }}
+          >
+            <Box
+              sx={{
+                mb: 1,
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
               <Typography
                 variant="h6"
                 fontWeight={600}
@@ -246,82 +253,100 @@ function AdminComplaintCard({ complaint, onUserClick }) {
 
           {/* User Info */}
           <Box
-          sx={{
-            minWidth:"20rem",
-            // bgcolor:"red"
-          }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5,
-                mb: 2,
-                p: 1,
-                borderRadius: 1.5,
-                bgcolor: 'background.default',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                '&:hover': {
-                  bgcolor: 'action.hover',
-                },
-
-              }}
-              onClick={() => handleUserClick(complaint.submittedBy)}
-            >
-              <Avatar
-                src={complaint.submittedBy?.profilePicture}
-                sx={{ width: 40, height: 40 }}
+            sx={{
+              minWidth: {
+                md: '20rem',
+                xs: '20rem',
+              },
+              paddingX: {
+                xs: 2,
+              },
+              display:"flex",
+              flexDirection:{
+                xs:"column",
+                sm:"row",
+                md:"column",
+                lg:"column"
+              },
+              gap:1,
+              // bgcolor:"red"
+              alignItems:"start"
+            }}
+          >
+            <Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  mb: 2,
+                  p: 1,
+                  borderRadius: 1.5,
+                  bgcolor: 'background.default',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                  },
+                  minWidth:"15rem"
+                }}
+                onClick={() => handleUserClick(complaint.submittedBy)}
               >
-                {complaint.submittedBy?.fullName?.[0]}
-              </Avatar>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  display="block"
-                  sx={{ fontSize: '0.7rem' }}
+                <Avatar
+                  src={complaint.submittedBy?.profilePicture}
+                  sx={{ width: 40, height: 40 }}
                 >
-                  Submitted by
-                </Typography>
-                <Typography variant="body2" fontWeight={600} noWrap>
-                  {complaint.submittedBy?.fullName}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  noWrap
-                  display="block"
-                >
-                  {complaint.submittedBy?.email}
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Details */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <CalendarTodayIcon
-                  sx={{ fontSize: 16, color: 'text.secondary' }}
-                />
-                <Typography variant="caption" color="text.secondary">
-                  {formatDate(complaint.createdAt)}
-                </Typography>
+                  {complaint.submittedBy?.fullName?.[0]}
+                </Avatar>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    display="block"
+                    sx={{ fontSize: '0.7rem' }}
+                  >
+                    Submitted by
+                  </Typography>
+                  <Typography variant="body2" fontWeight={600} noWrap>
+                    {complaint.submittedBy?.fullName}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    noWrap
+                    display="block"
+                  >
+                    {complaint.submittedBy?.email}
+                  </Typography>
+                </Box>
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                <LocationOnIcon
-                  sx={{ fontSize: 16, color: 'text.secondary', mt: 0.25 }}
-                />
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ lineHeight: 1.5 }}
-                >
-                  {complaint.address?.locality &&
-                    `${complaint.address.locality}, `}
-                  {complaint.address?.district}, {complaint.address?.state} -{' '}
-                  {complaint.address?.pinCode}
-                </Typography>
+              {/* Details */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CalendarTodayIcon
+                    sx={{ fontSize: 16, color: 'text.secondary' }}
+                  />
+                  <Typography variant="caption" color="text.secondary">
+                    {formatDate(complaint.createdAt)}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                  <LocationOnIcon
+                    sx={{ fontSize: 16, color: 'text.secondary', mt: 0.25 }}
+                  />
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ lineHeight: 1.5 }}
+                  >
+                    {complaint.address?.locality &&
+                      `${complaint.address.locality}, `}
+                    {complaint.address?.district}, {complaint.address?.state} -{' '}
+                    {complaint.address?.pinCode}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
 
@@ -335,6 +360,7 @@ function AdminComplaintCard({ complaint, onUserClick }) {
                     flexDirection: 'column',
                     gap: 1,
                     justifyContent: 'center',
+                    minWidth:"15rem"
                   }}
                 >
                   <Box

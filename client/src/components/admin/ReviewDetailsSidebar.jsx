@@ -89,6 +89,11 @@ function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
         message: `Your complaint with topic "${complaint?.title}" has been marked as resolved.`,
         complaint_id: complaint._id,
       });
+      await triggerNotification({
+        recipient_id: complaint.submittedBy._id,
+        message: `Your complaint with topic "${complaint?.title}" has been resolved.`,
+        complaint_id: complaint._id,
+      });
       setShowApproveDialog(false);
       onReviewed();
       onClose();

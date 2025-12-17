@@ -31,8 +31,6 @@ function AdminComplaintDetailedDialog({open, onClose, complaint, onAssign}) {
               <DetailedComplaint complaint={complaint} onAssign={onAssign} onClose={onClose}/>
             </Box>
           </Grow>
-          {/* <Button>hello</Button> */}
-          
     </Modal>
   )
 }

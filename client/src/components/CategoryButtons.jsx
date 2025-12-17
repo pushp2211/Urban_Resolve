@@ -9,6 +9,8 @@ import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 
 import { useLoading } from '../context/LoadingContext';
 import { COMPLAINT_URGENCY } from '../../enum/ComplaintUrgency';
+import { SNACK_SEVERITY } from '../../enum/snackSeverity';
+import Snack from './Snack';
 
 function CategoryButtons() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,6 +19,11 @@ function CategoryButtons() {
 
   const [statusFilter, setStatusFilter] = useState('');
   const [urgencyFilter, setUrgencyFilter] = useState('');
+  const [snackMessage, setSnackMessage] = useState('');
+  const [showSnack, setShowSnack] = useState(false);
+  const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO)
+
+
   const handleChange = (e) => {
     setGenFilter(e.target.value);
   };
@@ -66,6 +73,10 @@ function CategoryButtons() {
       }
 
       params.set('page', '1');
+
+      setSnackMessage('filter applied');
+      setShowSnack(true);
+      setSnackSeverity(SNACK_SEVERITY.INFO);
 
       // VERY IMPORTANT → return plain object to preserve all values
       return Object.fromEntries(params.entries());
@@ -274,6 +285,7 @@ function CategoryButtons() {
           ))}
         </Select>
       </FormControl>
+      <Snack message={snackMessage} openStatus={showSnack} severity={snackSeverity} setOpenStatus={setShowSnack}/>
     </Box>
   );
 }

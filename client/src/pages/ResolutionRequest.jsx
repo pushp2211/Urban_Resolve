@@ -6,22 +6,18 @@ import { useLoading } from '../context/LoadingContext';
 import { Box } from '@mui/material';
 import ComplaintCard from '../components/ComplaintResolution/ComplaintCard';
 import Snack from '../components/Snack';
+import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 function ResolutionRequest() {
     const [error, setError] = useState('');
     const {id : complaintId} = useParams();
     const [showSnack, setShowSnack] = useState(false);
     const [snackMessage, setSnackMessage] = useState('');
+    const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO)
     const onSuccess = ()=>{
       setSnackMessage("Resolution Request submitted successfully");
+      setSnackSeverity(SNACK_SEVERITY.SUCCESS);
       setShowSnack(true);
-      
-      setTimeout(()=>{
-        setShowSnack(false);
-        setSnackMessage('');
-      }, 3000 )
-      
     }
-
   return (
     <Box
         sx={{
@@ -42,7 +38,7 @@ function ResolutionRequest() {
     >
         <ComplaintCard id={complaintId}/>
         <ResolutionRequestForm complaintId={complaintId} onSuccess={onSuccess}/>
-        <Snack openStatus={showSnack} message={snackMessage}/>
+        <Snack openStatus={showSnack} message={snackMessage} severity={snackSeverity} setOpenStatus={setShowSnack}/>
     </Box>
   )
 }
