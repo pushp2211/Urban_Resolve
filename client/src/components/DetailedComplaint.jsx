@@ -627,7 +627,7 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
           )}
         {user.role === ROLES.STAFF &&
           user._id === complaint?.assignedTo?._id &&
-          complaint.status === COMPLAINT_STATUS.RESOLVED && (
+          complaint.status !== COMPLAINT_STATUS.RESOLVED && (
             <Box
               sx={{
                 display: 'flex',
