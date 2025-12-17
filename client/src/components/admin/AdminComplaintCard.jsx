@@ -181,15 +181,19 @@ function AdminComplaintCard({ complaint, onUserClick }) {
               <Typography
                 variant="h6"
                 fontWeight={600}
-                sx={{ lineHeight: 1.3,
-                  maxWidth:"60%",
-                 }}
+                sx={{ lineHeight: 1.3, maxWidth: '60%' }}
               >
                 {complaint.title}
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 1.5, flexWrap: 'wrap', 
-               paddingLeft:"1rem"  
-               }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                  mb: 1.5,
+                  flexWrap: 'wrap',
+                  paddingLeft: '1rem',
+                }}
+              >
                 <Chip
                   label={complaint.status}
                   color={getStatusColor(complaint.status)}
@@ -265,16 +269,19 @@ function AdminComplaintCard({ complaint, onUserClick }) {
               paddingX: {
                 xs: 2,
               },
-              display:"flex",
-              flexDirection:{
-                xs:"column",
-                sm:"row",
-                md:"column",
-                lg:"column"
+              display: 'flex',
+              flexDirection: {
+                xs: 'column',
+                sm: 'row',
+                md: 'column',
+                lg: 'column',
               },
-              gap:1,
+              gap: 1,
               // bgcolor:"red"
-              alignItems:"start"
+              alignItems: {
+                xs: 'center',
+                sm: 'start',
+              },
             }}
           >
             <Box>
@@ -292,7 +299,7 @@ function AdminComplaintCard({ complaint, onUserClick }) {
                   '&:hover': {
                     bgcolor: 'action.hover',
                   },
-                  minWidth:"15rem"
+                  width: '17rem',
                 }}
                 onClick={() => handleUserClick(complaint.submittedBy)}
               >
@@ -319,6 +326,9 @@ function AdminComplaintCard({ complaint, onUserClick }) {
                     color="text.secondary"
                     noWrap
                     display="block"
+                    sx={{
+                      overflow: 'scroll',
+                    }}
                   >
                     {complaint.submittedBy?.email}
                   </Typography>
@@ -364,7 +374,7 @@ function AdminComplaintCard({ complaint, onUserClick }) {
                     flexDirection: 'column',
                     gap: 1,
                     justifyContent: 'center',
-                    minWidth:"15rem"
+                    width: '17rem',
                   }}
                 >
                   <Box
@@ -406,6 +416,9 @@ function AdminComplaintCard({ complaint, onUserClick }) {
                         color="text.secondary"
                         noWrap
                         display="block"
+                        sx={{
+                          overflow: 'scroll',
+                        }}
                       >
                         {complaint.assignedTo?.email}
                       </Typography>
