@@ -476,7 +476,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
       >
         <Box
           sx={{
-            overflowX:"scroll"
+            overflowX:"scroll",
+            alignSelf:"flex-start",
+            paddingX:1
           }}
         >
           <Typography variant='overline'>
