@@ -90,7 +90,7 @@ function Register() {
         ["district"] : district
       })
 
-      console.log(data);
+      // console.log(data);
       } catch (error) {
         setError("Retry entering the pincode");
       }

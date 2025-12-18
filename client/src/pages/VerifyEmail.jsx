@@ -44,7 +44,7 @@ export default function VerifyEmail() {
           `/user/verify/verify-email`,
           { params: { token, email } }
         );
-        console.log(response);
+        // console.log(response);
         setVerified(true);
       } catch (err) {
           setError(err.response?.data?.message || "Verification failed or link expired.");

@@ -38,7 +38,7 @@ function ReportModal({ open, handleReportModalClose }) {
     const params = new URLSearchParams();
     if (pinCode) params.set('pinCode', pinCode);
     if (state) params.set('state', state);
-    console.log(params);
+    // console.log(params);
     try {
       const response = await apiClient.get(
         `/data/report?${params.toString()}`,

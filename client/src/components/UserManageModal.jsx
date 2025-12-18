@@ -19,7 +19,7 @@ import Snack from './Snack';
 import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 function UserManageModal({ open, handleOnClose, user }) {
   const theme = useTheme();
-  console.log(user);
+  // console.log(user);
   const [menuOpen, setMenuOpen] = useState(null);
   const handleMenuOpen = (event) => {
     setMenuOpen(event.currentTarget);
@@ -58,13 +58,13 @@ useEffect(() => {
       { role: newRole },
     );
 
-    console.log(`Role updated successfully to ${newRole}`, response);
+    // console.log(`Role updated successfully to ${newRole}`, response);
     const updatedUser = response.data.data;
     setCurrentUser(updatedUser);
     setSnackMessage('Role updated successfully');
     setSnackSeverity(SNACK_SEVERITY.SUCCESS);
     setShowSnack(true);
-    console.log('Snack state set:', { snackMessage: 'Role updated successfully', showSnack: true });
+    // console.log('Snack state set:', { snackMessage: 'Role updated successfully', showSnack: true });
     
     triggerNotification({
       recipient_id: user._id,
@@ -75,7 +75,7 @@ useEffect(() => {
     setSnackMessage(error.response?.data?.message || "Failed to update role");
     setSnackSeverity(SNACK_SEVERITY.ERROR);
     setShowSnack(true);
-    console.log('Snack error state set:', { snackMessage: error.response?.data?.message || "Failed to update role", showSnack: true });
+    // console.log('Snack error state set:', { snackMessage: error.response?.data?.message || "Failed to update role", showSnack: true });
   } finally {
     setRoleSetLoading(false); 
   }

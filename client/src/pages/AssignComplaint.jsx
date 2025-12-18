@@ -68,7 +68,7 @@ function AssignComplaint() {
     try {
       const response = await getComplaint(complaintId);
       setComplaint(response.data.data);
-      console.log(response.data.data);
+      // console.log(response.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch complaint details');
     } finally {

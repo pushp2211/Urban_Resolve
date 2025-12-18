@@ -282,13 +282,14 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
         flexDirection: {
           xs: 'column',
           sm: 'column',
+          md:'row',
           lg: 'row',
         },
         // backdropFilter:"blur(20px)",
         width: {
           xs: '24rem',
-          sm: '24rem',
-          md: '30rem',
+          sm: '26rem',
+          md: '47rem',
           lg: '60rem',
         },
         backgroundColor: 'background.paper',
@@ -304,380 +305,298 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
+          gap: 1.5,
           width: {
-            xs: '22rem', // extra-small devices: full width
-            sm: '24rem', // small devices: 25rem
-            md: '30rem', // medium devices: 30rem
-            lg: '33rem', // large devices: 35rem
-            xl: '40rem', // extra large devices: 40rem
+            xs: '22rem',
+            sm: '24rem',
+            md: '50%',
+            lg: '50%',
+            xl: '50%',
           },
-          paddingY: '1rem',
+          flexGrow:1
         }}
       >
-        <Container
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}
-        >
+        {/* Header Card */}
+        <Box>
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'column',
-              gap: '0.1rem',
-              width: '100%',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 0.8,
             }}
           >
             <Box
               sx={{
-                display: {
-                  xs: 'flex',
-                },
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-              }}
-            >
-              {/* <Button
-                onClick={onClose}
-                color='warning'
-                sx={{
-                  // justifySelf:'flex-end'
-                  display:{
-                    lg:"none"
-                  }
-                }}
-              >
-                Close
-              </Button> */}
-            </Box>
-            <Box
-              sx={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                gap: 1.2,
                 alignItems: 'center',
-                gap: 2,
-                marginY: '0.2rem',
-                minWidth: '100%',
+                cursor: user?.role === ROLES.ADMIN ? 'pointer' : 'default',
+                flex: 1,
+              }}
+              onClick={() => {
+                handleUserClick(complaint?.submittedBy);
               }}
             >
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: 2,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  handleUserClick(complaint?.submittedBy);
-                }}
-              >
-                <Avatar
-                  alt={complaint.submittedBy?.fullName}
-                  src={complaint.submittedBy?.profilePicture}
-                />
-                <Typography variant="button">
+              <Avatar
+                alt={complaint.submittedBy?.fullName}
+                src={complaint.submittedBy?.profilePicture}
+                sx={{ width: 32, height: 32 }}
+              />
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography variant="body2" fontWeight={600} sx={{ lineHeight: 1.2, fontSize: '0.875rem' }}>
                   {complaint.submittedBy?.fullName}
                 </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  Reporter
+                </Typography>
               </Box>
-              <Button
-                onClick={onClose}
-                color="warning"
-                sx={{
-                  // justifySelf:'flex-end'
-                  display: {
-                    lg: 'none',
-                  },
-                }}
-              >
-                Close
-              </Button>
             </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <Typography variant="button" color="#ffa726">
-                {complaint.title}
-              </Typography>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Chip
                 label={complaint?.status}
                 color={getStatusColor(complaint?.status)}
                 size="small"
+                sx={{ fontWeight: 600 }}
               />
+              <Button
+                onClick={onClose}
+                size="small"
+                sx={{
+                  display: { lg: 'none' },
+                  minWidth: 'auto',
+                  px: 1,
+                }}
+              >
+                ✕
+              </Button>
             </Box>
           </Box>
-        </Container>
-        <Container>
-          <Box
-            sx={{
-              position: 'relative',
-              width: '100%',
-              paddingTop: '56.25%', // 16:9 aspect ratio (9/16 = 0.5625 * 100)
-              overflow: 'hidden',
-              borderRadius: 1,
-              marginY: {
-                lg: '0.4rem',
-                xs: '0.3rem',
-              },
+          
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              fontWeight: 500,
+              fontSize: '0.9rem',
+              textTransform: 'uppercase',
+              letterSpacing: 0.3,
             }}
+            color='warning'
           >
-            <Box
-              component="img"
-              src={complaint.photoUrl}
-              alt="loading..."
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-            />
-          </Box>
-          <Typography
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            {new Date(complaint.createdAt).toLocaleDateString()}
-            <Typography variant="button">Type: {complaint.type}</Typography>
+            {complaint.title}
           </Typography>
-        </Container>
+        </Box>
+
+        {/* Image Card */}
+        <Box
+          sx={{
+            position: 'relative',
+            width: '100%',
+            paddingTop: '56.25%',
+            overflow: 'hidden',
+            borderRadius: 1.5,
+            boxShadow: 2,
+          }}
+        >
+          <Box
+            component="img"
+            src={complaint.photoUrl}
+            alt={complaint.title}
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+        </Box>
+
+        {/* Info Footer */}
+        <Box
+          sx={{
+            backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+            padding: 1.2,
+            borderRadius: 1.5,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Box>
+            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.2, fontSize: '0.7rem' }}>
+              Submitted
+            </Typography>
+            <Typography variant="body2" fontWeight={500} sx={{ fontSize: '0.875rem' }}>
+              {new Date(complaint.createdAt).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              })}
+            </Typography>
+          </Box>
+          <Box sx={{ textAlign: 'right' }}>
+            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.2, fontSize: '0.7rem' }}>
+              Category
+            </Typography>
+            <Typography variant="body2" fontWeight={500} sx={{ textTransform: 'capitalize', fontSize: '0.875rem' }}>
+              {complaint.type}
+            </Typography>
+          </Box>
+        </Box>
       </Box>
-      {/* */}
+      {/* Right Side Content */}
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems:"center",
+          justifyContent: 'flex-start',
           flexGrow: 1,
-          gap: {
-            lg: 2,
-            sm: 1,
-            xs: 1,
-          },
+          gap: 1.5,
           width:{
             xs:"100%",
             sm:"100%",
-            md:"100%",
-            lg:"45%"
+            md:"50%",
+            lg:"45%",
+            xl:"45%"
           },
         }}
       >
+        {/* Description Box */}
         <Box
           sx={{
-            overflowX:"scroll",
-            alignSelf:"flex-start",
-            paddingX:1
+            backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+            padding: 1.5,
+            borderRadius: 1.5,
+            borderLeft: '3px solid',
+            borderColor: 'primary.main',
+            maxHeight: '6rem',
+            overflowY: 'auto',
           }}
         >
-          <Typography variant='overline'>
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.3, mb: 0.5, display: 'block' }}>
             Description
           </Typography>
-          <Typography variant='body2'
-          
-          >{complaint.description}</Typography>
+          <Typography variant="body2" sx={{ lineHeight: 1.5, fontSize: '0.875rem',  }}>
+            {complaint.description}
+          </Typography>
         </Box>
+
+        {/* Location Box */}
         <Box
           sx={{
-            display: 'flex',
-            // justifyContent:"center",
-            // alignItems:"center",
-            width: '100%',
-            flexDirection: 'column',
-            gap: {
-              lg: 2,
-              xs: 1,
-              sm: 1,
-            },
+            backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+            padding: 1.5,
+            borderRadius: 1.5,
           }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 1,
-              flexDirection: 'row',
-              backgroundColor:
-                theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-              paddingX: {
-                lg: '1rem',
-                xs: '0.5rem',
-              },
-              paddingY: {
-                lg: '1rem',
-                xs: '0.5rem',
-              },
-              borderRadius: '1rem',
-              alignItems: 'center',
-              width:"100%"
-            }}
-          >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
-              <Typography variant="subtitle2" fontWeight={600} color="text.secondary">
-                📍 Location
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.3 }}>
-                <Typography variant="body1" fontWeight={500}>
-                  {complaint.address?.locality || 'N/A'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {[
-                    complaint.address?.district,
-                    complaint.address?.state,
-                  ].filter(Boolean).join(', ')}
-                  {(complaint.address?.pinCode || complaint.address?.pincode) && 
-                    ` - ${complaint.address?.pinCode || complaint.address?.pincode}`}
-                </Typography>
-              </Box>
-            </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.8 }}>
+            {/* <Typography sx={{ fontSize: '0.9rem' }}>📍</Typography> */}
+            <Typography variant="body2" fontWeight={600}>
+              Location
+            </Typography>
           </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 1,
-              flexDirection: 'row',
-              backgroundColor:
-                theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-              paddingX: {
-                lg: '1rem',
-                xs: '0.5rem',
-              },
-              paddingY: {
-                lg: '1rem',
-                xs: '0.5rem',
-              },
-              borderRadius: '1rem',
-              alignItems:"center"
-            }}
-          >
-            <Typography>Assigned To :</Typography>
-            {complaint.assignedTo && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: 1,
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleUserClick(complaint?.assignedTo);
-                }}
-              >
-                <Avatar
-                  alt={complaint.assignedTo?.fullName}
-                  src={complaint.assignedTo?.profilePicture}
-                />
-                <Typography>{complaint.assignedTo?.fullName}</Typography>
-              </Box>
-            )}
-            {!complaint?.assignedTo && (
-              <Typography>Not assigned yet</Typography>
-            )}
-          </Box>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.3, fontSize: '0.875rem' }}>
+            {complaint.address?.locality || 'N/A'}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {[
+              complaint.address?.district,
+              complaint.address?.state,
+            ].filter(Boolean).join(', ')}
+            {(complaint.address?.pinCode || complaint.address?.pincode) && 
+              ` - ${complaint.address?.pinCode || complaint.address?.pincode}`}
+          </Typography>
         </Box>
+
+        {/* Assigned To Box */}
+        <Box
+          sx={{
+            backgroundColor: theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+            padding: 1.5,
+            borderRadius: 1.5,
+          }}
+        >
+          <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>
+            Assigned To
+          </Typography>
+          {complaint.assignedTo ? (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                cursor: 'pointer',
+                padding: 0.8,
+                borderRadius: 1,
+                transition: 'background-color 0.2s',
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                },
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleUserClick(complaint?.assignedTo);
+              }}
+            >
+              <Avatar
+                alt={complaint.assignedTo?.fullName}
+                src={complaint.assignedTo?.profilePicture}
+                sx={{ width: 32, height: 32 }}
+              />
+              <Typography variant="body2" fontWeight={500}>
+                {complaint.assignedTo?.fullName}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+              Not assigned yet
+            </Typography>
+          )}
+        </Box>
+
+        {/* Admin Action Button */}
         {user?.role === ROLES?.ADMIN &&
           complaint?.status !== COMPLAINT_STATUS.REJECTED && (
-            <Box
+            <Button
+              onClick={() => navigate(`/admin/assign-complaint/${complaint?._id}`)}
+              variant="contained"
+              disabled={listOpen}
+              fullWidth
               sx={{
-                backgroundColor:
-                  theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-                paddingX: {
-                  lg: '1rem',
-                  xs: '0.5rem',
-                },
-                paddingY: {
-                  lg: '1rem',
-                  xs: '0.5rem',
-                },
-                borderRadius: '1rem',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8%',
+                textTransform: 'none',
+                py: 1.2,
+                borderRadius: 1.5,
+                fontWeight: 600,
+                mt: 0.5,
               }}
             >
-              {/* Manage this complaint */}
-              <Button
-                onClick={() =>
-                  navigate(`/admin/assign-complaint/${complaint?._id}`)
-                }
+              Manage Complaint
+            </Button>
+          )}
+
+        {/* Staff Resolution Button */}
+        {user.role === ROLES.STAFF &&
+          user._id === complaint?.assignedTo?._id && (
+            <Box>
+              <Button 
+                onClick={navigateToResolutionRequestPage}
                 variant="contained"
-                loading={loading}
-                disabled={listOpen}
+                color="success"
+                fullWidth
                 sx={{
-                  marginLeft: '0.4rem',
                   textTransform: 'none',
+                  py: 1.2,
+                  borderRadius: 1.5,
+                  fontWeight: 600,
                 }}
               >
-                Manage Complaint
+                Resolve Complaint
               </Button>
-            </Box>
-          )}
-        {user.role === ROLES.STAFF &&
-          user._id === complaint?.assignedTo?._id &&
-          complaint.status !== COMPLAINT_STATUS.RESOLVED && (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                backgroundColor:
-                  theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-                paddingX: {
-                  lg: '1rem',
-                  xs: '0.5rem',
-                },
-                paddingY: {
-                  lg: '1rem',
-                  xs: '0.5rem',
-                },
-                borderRadius: '1rem',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {/* <FormControl
-              sx={{ m: 1, minWidth: 120 }}
-              size="small"
-              disabled={
-                statusLoading ||
-                curComplaintStatus === COMPLAINT_STATUS.REJECTED ||
-                curComplaintStatus === COMPLAINT_STATUS.RESOLVED ||
-                (user.role === ROLES.STAFF && user._id !== assignedTo?._id)
-              }
-            >
-              <InputLabel id="demo-select-small-label">Status</InputLabel>
-              <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
-                value={curComplaintStatus}
-                label="Status"
-                onChange={handleChange}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {validComplaintStatus.map((value) => (
-                  <MenuItem value={value}>{value}</MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
-              <Button onClick={navigateToResolutionRequestPage}>Resolve</Button>
-              <Typography variant="caption">
-                To submit resolution request click the above button
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, textAlign: 'center', px: 1 }}>
+                Submit a resolution request to complete this complaint
               </Typography>
             </Box>
           )}

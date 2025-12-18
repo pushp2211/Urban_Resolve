@@ -62,7 +62,7 @@ function ResetPassword() {
           password,
         }
       );
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('user');

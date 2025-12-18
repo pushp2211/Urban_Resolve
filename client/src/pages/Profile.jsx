@@ -58,7 +58,7 @@ function Profile() {
       if (element.label === COMPLAINT_STATUS.RESOLVED)
         setResolved(element.value);
     });
-    console.log(totalComplaints);
+    // console.log(totalComplaints);
   }, [data]);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ function Profile() {
           setError('Error occured while fetching the profile information');
           return;
         }
-        console.log(response.data.data);
+        // console.log(response.data.data);
         const complaintStats = response.data?.data?.complaintStats;
         // console.log(complaintStats);
         setUserComplaintDetails(complaintStats);

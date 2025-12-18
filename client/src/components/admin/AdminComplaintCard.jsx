@@ -26,7 +26,7 @@ import apiClient from '../../api/axios';
 
 function AdminComplaintCard({ complaint, onUserClick }) {
   //   const [complaint, setComplaint] = useState(null);
-  console.log(complaint);
+  // console.log(complaint);
   const [error, setError] = useState('');
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);

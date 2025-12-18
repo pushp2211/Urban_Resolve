@@ -10,7 +10,7 @@ export async function triggerNotification({ recipient_id, message, complaint_id 
   try {
     const response = await sendNotification({ recipient_id, message, complaint_id });
 
-    console.debug('Notification sent:', response);
+    // console.debug('Notification sent:', response);
     return response;
   } catch (error) {
     console.error('Failed to send notification:', error);

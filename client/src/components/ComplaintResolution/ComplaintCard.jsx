@@ -7,7 +7,8 @@ import { useLoading } from '../../context/LoadingContext';
 import { Box, Typography, Avatar, Chip } from '@mui/material';
 import { COMPLAINT_STATUS } from '../../../enum/ComplaintStatus';
 import { useTheme } from '@mui/material/styles';
-function ComplaintCard({ id, sx }) {
+import { COMPLAINT_URGENCY } from '../../../enum/ComplaintUrgency';
+function ComplaintCard({ id, sx, setCurComplaint }) {
   const getStatusColor = (status) => {
     switch (status) {
       case COMPLAINT_STATUS.PENDING:
@@ -17,6 +18,18 @@ function ComplaintCard({ id, sx }) {
       case COMPLAINT_STATUS.RESOLVED:
         return 'success';
       case COMPLAINT_STATUS.REJECTED:
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+  const getUrgencyColor = (urgency) => {
+    switch (urgency) {
+      case COMPLAINT_URGENCY.MEDIUM:
+        return 'warning';
+      case COMPLAINT_URGENCY.LOW:
+        return 'primary';
+      case COMPLAINT_URGENCY.HIGH:
         return 'error';
       default:
         return 'default';
@@ -33,8 +46,9 @@ function ComplaintCard({ id, sx }) {
       setError('');
       try {
         const response = await getComplaint(id);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setComplaint(response.data.data); // Get complaint from response.data.data
+        setCurComplaint(response.data.data);
       } catch (error) {
         setError(error.response?.data?.message || 'Failed to load complaint');
         console.error(error);
@@ -99,6 +113,11 @@ function ComplaintCard({ id, sx }) {
           />
         </Box>
       </Box>
+      <Box>
+          <Typography variant='overline' color='warning'>
+            {complaint?.title}
+          </Typography>
+      </Box>
 
       <Box
         sx={{
@@ -141,7 +160,66 @@ function ComplaintCard({ id, sx }) {
           {complaint?.type}
         </Typography>
       </Box>
-      <Typography>Urgency: {complaint?.urgency}</Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 1.5,
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent:"flex-end"
+        }}
+      >
+        <Chip
+          label={complaint?.urgency}
+          color={getUrgencyColor(complaint?.urgency)}
+          size="small"
+          sx={{
+            fontWeight: 600,
+            textTransform: 'capitalize',
+          }}
+        />
+        {complaint?.address && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              px: 1.5,
+              py: 0.5,
+              borderRadius: 3,
+              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+            }}
+          >
+            {/* <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+              📍
+            </Typography> */}
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+              {complaint.address.locality}, {complaint.address.district}
+            </Typography>
+          </Box>
+        )}
+      </Box>
+      
+      {complaint?.description && (
+        <Box
+          sx={{
+            backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+            padding: 2,
+            borderRadius: 2,
+            borderLeft: '3px solid',
+            borderColor: 'primary.main',
+          }}
+        >
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            Description
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 0.5, lineHeight: 1.6 }}>
+            {complaint.description}
+          </Typography>
+        </Box>
+      )}
+
       <Box
         sx={{
           backgroundColor:
@@ -244,11 +322,11 @@ function ComplaintCard({ id, sx }) {
               </Typography>
             </Box>
 
-            <Box>
+            {complaint?.resolutionReview?.rejectionReason && <Box>
               <Typography>
                 Remark: {complaint?.resolutionReview?.rejectionReason}
               </Typography>
-            </Box>
+            </Box>}
           </Box>
         )}
       </Box>
