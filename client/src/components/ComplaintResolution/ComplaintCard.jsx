@@ -225,7 +225,7 @@ function ComplaintCard({ id, sx, setCurComplaint }) {
           backgroundColor:
                 theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
               padding: 2,
-              borderRadius: 5,
+              borderRadius: 2,
         }}
       >
         {!complaint?.resolutionReview &&
