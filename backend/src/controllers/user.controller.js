@@ -225,40 +225,78 @@ const userProfile = asyncHandler(async (req, res) => {
     }
 
     const userRole = user.role;
-    let matchQuery = {};
+    let complaintStats = {};
 
-    // Determine the match criteria based on the user's role
+    const initialStats = Object.fromEntries(COMPLAINT_STATUS_ENUM.map(status => [status, 0]));
+
+    // For STAFF: Get both assigned and submitted complaints
     if (userRole === ROLES.STAFF) {
-        matchQuery = { assignedTo: userId };
+        // Get complaints assigned to staff
+        const assignedComplaintsCounts = await Complaint.aggregate([
+            {
+                $match: { assignedTo: userId },
+            },
+            {
+                $group: {
+                    _id: '$status',
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        // Get complaints submitted by staff
+        const submittedComplaintsCounts = await Complaint.aggregate([
+            {
+                $match: { submittedBy: userId },
+            },
+            {
+                $group: {
+                    _id: '$status',
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const assignedStats = assignedComplaintsCounts.reduce((acc, status) => {
+            acc[status._id] = status.count;
+            return acc;
+        }, { ...initialStats });
+
+        const submittedStats = submittedComplaintsCounts.reduce((acc, status) => {
+            acc[status._id] = status.count;
+            return acc;
+        }, { ...initialStats });
+
+        complaintStats = {
+            assigned: assignedStats,
+            submitted: submittedStats,
+        };
     } else if (userRole === ROLES.USER || userRole === ROLES.ADMIN) {
-        matchQuery = { submittedBy: userId };
+        // For USER and ADMIN: Get only submitted complaints
+        const complaintStatusCounts = await Complaint.aggregate([
+            {
+                $match: { submittedBy: userId },
+            },
+            {
+                $group: {
+                    _id: '$status',
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        const submittedStats = complaintStatusCounts.reduce((acc, status) => {
+            acc[status._id] = status.count;
+            return acc;
+        }, { ...initialStats });
+
+        complaintStats = {
+          submitted: submittedStats
+        }
     } else {
-        // Handle cases where user might not have a role that sees complaints
-        matchQuery = { _id: null }; // An impossible query to return no results
+        // Handle other roles with empty stats
+        complaintStats = {submitted: initialStats};
     }
-
-  // Use an aggregation pipeline to efficiently count complaints by status
-  const complaintStatusCounts = await Complaint.aggregate([
-    {
-      $match: matchQuery,
-    },
-    {
-      $group: {
-        _id: '$status', // Group documents by their status
-        count: { $sum: 1 }, // Count the documents in each group
-      },
-    },
-  ]);
-
-  const initialStats = Object.fromEntries(COMPLAINT_STATUS_ENUM.map(status => [status, 0])); //to take all states intially
-  //to ensure that even if the status result is 0, it is in our Complaint stats result
-
-  // Convert the aggregation result array into a more convenient object
-  // e.g., from [{ _id: 'PENDING', count: 5 }] to { PENDING: 5 }
-  const complaintStats = complaintStatusCounts.reduce((acc, status) => {
-    acc[status._id] = status.count; //status curreent value ko denote krta hai aur acc result array hai
-    return acc;
-  }, initialStats);
 
     const data = {
         role: userRole,

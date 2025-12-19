@@ -20,6 +20,7 @@ function Profile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [data, setData] = useState([]);
+  const [submittedData, setSubmittedData] = useState([]);
 
 
   const {showLoading, hideLoading} = useLoading();
@@ -29,6 +30,20 @@ function Profile() {
   const [inProgress, setInprogress] = useState(0);
   const [rejected, setRejected] = useState(0);
   const [pending, setPending] = useState(0);
+  const [pendingReview, setPendingReview] = useState(0);
+  
+  // For staff - separate stats
+  const [assignedTotal, setAssignedTotal] = useState(0);
+  const [assignedResolved, setAssignedResolved] = useState(0);
+  const [assignedInProgress, setAssignedInProgress] = useState(0);
+  const [assignedPendingReview, setAssignedPendingReview] = useState(0);
+  
+  const [submittedTotal, setSubmittedTotal] = useState(0);
+  const [submittedResolved, setSubmittedResolved] = useState(0);
+  const [submittedInProgress, setSubmittedInProgress] = useState(0);
+  const [submittedPending, setSubmittedPending] = useState(0);
+  const [submittedRejected, setSubmittedRejected] = useState(0);
+  const [submittedPendingReview, setSubmittedPendingReview] = useState(0);
 
   const [editOpen, setEditOpen] = useState(false);
 
@@ -44,22 +59,41 @@ function Profile() {
     Pending: '#e95101', // Orange
     'In Progress': '#3814d8', // Blue
     Rejected: '#c90000', // Red
+    'Pending Review': '#f59e0b', // Amber
   };
 
   useEffect(() => {
-    setTotalComplaints(0);
-    data.map((element, index) => {
-      setTotalComplaints((prev) => prev + element.value);
-      if (element.label === COMPLAINT_STATUS.IN_PROGRESS)
-        setInprogress(element.value);
-      if (element.label === COMPLAINT_STATUS.PENDING) setPending(element.value);
-      if (element.label === COMPLAINT_STATUS.REJECTED)
-        setRejected(element.value);
-      if (element.label === COMPLAINT_STATUS.RESOLVED)
-        setResolved(element.value);
-    });
-    // console.log(totalComplaints);
-  }, [data]);
+    if (user.role === ROLES.STAFF) {
+      // For staff, data contains assigned complaints for the chart
+      let total = 0;
+      data.forEach((element) => {
+        total += element.value;
+        if (element.label === COMPLAINT_STATUS.IN_PROGRESS)
+          setAssignedInProgress(element.value);
+        if (element.label === COMPLAINT_STATUS.RESOLVED)
+          setAssignedResolved(element.value);
+        if (element.label === COMPLAINT_STATUS.PENDING_REVIEW)
+          setAssignedPendingReview(element.value);
+      });
+      setAssignedTotal(total);
+    } else {
+      // For USER/ADMIN, data contains submitted complaints
+      let total = 0;
+      data.forEach((element) => {
+        total += element.value;
+        if (element.label === COMPLAINT_STATUS.IN_PROGRESS)
+          setInprogress(element.value);
+        if (element.label === COMPLAINT_STATUS.PENDING) setPending(element.value);
+        if (element.label === COMPLAINT_STATUS.REJECTED)
+          setRejected(element.value);
+        if (element.label === COMPLAINT_STATUS.RESOLVED)
+          setResolved(element.value);
+        if (element.label === COMPLAINT_STATUS.PENDING_REVIEW)
+          setPendingReview(element.value);
+      });
+      setTotalComplaints(total);
+    }
+  }, [data, user.role]);
 
   useEffect(() => {
 
@@ -92,327 +126,474 @@ function Profile() {
   }, [user]);
 
   useEffect(() => {
-    const chartData = userComplaintDetails
-      ? Object.keys(userComplaintDetails).map((key, index) => ({
+    let chartData = [];
+    let submittedChartData = [];
+    
+    if (user.role === ROLES.STAFF && userComplaintDetails.assigned) {
+      // For staff, show assigned complaints in the chart
+      chartData = Object.keys(userComplaintDetails.assigned).map((key, index) => ({
+        id: index,
+        value: userComplaintDetails.assigned[key],
+        label: key,
+        color: STATUS_COLORS[key],
+      })).filter(item => item.value > 0);
+      
+      // Calculate submitted totals and chart data for staff
+      if (userComplaintDetails.submitted) {
+        let submittedTotalCount = 0;
+        submittedChartData = Object.keys(userComplaintDetails.submitted).map((key, index) => ({
           id: index,
-          value: userComplaintDetails[key],
+          value: userComplaintDetails.submitted[key],
           label: key,
           color: STATUS_COLORS[key],
-        }))
-      : [];
+        })).filter(item => item.value > 0);
+        
+        Object.entries(userComplaintDetails.submitted).forEach(([status, count]) => {
+          submittedTotalCount += count;
+          if (status === COMPLAINT_STATUS.RESOLVED) setSubmittedResolved(count);
+          if (status === COMPLAINT_STATUS.IN_PROGRESS) setSubmittedInProgress(count);
+          if (status === COMPLAINT_STATUS.PENDING) setSubmittedPending(count);
+          if (status === COMPLAINT_STATUS.REJECTED) setSubmittedRejected(count);
+          if (status === COMPLAINT_STATUS.PENDING_REVIEW) setSubmittedPendingReview(count);
+        });
+        setSubmittedTotal(submittedTotalCount);
+      }
+    } else if (userComplaintDetails.submitted) {
+      // For USER/ADMIN, show submitted complaints in the chart
+      chartData = Object.keys(userComplaintDetails.submitted).map((key, index) => ({
+        id: index,
+        value: userComplaintDetails.submitted[key],
+        label: key,
+        color: STATUS_COLORS[key],
+      })).filter(item => item.value > 0);
+    }
+    
     setData(chartData);
-  }, [userComplaintDetails]);
+    setSubmittedData(submittedChartData);
+  }, [userComplaintDetails, user.role]);
 
   return (
-    
     <Container
+      maxWidth="lg"
       sx={{
-        // bgcolor: 'gray',
         minHeight: '78svh',
-        display: 'flex',
-        gap: '4',
-        // alignItems: 'center',
-        flexDirection: {
-          xs: 'column',
-          sm: 'column',
-          md:"row",
-          lg: 'row',
-          xl: 'row',
-        },
         paddingY: {
-          xs:5,
-          lg:3
+          xs: 3,
+          md: 4,
+          lg: 5
         },
-        justifyContent: 'center',
-        alignItems:"center"
       }}
     >
+      {/* Header Section */}
       <Box
         sx={{
-          height: '100%',
-          flexGrow: 1,
           display: 'flex',
-          // justifyContent:"center",
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 4,
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'space-between',
+          alignItems: { xs: 'center', md: 'flex-start' },
+          gap: 3,
+          mb: 4,
+          pb: 3,
+          borderBottom: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
         }}
       >
-        <Avatar
-          alt={user.fullName}
-          src={user.profilePicture}
-          sx={{ width: {
-            xs:110,
-            md:120,
-            lg:130,
-          },
-             height: {
-            xs:110,
-            md:120,
-            lg:130,
-          }
-             }}
-        />
+        {/* Avatar & Basic Info */}
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'row',
-            gap: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 1,
-            backgroundColor:
-              theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-            borderRadius: '1rem',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 2.5,
+            alignItems: { xs: 'center', sm: 'flex-start' },
+            flex: 1,
           }}
         >
-          <Typography variant="h7">ROLE:</Typography>
-
-          <Typography variant="h7">{user.role}</Typography>
-        </Box>
-        <Box>
-          <Button
+          <Avatar
+            alt={user.fullName}
+            src={user.profilePicture}
             sx={{
-              borderRadius:"3rem",
-
-              backgroundColor:theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-              paddingX:1,
-              fontSize:{
-                xs:"0.7rem",
-                md:"1rem",
-                lg:""
-              }
+              width: { xs: 100, md: 110 },
+              height: { xs: 100, md: 110 },
+              border: `3px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
             }}
-            onClick={setEditOpenController}
-          >
-            Edit Profile
-          </Button>
-        </Box>
-        <Box
-          sx={{
-            // display:"flex",
-            // gap:1,
-            // alignItems:"center",
-            // justifyContent:"center"
-            textAlign:"center"
-          }}
-        >
-          <Typography color='text.secondary' variant='overline'
-            sx={{
-              fontSize:"1rem",
-              textAlign:"center"
-            }}
-            // align='center'
-          >
-            Addres details
-          </Typography>
-          <Box
-          sx={{
-            display:"flex",
-            flexDirection:"column"
-          }}
-          >
+          />
+          
+          <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
             <Typography
-              variant='overline'
+              variant="h4"
               sx={{
-                fontWeight:"medium",
-                textAlign:"center"
+                fontWeight: 600,
+                fontSize: { xs: '1.5rem', md: '2rem' },
+                mb: 0.5,
               }}
             >
-              {user?.address?.locality}, {user?.address?.city}, {user?.address?.district}
+              {user.fullName}
             </Typography>
+            
             <Typography
-              variant='overline'
+              variant="body2"
+              color="text.secondary"
+              sx={{ mb: 1.5, fontSize: '0.875rem' }}
+            >
+              {user.email}
+            </Typography>
+            
+            <Box
               sx={{
-                fontWeight:"medium",
-                textAlign:"center"
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 1,
+                px: 1.5,
+                py: 0.5,
+                backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                borderRadius: '20px',
+                border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
               }}
             >
-              {user?.address?.state}{",  "}{user?.address?.pinCode}
-            </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', fontSize: '0.7rem', fontWeight: 600 }}>
+                Role
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.875rem' }}>
+                {user.role}
+              </Typography>
+            </Box>
           </Box>
         </Box>
-      </Box>
 
-      <Box
-        sx={{
-          height: '100%',
-          flexGrow: 1,
-          // bgcolor: 'green',
-          padding: 1,
-        }}
-      >
-        <Box
+        {/* Edit Button */}
+        <Button
+          onClick={setEditOpenController}
+          variant="outlined"
           sx={{
-            display:"flex",
-            flexDirection:"column",
-
-          }}
-        >
-          <Typography
-            // variant="h3"
-            sx={{
-              fontWeight: 'bold',
-              textAlign:{
-                xs:"center",
-                sm:"center",
-                md:"left",
-                lg:"left"
-              },
-              fontSize:{
-                xs:"1rem",
-                md:"1.2rem",
-                lg:"3rem"
-              },
-              width:"100%"
-            }}
-          >
-            Hello &nbsp;
-            {user.fullName?.length > 10
-              ? `${user.fullName?.slice(0, 10)}…`
-              : user.fullName}
-            !
-          </Typography>
-          <Typography variant="button"
-            sx={{
-              textAlign:{
-                xs:"center",
-                sm:"center",
-                md:"left",
-                lg:"left"
-              },
-              width:"100%",
-              alignSelf:"center"
-            }}
-          >
-            A cleaner, safer society starts with you
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexDirection: {
-              xs: 'column',
-              sm: 'column',
-              lg: 'row',
+            borderRadius: '8px',
+            px: 3,
+            py: 1,
+            textTransform: 'none',
+            fontWeight: 500,
+            height: 'fit-content',
+            borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+            '&:hover': {
+              borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
+              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
             },
           }}
         >
+          Edit Profile
+        </Button>
+      </Box>
+
+      {/* Welcome Message */}
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 600,
+            fontSize: { xs: '1.25rem', md: '1.5rem' },
+            mb: 0.5,
+          }}
+        >
+          Welcome back, {user.fullName?.split(' ')[0]}!
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          A cleaner, safer society starts with you
+        </Typography>
+      </Box>
+
+      {/* Main Content */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', lg: 'row' },
+          gap: 3,
+        }}
+      >
+        {/* Left Column - Address & Chart */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3,
+            width: { xs: '100%', lg: '350px' },
+          }}
+        >
+          {/* Address Details */}
           <Box
             sx={{
-              width: '100%',
-              display: 'flex',
-              flexDirection: {
-                xs: 'column',
-          sm: 'column',
-          md:"row",
-          lg: 'row',
-          xl: 'row',
-              },
-              alignItems: 'center',
-
-              gap: 2,
-              justifyContent: {
-                lg: 'space-between',
-                sm: 'center',
-                xs: 'center',
-              },
+              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+              borderRadius: '12px',
+              p: 3,
+              border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
             }}
           >
-            {totalComplaints>0 && <InfoPieChart data={data} colors={STATUS_COLORS} />}
-            <Box
+            <Typography
+              variant="overline"
+              color="text.secondary"
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                letterSpacing: 1,
+                display: 'block',
+                mb: 2,
               }}
             >
-              <Typography
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 2,
-                  backgroundColor:
-                    theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-                  borderRadius: '1rem',
-                }}
-              >
-                {user.role !==ROLES.STAFF && `Total Complaints reported: ${totalComplaints}`}
-                {user.role ===ROLES.STAFF && `Total Complaints Assigned: ${totalComplaints}`}
+              Address Details
+            </Typography>
+            
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Typography variant="body2" sx={{ lineHeight: 1.6, fontWeight: 500 }}>
+                {user?.address?.locality}
               </Typography>
-              <Typography
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 2,
-                  backgroundColor:
-                    theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-                  borderRadius: '1rem',
-                }}
-              >
-                Resolved: {resolved}
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                {user?.address?.city}, {user?.address?.district}
               </Typography>
-              <Typography
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 2,
-                  backgroundColor:
-                    theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-                  borderRadius: '1rem',
-                }}
-              >
-                In Progress: {inProgress}
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                {user?.address?.state} - {user?.address?.pinCode}
               </Typography>
-              {user.role!==ROLES.STAFF && <Typography
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 2,
-                  backgroundColor:
-                    theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-                  borderRadius: '1rem',
-                }}
-              >
-                Pending:{pending}
-              </Typography>}
-              {user.role!==ROLES.STAFF && <Typography
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 2,
-                  backgroundColor:
-                    theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-                  borderRadius: '1rem',
-                  
-                }}
-                
-              >
-                Rejected: {rejected}
-              </Typography>}
             </Box>
           </Box>
-          <Box></Box>
+
+          {/* Pie Charts */}
+          {user.role === ROLES.STAFF ? (
+            <>
+              {/* Assigned Complaints Chart */}
+              {assignedTotal > 0 && (
+                <Box
+                  sx={{
+                    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                    borderRadius: '12px',
+                    p: 3,
+                    border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                  }}
+                >
+                  <Typography
+                    variant="overline"
+                    color="text.secondary"
+                    sx={{
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      letterSpacing: 1,
+                      display: 'block',
+                      mb: 2,
+                      textAlign: 'center',
+                    }}
+                  >
+                    Assigned Complaints
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <InfoPieChart data={data} colors={STATUS_COLORS} />
+                  </Box>
+                </Box>
+              )}
+              
+              {/* Submitted Complaints Chart */}
+              {submittedTotal > 0 && (
+                <Box
+                  sx={{
+                    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                    borderRadius: '12px',
+                    p: 3,
+                    border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                  }}
+                >
+                  <Typography
+                    variant="overline"
+                    color="text.secondary"
+                    sx={{
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      letterSpacing: 1,
+                      display: 'block',
+                      mb: 2,
+                      textAlign: 'center',
+                    }}
+                  >
+                    My Submitted Complaints
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <InfoPieChart data={submittedData} colors={STATUS_COLORS} />
+                  </Box>
+                </Box>
+              )}
+            </>
+          ) : (
+            totalComplaints > 0 && (
+              <Box
+                sx={{
+                  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                  borderRadius: '12px',
+                  p: 3,
+                  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <InfoPieChart data={data} colors={STATUS_COLORS} />
+              </Box>
+            )
+          )}
+        </Box>
+
+        {/* Right Column - Statistics */}
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3,
+          }}
+        >
+          {/* Stats Grid */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              gap: 2,
+            }}
+          >
+            {/* Total Complaints - Different for Staff */}
+            {user.role === ROLES.STAFF ? (
+              <>
+                <Box
+                  sx={{
+                    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                    borderRadius: '12px',
+                    p: 2.5,
+                    border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>
+                    Total Complaints Assigned
+                  </Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>
+                    {assignedTotal}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                    borderRadius: '12px',
+                    p: 2.5,
+                    border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>
+                    Total Complaints Submitted
+                  </Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>
+                    {submittedTotal}
+                  </Typography>
+                </Box>
+              </>
+            ) : (
+              <Box
+                sx={{
+                  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                  borderRadius: '12px',
+                  p: 2.5,
+                  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                  gridColumn: 'span 2',
+                }}
+              >
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>
+                  Total Complaints Reported
+                </Typography>
+                <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>
+                  {totalComplaints}
+                </Typography>
+              </Box>
+            )}
+
+            {/* Stats - Different layout for Staff vs USER/ADMIN */}
+            {user.role === ROLES.STAFF ? (
+              <>
+                {/* Assigned Stats Section */}
+                <Box sx={{ gridColumn: 'span 2', mb: 1 }}>
+                  <Typography variant="body2" fontWeight={600} color="text.secondary" sx={{ mb: 1.5, textTransform: 'uppercase', fontSize: '0.75rem' }}>
+                    📋 Assigned Complaints
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Resolved</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{assignedResolved}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>In Progress</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{assignedInProgress}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Pending Review</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{assignedPendingReview}</Typography>
+                </Box>
+
+                {/* Submitted Stats Section */}
+                <Box sx={{ gridColumn: 'span 2', mt: 2, mb: 1 }}>
+                  <Typography variant="body2" fontWeight={600} color="text.secondary" sx={{ mb: 1.5, textTransform: 'uppercase', fontSize: '0.75rem' }}>
+                    📝 My Submitted Complaints
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Resolved</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{submittedResolved}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>In Progress</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{submittedInProgress}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Pending</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{submittedPending}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Rejected</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{submittedRejected}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Pending Review</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{submittedPendingReview}</Typography>
+                </Box>
+              </>
+            ) : (
+              <>
+                {/* USER/ADMIN Stats */}
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Resolved</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{resolved}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>In Progress</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{inProgress}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Pending</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{pending}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Rejected</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{rejected}</Typography>
+                </Box>
+                
+                <Box sx={{ backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', borderRadius: '12px', p: 2.5, border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}` }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>Pending Review</Typography>
+                  <Typography variant="h3" sx={{ fontWeight: 600, mt: 0.5 }}>{pendingReview}</Typography>
+                </Box>
+              </>
+            )}
+          </Box>
         </Box>
       </Box>
-      <EditProfile open={editOpen} onClose={setEditCloseController}/>
+
+      <EditProfile open={editOpen} onClose={setEditCloseController} />
     </Container>
   );
 }

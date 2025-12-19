@@ -83,12 +83,14 @@ function ReviewPhotoGallery({ photos = [] }) {
       <Dialog
         open={!!selectedImage}
         onClose={handleClose}
-        maxWidth="lg"
+        maxWidth="md"
         fullWidth
         slotProps={{
           paper: {
             sx: {
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              backdropFilter:'blur(2px)',
+              borderRadius:7
             },
           },
         }}
@@ -151,8 +153,9 @@ function ReviewPhotoGallery({ photos = [] }) {
               alt="Full size"
               style={{
                 maxWidth: '100%',
-                maxHeight: '80vh',
-                objectFit: 'contain',
+                maxHeight: '40vh',
+                objectFit: 'cover',
+                borderRadius:6
               }}
             />
           </Box>
