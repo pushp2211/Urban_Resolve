@@ -1,17 +1,24 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-
+import { Navigate } from 'react-router-dom';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(()=>{
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    return storedUser? storedUser : null
-  }); 
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // useEffect(()=>{
-  //   setUser(localStorage.getItem('user'));
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error('Error loading user from localStorage:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  // },[])
   const login = (userData) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
@@ -25,7 +32,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, setUser }}>
+    <AuthContext.Provider value={{ user, login, logout, setUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

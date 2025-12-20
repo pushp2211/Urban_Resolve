@@ -61,7 +61,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="notifications" element={<Notifications />} />
             {user?.role === ROLES.STAFF && <Route path="assigned-complaints" element={<MyAssignedComplaints />} />}
-            {user?.role === ROLES.STAFF && <Route path="/complaint/resolution-request/:id" element={<ResolutionRequest />} />}
+            {user?.role === ROLES.STAFF && <Route path="complaint/resolution-request/:id" element={<ResolutionRequest />} />}
             {user?.role === ROLES.ADMIN && <Route path="management" element={<Management/>} />}
             {user?.role === ROLES.ADMIN && <Route path="management/resolutions" element={<ReviewRequests/>} />}
             {user?.role === ROLES.ADMIN && <Route path="management/users" element={<ManageUsers/>} />}

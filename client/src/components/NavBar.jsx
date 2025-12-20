@@ -15,6 +15,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { ROLES } from '../../enum/roles';
 import ThemeButton from './ThemeButton';
+import { useLoading } from '../context/LoadingContext';
 // Update pages to be an array of objects with paths
 const userPages = [
   { label: 'Home', path: '/dashboard' },
@@ -34,6 +35,7 @@ const adminPages = [
 
 function NavBar() {
   const {user, logout } = useAuth();
+  const {showLoading, hideLoading} = useLoading();
 
   const navigate = useNavigate();
   // console.log(user);
@@ -53,7 +55,7 @@ function NavBar() {
   const [loading, setLoading] = React.useState(false);
   const handleLogout = async(event) => {
     event.preventDefault();
-    
+    showLoading();
     setLoading(true);
     setError('');
 
@@ -63,7 +65,7 @@ function NavBar() {
 
       if(response.status === 200){
         logout();
-        navigate('/login');
+        navigate('/urban-resolve');
       }
     } catch (error) {
         alert("Encountered an error while log out, Please try again.")
@@ -72,6 +74,7 @@ function NavBar() {
     }
     finally{
       setLoading(false);
+      hideLoading();
     }
   };
   const openProfile = ()=>{

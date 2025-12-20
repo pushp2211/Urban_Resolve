@@ -63,7 +63,7 @@ app.use('/api/v1/data/', reportRouter);
 app.use('/api/v1/landing/', landingRouter);
 
 app.use((err, req, res, next) => {
-  console.error('GLOBAL ERROR HANDLER:', err);
+  // console.error('GLOBAL ERROR HANDLER:', err);
 
   if (err instanceof apiError) {
     return res.status(err.statusCode).json({
