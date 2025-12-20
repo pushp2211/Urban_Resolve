@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useLoading } from '../../context/LoadingContext';
 import apiClient from '../../api/axios';
 function ComplaintStats() {
-    const [complaintData, setUsersData] = useState(null);
+    const [complaintData, setComplaintData] = useState(null);
     const {showLoading, hideLoading } = useLoading();
     const [error, setError] = useState("");
     const [complaintDataArr, setComplaintDataArr] = useState([]);
@@ -22,7 +22,7 @@ function ComplaintStats() {
             try {
                 const resp = await apiClient.get('/landing/complaint-stats');
                 // console.log(resp.data.data);
-                setUsersData(resp.data.data);
+                setComplaintData(resp.data.data);
             } catch (error) {
                 console.log(error.message);
             }
@@ -42,7 +42,7 @@ function ComplaintStats() {
                 count:complaintData[key]
             }))
         setComplaintDataArr(arr);
-        console.log(complaintDataArr);
+        // console.log(complaintDataArr);
     }, [complaintData]);
   return (
     <Box
@@ -51,8 +51,8 @@ function ComplaintStats() {
                 gap:2,
                 flexDirection:{
                     xs:"column-reverse",
-                    sm:"row",
-                    lg:"row"
+                sm:"column-reverse",
+                md:"row"
                 },
                 justifyContent:"center",
                 alignItems:"center",
@@ -80,7 +80,9 @@ function ComplaintStats() {
                         xs:"100%",
                         md:"50%",
                     },
-                    justifySelf:"center"
+                    
+                    justifySelf:"center",
+                    justifyItems:"center"
                 }}
             >
                 <HorizontalChart data={complaintDataArr}/>

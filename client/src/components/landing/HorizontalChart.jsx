@@ -10,15 +10,15 @@ import {
 } from 'recharts';
 
 export default function HorizontalChart({ data }) {
-  console.log(data);
+  // console.log(data);
   return (
     <Box
       sx={{
         minHeight: 20,
         height: '20rem',
         width: {
-          xs: '90%',
-          sm: '25rem',
+          xs: '100%',
+          sm: '28rem',
           lg: '30rem',
         },
         display: 'flex',

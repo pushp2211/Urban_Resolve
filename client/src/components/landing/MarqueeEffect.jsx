@@ -14,13 +14,16 @@ function MarqueeEffect() {
     { title: 'Dashboard', path: '/Homepage.png', description: 'A dynamic and intuitive control center that brings together recent activities, and quick-access tools, helping users track complaint progress and overall system health at a glance.' },
     {
       title: 'Complaint Details',
-      path: '/Complaint_detailed_card.png',
+      path: '/Detailed_complaint_card.png',
       description: 'A dedicated and structured view that showcases every aspect of a complaint, timestamps, and assigned staff, enabling seamless tracking and clearer communication.',
     },
     { title: 'Filters', path: '/Filters.png', description: 'An efficient filtering system that allows users to narrow down complaints based on address, current month or status, ensuring faster discovery and smoother workflow management.' },
     { title: 'Live Notifications', path: '/Notifications.png', description: 'A real-time alert system that instantly updates users about complaint status changes, staff actions, and important system activities, ensuring no critical event goes unnoticed.' },
     { title: 'Profile Page', path: '/Profile_page.png', description: 'A personalized space where users can manage their identity, view account information, update details, and maintain a secure presence within the system.' },
     { title: 'Live status', path: '/Status.png', description: 'A continuously updating interface that displays the current state of submitted complaints, allowing citizens to follow their issue’s journey from submission to resolution.' },
+    { title: 'Resolution Request', path: '/Resolution_review.png', description: 'A streamlined review system where staff can submit resolution requests with proof and admins can evaluate completed work, ensuring quality control and proper closure of complaints.' },
+    { title: 'User Profile info', path: '/User_profile_info.png', description: 'A comprehensive profile management card where admins can view user statistics, update roles, and access detailed account information for effective user administration.' },
+
   ];
   return (
     <Marquee pauseOnHover={true}  gradientWidth={50}

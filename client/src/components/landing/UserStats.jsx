@@ -44,7 +44,7 @@ function UserStats() {
                 count:usersData[key]
             }))
         setUserDataArr(arr);
-        console.log(userDataArr);
+        // console.log(userDataArr);
     }, [usersData]);
 
   return (
@@ -54,8 +54,8 @@ function UserStats() {
             gap:2,
             flexDirection:{
                 xs:"column",
-                sm:"row",
-                lg:"row"
+                sm:"column",
+                md:"row"
             },
             justifyContent:"center",
             alignItems:"center",
@@ -68,7 +68,8 @@ function UserStats() {
                     xs:"100%",
                     md:"50%",
                 },
-                justifySelf:"center"
+                justifySelf:"center",
+                justifyItems:"center"
             }}
         >
             <HorizontalChart data={userDataArr}/>
