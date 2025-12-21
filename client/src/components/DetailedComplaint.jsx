@@ -48,7 +48,7 @@ const getStatusColor = (status) => {
 };
 
 function DetailedComplaint({ complaint, onAssign, onClose }) {
-  console.log(complaint);
+  // console.log(complaint);
   // console.log(theme);
   const theme = useTheme();
   const { user } = useAuth();
@@ -181,6 +181,9 @@ function DetailedComplaint({ complaint, onAssign, onClose }) {
       } catch (err) {
         console.error('Failed to fetch user details:', err);
         setError('Failed to load user details');
+        setSnackMessage('Failed to load user details');
+        setSnackSeverity(SNACK_SEVERITY.ERROR);
+        setShowSnack(true);
       } finally {
         hideLoading();
       }

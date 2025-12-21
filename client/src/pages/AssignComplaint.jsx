@@ -196,7 +196,7 @@ function AssignComplaint() {
           }
         }}>
         {/* Complaint Details - Left Side */}
-        <Grid item xs={12} lg={5} sx={
+        <Grid  sx={
           {
             width:{
               xs:"100%",
@@ -212,7 +212,7 @@ function AssignComplaint() {
         {/* Staff Selection - Right Side */}
         {complaint.status !== COMPLAINT_STATUS.RESOLVED && complaint.status !== COMPLAINT_STATUS.REJECTED
           &&
-          <Grid item xs={12} lg={7}
+          <Grid
           sx={{
             width:{
               xs:"100%",

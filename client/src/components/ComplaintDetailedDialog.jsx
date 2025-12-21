@@ -6,10 +6,18 @@ import { Button, Fade, Box, Grow } from '@mui/material'
 
 function AdminComplaintDetailedDialog({open, onClose, complaint, onAssign}) {
 
+  const handleClose = (event, reason) => {
+    // Blur any focused element before closing
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    onClose(event, reason);
+  };
+
   return (
     <Modal
             open={open}
-            onClose={onClose}
+            onClose={handleClose}
             // maxWidth="40rem"
             sx={{
               backdropFilter: 'blur(2px)',
@@ -28,7 +36,7 @@ function AdminComplaintDetailedDialog({open, onClose, complaint, onAssign}) {
                 border:"none"
               }}
             >
-              <DetailedComplaint complaint={complaint} onAssign={onAssign} onClose={onClose}/>
+              <DetailedComplaint complaint={complaint} onAssign={onAssign} onClose={handleClose}/>
             </Box>
           </Grow>
     </Modal>

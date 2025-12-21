@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Snackbar, Alert } from '@mui/material';
+import Slide from '@mui/material/Slide';
 function Snack({ message, openStatus, severity, setOpenStatus }) {
   const [open, setOpen] = useState(false);
   
@@ -24,11 +25,17 @@ function Snack({ message, openStatus, severity, setOpenStatus }) {
     }
   };
   return (
-    <Snackbar
+    
+      <Snackbar
       open={open}
       autoHideDuration={3500}
       onClose={handleClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      slots={{ transition: Slide }}
+      slotProps={{ 
+        transition: { direction: 'left' }
+      }}
+      
     >
       <Alert
         onClose={handleClose}

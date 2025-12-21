@@ -50,10 +50,10 @@ export const generateLocalityReport = asyncHandler(async (req, res) => {
         typeCounts[complaint.type]++;
     }
 
-  
+    // Set headers only after we're sure we have data and won't throw errors
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=report_${pinCode?pinCode:""}_${state? state: ""}_${new Date().toISOString().slice(0,10)}.pdf`);
 
     
-    generateComplaintReportPDF(complaints, statusCounts, typeCounts, pinCode, state, res);
+    await generateComplaintReportPDF(complaints, statusCounts, typeCounts, pinCode, state, res);
 });

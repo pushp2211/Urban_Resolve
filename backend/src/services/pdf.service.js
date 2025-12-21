@@ -11,7 +11,16 @@ function drawPieChart(doc, chartData, chartX, chartY, radius, title) {
     align: 'center',
   });
 
-  const total = Object.values(chartData).reduce((sum, value) => sum + value, 0);
+  // Filter out invalid values and ensure they're numbers
+  const validData = {};
+  for (const [label, value] of Object.entries(chartData)) {
+    const numValue = Number(value);
+    if (!isNaN(numValue) && numValue > 0) {
+      validData[label] = numValue;
+    }
+  }
+
+  const total = Object.values(validData).reduce((sum, value) => sum + value, 0);
   if (total === 0) {
     doc
       .fontSize(10)
@@ -24,8 +33,7 @@ function drawPieChart(doc, chartData, chartX, chartY, radius, title) {
   const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
   let colorIndex = 0;
 
-  for (const [label, value] of Object.entries(chartData)) {
-    if (value === 0) continue;
+  for (const [label, value] of Object.entries(validData)) {
     const sliceAngle = (value / total) * 2 * Math.PI;
     const endAngle = startAngle + sliceAngle;
     doc
@@ -43,7 +51,7 @@ function drawPieChart(doc, chartData, chartX, chartY, radius, title) {
   const legendStartX = chartX + radius + 20;
   let legendY = chartY - radius;
   colorIndex = 0;
-  for (const [label, value] of Object.entries(chartData)) {
+  for (const [label, value] of Object.entries(validData)) {
     const percentage = ((value / total) * 100).toFixed(1);
     doc
       .rect(legendStartX, legendY, 12, 12)
@@ -68,8 +76,23 @@ export function generateComplaintReportPDF(
   state,
   res
 ) {
-  const doc = new PDFDocument({ margin: 50 });
-  doc.pipe(res);
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new PDFDocument({ margin: 50 });
+      const buffers = [];
+      
+      // Collect PDF data in buffers instead of piping directly to response
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => {
+        const pdfBuffer = Buffer.concat(buffers);
+        // Headers are already set in the controller
+        res.end(pdfBuffer);
+        resolve();
+      });
+      doc.on('error', (err) => {
+        console.error('PDF Document Error:', err);
+        reject(err);
+      });
 
   // Document Header
   doc
@@ -189,7 +212,9 @@ export function generateComplaintReportPDF(
 
     // description line
     doc.fontSize(8);
-    const descriptionText = complaint.description.substring(0, 100) + '...';
+    const descriptionText = complaint.description 
+      ? complaint.description.substring(0, 100) + '...' 
+      : 'No description';
     const descriptionHeight = doc.heightOfString(descriptionText, {
       width: columnWidths.title,
     });
@@ -204,5 +229,10 @@ export function generateComplaintReportPDF(
     doc.fillColor('black').fontSize(10);
   }
 
-  doc.end();
+      doc.end();
+    } catch (err) {
+      console.error('PDF Generation Error:', err);
+      reject(err);
+    }
+  });
 }

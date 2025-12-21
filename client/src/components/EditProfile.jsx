@@ -21,8 +21,10 @@ import apiClient from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { fetchAddressDetails } from '../../utils/pincodeToAddress';
 import { useTheme, alpha } from '@mui/material/styles';
+import Snack from './Snack';
+import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 
-function EditProfile({ open, onClose }) {
+function EditProfile({ open, onClose, snackMessage, setSnackMessage, snackOpen, setSnackOpen, snackSeverity, setSnackSeverity }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
@@ -60,6 +62,8 @@ function EditProfile({ open, onClose }) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  
 
   const { setUser } = useAuth();
 
@@ -168,12 +172,19 @@ function EditProfile({ open, onClose }) {
 
       localStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
-
       onClose();
+      setSnackMessage("Update Successful");
+      setSnackSeverity(SNACK_SEVERITY.SUCCESS);
+      
+
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to update details.');
+      setSnackMessage(err.response?.data?.message || 'Unable to update details.');
+      setSnackSeverity(SNACK_SEVERITY.ERROR);
+      
     } finally {
       setLoading(false);
+      setSnackOpen(true);
     }
   };
 
@@ -414,7 +425,9 @@ function EditProfile({ open, onClose }) {
             </Button>
           </Stack>
         </Stack>
+        
       </Box>
+      
     </Modal>
   );
 }

@@ -226,7 +226,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
         {/* Content Section */}
         <Box sx={{ padding: 2.5 }}>
           <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={12} md={5}>
+            <Grid >
               <Box
                 sx={{
                   background:
@@ -278,7 +278,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
               </Box>
             </Grid>
             {/* Contact Information Card */}
-            <Grid item xs={12} md={5}>
+            <Grid >
               <Card elevation={1} sx={{ borderRadius: 2, height: '100%',
                 width:{
                       xs:"80svw",
@@ -424,7 +424,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
             </Grid>
 
             {/* Role Management Card */}
-            <Grid item xs={12} md={5}>
+            <Grid >
               <Card elevation={1} sx={{ borderRadius: 2, height: '100%',
                 width:{
                       xs:"80svw",
@@ -562,14 +562,19 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
 
             {/* Complaint Stats Section - Only for Staff */}
             {user.role === ROLES.STAFF && user.complaintStats && (
-              <Grid item xs={12}>
+              <Grid >
                 <Card elevation={1} sx={{ 
                   borderRadius: 2,
                   marginX:{
                     xs:0,
                     sm:1,
                     md:2
-                  }
+                  },
+                  width:{
+                      xs:"80svw",
+                      sm:"30rem",
+                      md:"100%"
+                    }
 
                 }}>
                   <Box
@@ -585,7 +590,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
                       Performance Statistics
                     </Typography>
                   </Box>
-                  <CardContent sx={{ paddingX: 4 }}>
+                  <CardContent sx={{ paddingX: 1 }}>
                     <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                       {/* Total Assigned Card */}
                       <Paper
@@ -659,7 +664,7 @@ function UserDetailsModal({ open, user, onClose, onUserUpdate }) {
                               color: 'info.main',
                             },
                           ].map((stat, index) => (
-                            <Grid item xs={6} key={index}>
+                            <Grid key={index}>
                               <Box
                                 sx={{
                                   display: 'flex',

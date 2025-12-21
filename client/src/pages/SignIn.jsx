@@ -12,7 +12,8 @@ import {Visibility, VisibilityOff} from '@mui/icons-material'
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import LogoAndName from '../Logo/LogoAndName';
-
+import Snack from '../components/Snack';
+import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +23,11 @@ function SignIn() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
 
+
+  const[snackMessage, setSnackMessage] = useState("");
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO);
+  
   useEffect(() => {
     if (user) {
       navigate('/dashboard');
@@ -50,7 +56,10 @@ function SignIn() {
       }
     } catch (error) {
       setError(error.response.data.message)
-      console.error('login error', error);
+      // console.error('login error', error);
+      setSnackMessage(error.response.data.message || "Error")
+      setSnackSeverity(SNACK_SEVERITY.ERROR)
+      setSnackOpen(true)
     } finally {
       setLoading(false);
     }
@@ -175,7 +184,7 @@ function SignIn() {
         >
           Log In
         </Button>
-        {error.length > 0 && (
+        {/* {error.length > 0 && (
           <Typography
             variant="overline"
             sx={{
@@ -185,7 +194,7 @@ function SignIn() {
           >
             {error}
           </Typography>
-        )}
+        )} */}
 
         <Typography
           variant="caption"
@@ -199,6 +208,7 @@ function SignIn() {
           </Link>
         </Typography>
       </Paper>
+      {snackOpen && <Snack message={snackMessage} openStatus={snackOpen} severity={snackSeverity} setOpenStatus={setSnackOpen} />}
     </Box>
   );
 }

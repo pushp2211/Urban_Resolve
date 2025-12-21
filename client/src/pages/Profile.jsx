@@ -13,6 +13,8 @@ import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 import EditProfile from '../components/EditProfile';
 import { ROLES } from '../../enum/roles';
 import { useLoading } from '../context/LoadingContext';
+import Snack from '../components/Snack';
+import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 function Profile() {
   const theme = useTheme();
   const { user } = useAuth();
@@ -46,6 +48,10 @@ function Profile() {
   const [submittedPendingReview, setSubmittedPendingReview] = useState(0);
 
   const [editOpen, setEditOpen] = useState(false);
+
+  const[snackMessage, setSnackMessage] = useState("");
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO);
 
   const setEditOpenController = ()=>{
     setEditOpen(true);
@@ -593,7 +599,8 @@ function Profile() {
         </Box>
       </Box>
 
-      <EditProfile open={editOpen} onClose={setEditCloseController} />
+      <EditProfile open={editOpen} onClose={setEditCloseController} setSnackMessage={setSnackMessage} snackOpen={snackOpen} setSnackOpen={setSnackOpen} snackMessage={snackMessage} snackSeverity={snackSeverity} setSnackSeverity={setSnackSeverity} />
+      {snackOpen && <Snack message={snackMessage} openStatus={snackOpen} severity={snackSeverity} setOpenStatus={setSnackOpen} />}
     </Container>
   );
 }

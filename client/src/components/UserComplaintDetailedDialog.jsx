@@ -4,7 +4,7 @@ import Dialog from '@mui/material/Dialog'
 
 function UserComplaintDetailedDialog({open, onClose, complaint}) {
 
-    console.log(complaint)
+    // console.log(complaint)
   return (
     <Dialog
             open={open}
