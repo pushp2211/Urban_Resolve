@@ -165,11 +165,11 @@ const loginUser = asyncHandler(async (req, res) => {
     //sendin cookie
     //cookie is modifiable from server only
     const options = {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
+        httpOnly: process.env.COOKIE_HTTP_ONLY,
+        secure: process.env.COOKIE_SECURE,
+        sameSite: process.env.COOKIE_SAME_SITE,
     };
-    console.log(loggedInUser);
+    // console.log(loggedInUser);
 
     return res
         .status(200)
@@ -199,9 +199,9 @@ const logoutUser = asyncHandler(async (req, res) => {
         }
     );
     const options = {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none", // Match the 'Lax' setting used elsewhere
+        httpOnly: process.env.COOKIE_HTTP_ONLY,
+        secure: process.env.COOKIE_SECURE,
+        sameSite: process.env.COOKIE_SAME_SITE, // Match the 'Lax' setting used elsewhere
     };
 
     return res
