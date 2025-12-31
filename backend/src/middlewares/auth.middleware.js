@@ -60,7 +60,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     const cookieOptions = {
       httpOnly: true,
       secure: true, 
-      sameSite: "none",
+      sameSite: "lax",
     };
 
     // We can't send the new access token in the response body from a middleware
