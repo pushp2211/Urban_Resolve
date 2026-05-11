@@ -30,10 +30,10 @@ function Snack({ message, openStatus, severity, setOpenStatus }) {
       open={open}
       autoHideDuration={3500}
       onClose={handleClose}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      anchorOrigin={{ vertical: 'top', horizontal: 'mid' }}
       slots={{ transition: Slide }}
       slotProps={{ 
-        transition: { direction: 'left' }
+        transition: { direction: 'down' }
       }}
       
     >
@@ -41,7 +41,9 @@ function Snack({ message, openStatus, severity, setOpenStatus }) {
         onClose={handleClose}
         severity={severity || "info"}
         variant="filled"
-        sx={{ width: '100%' }}
+        sx={{ 
+          borderRadius: '2rem',
+        }}
       >
         {message}
       </Alert>
