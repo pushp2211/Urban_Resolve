@@ -4,6 +4,7 @@ import NotificationItem from './NotificationItem';
 export default function NotificationList({
   notifications = [],
   onMarkAsRead,
+  openComplaintModal
 }) {
   if (!notifications.length) {
     return (
@@ -28,6 +29,7 @@ export default function NotificationList({
           key={n._id}
           notification={n}
           onMarkAsRead={() => onMarkAsRead(n)}
+          openComplaintModal = {() => openComplaintModal(n.complaint_id)}
         />
       ))}
     </Box>

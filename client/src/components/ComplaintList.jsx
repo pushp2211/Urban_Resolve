@@ -112,10 +112,11 @@ function ComplaintList({ filter = {} }) {
           setHasNextPage(false);
         }
       } catch (error) {
-        if (error.status === 401) {
-          localStorage.clear();
-          navigate('/login');
-        }
+        console.log(error);
+        // if (error.status === 401) {
+        //   localStorage.clear();
+        //   navigate('/');
+        // }
         setError('Error while fetching complaints, Try again later');
         console.log(error);
       } finally {

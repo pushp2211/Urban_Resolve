@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import apiClient from '../api/axios.js';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -7,16 +7,27 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+    const initializeAuth = async () => {
+      try {
+        const response = await apiClient.get('/profile');
+        const currentUser = response.data?.data?.user;
+
+        if (currentUser) {
+          setUser(currentUser);
+          localStorage.setItem('user', JSON.stringify(currentUser));
+          return;
+        }
+      } catch (error) {
+        console.error('Error loading user from auth storage:', error);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading user from localStorage:', error);
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    initializeAuth();
   }, []);
 
   const login = (userData) => {

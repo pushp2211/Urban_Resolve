@@ -35,7 +35,7 @@ function AssignComplaints() {
         `http://localhost:5000/api/v1/complaints/my-assigned?${queryString}`, 
         {
           headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
+            Authorization: "Bearer " + localStorage.getItem("accessToken"),
           },
         }
       );

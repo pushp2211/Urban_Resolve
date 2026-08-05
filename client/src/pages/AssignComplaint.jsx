@@ -117,13 +117,16 @@ function AssignComplaint() {
       setSnackSeverity(SNACK_SEVERITY.SUCCESS)
       setSnackMessage("complaint assigned successfully");
       setSnackOpen(true);
+      // console.log(complaint);
       fetchComplaint();
+      
       await triggerNotification({
         recipient_id: staffId,
         message : `You have been assigned a complaint from locality ${complaint.address.locality} titled as ${complaint.title} [Urgency: ${complaint.urgency}]`,
         complaint_id:complaint._id
       })
       await triggerNotification({
+        
         recipient_id: complaint.submittedBy?._id || complaint.submittedBy,
         message : `Your complaint titled as ${complaint.title} has been assigned to staff.`,
         complaint_id:complaint._id

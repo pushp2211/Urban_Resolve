@@ -65,8 +65,9 @@ function CategoryButtons() {
   const handleClick = useCallback((key, value) => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
+      const currentValue = params.get(key);
 
-      if (value==="All" || value==="") {
+      if (value === 'All' || value === '' || currentValue === String(value)) {
         params.delete(key);
       } else {
         params.set(key, value);
@@ -81,7 +82,7 @@ function CategoryButtons() {
       // VERY IMPORTANT → return plain object to preserve all values
       return Object.fromEntries(params.entries());
     });
-  }, [searchParams]);
+  }, [setSearchParams]);
   useEffect(() => {
     setStatusFilter(searchParams.get('status') || 'All');
     setUrgencyFilter(searchParams.get('urgency') || 'All');
@@ -115,7 +116,10 @@ function CategoryButtons() {
           gap: 2,
         }}
       >
-        {filters.map((filter, idx) => (
+        {filters.map((filter, idx) => {
+          const isActive = searchParams.get(filter.key) === String(filter.value);
+
+          return (
           <Button
             // id={idx}
             key={filter.key}
@@ -128,12 +132,20 @@ function CategoryButtons() {
                 md: '1rem',
                 lg: '',
               },
+              borderColor: isActive ? 'success.main' : undefined,
+              color: isActive ? 'success.main' : 'inherit',
+              backgroundColor: isActive ? 'rgba(46, 125, 50, 0.12)' : 'transparent',
+              '&:hover': {
+                backgroundColor: isActive ? 'rgba(46, 125, 50, 0.18)' : undefined,
+                borderColor: isActive ? 'success.main' : undefined,
+              },
             }}
             onClick={() => handleClick(filter.key, filter.value)}
           >
             {filter.label}
           </Button>
-        ))}
+          );
+        })}
         {/* <Button
         variant="text"
         sx={{ textTransform: 'none' }}

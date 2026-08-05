@@ -53,21 +53,13 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
       throw new apiError(401, "Refresh token is expired or has been used");
     }
     
-    // If everything is okay, generate new tokens
+    // If everything is okay, generate a new access token only.
+    // Keep the refresh token stable so repeated protected requests do not invalidate each other.
     const newAccessToken = user.generateAccessToken();
-    const newRefreshToken = user.generateRefreshToken(); // It's good practice to rotate refresh tokens as well
-
-    const cookieOptions = {
-      httpOnly: true,
-      secure: true, 
-      sameSite: "lax",
-    };
 
     // We can't send the new access token in the response body from a middleware
     // So, we'll attach it to a custom response header. The frontend can check for this header.
-    res.setHeader('X-Access-Token', newAccessToken);
-
-    res.cookie("refreshToken", newRefreshToken, cookieOptions);
+    res.setHeader('x-access-token', newAccessToken);
 
     // Attach the user to the request and continue
     req.user = user;

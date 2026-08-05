@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Chip } from '@mui/material';
 import NotificationList from '../components/NotificationList';
+import ComplaintDetailedDialog from '../components/ComplaintDetailedDialog';
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -18,6 +19,8 @@ function Notifications() {
   const [notificationError, setNotificationError] = useState('');
   const [markAsReadLoading, setMarkAsReadLoading] = useState(false);
   const [markAsReadMessage, setMarkAsReadMessage] = useState('');
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [openComplaintDialogue, setOpenComplaintDialogue] = useState(false);
 
   const [unReadListOpen, setUnReadListOpen] = useState(false);
   const[readListOpen, setReadListOpen] = useState(true);
@@ -87,6 +90,31 @@ function Notifications() {
     }
   };
 
+  const openComplaintModal = async (complaint_id) => {
+    if (!complaint_id) {
+      return;
+    }
+
+    try {
+      showLoading();
+      const response = await apiClient.get(`/complaint/getOneComplaint/${complaint_id}`);
+      const complaint = response?.data?.data;
+
+      if (!complaint) {
+        setNotificationError('Unable to load complaint details');
+        return;
+      }
+
+      setSelectedComplaint(complaint);
+      setOpenComplaintDialogue(true);
+    } catch (error) {
+      console.log(error);
+      setNotificationError('Unable to load complaint details');
+    } finally {
+      hideLoading();
+    }
+  };
+
   return (
     <Container
       disableGutters
@@ -115,11 +143,20 @@ function Notifications() {
       {unReadListOpen && <NotificationList
         notifications={readNotifications}
         onMarkAsRead={onMarkAsRead}
+        openComplaintModal={openComplaintModal}
       />}
       {readListOpen && <NotificationList
         notifications={unreadNotifications}
         onMarkAsRead={onMarkAsRead}
+        openComplaintModal={openComplaintModal}
       />}
+
+      <ComplaintDetailedDialog
+        complaint={selectedComplaint}
+        open={openComplaintDialogue}
+        onClose={() => setOpenComplaintDialogue(false)}
+        onAssign={() => {}}
+      />
     </Container>
   );
 }
