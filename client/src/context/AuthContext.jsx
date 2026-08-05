@@ -9,7 +9,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const response = await apiClient.get('/profile');
+        const response = await apiClient.get('/profile', {
+          skipAuthRedirect: true,
+        });
         const currentUser = response.data?.data?.user;
 
         if (currentUser) {
@@ -19,9 +21,24 @@ export function AuthProvider({ children }) {
         }
       } catch (error) {
         console.error('Error loading user from auth storage:', error);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('user');
-        setUser(null);
+        const status = error.response?.status;
+
+        if (status === 401) {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('user');
+          setUser(null);
+          return;
+        }
+
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            setUser(JSON.parse(storedUser));
+          } catch (parseError) {
+            console.error('Error parsing cached user from localStorage:', parseError);
+            setUser(null);
+          }
+        }
       } finally {
         setLoading(false);
       }

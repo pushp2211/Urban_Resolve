@@ -55,9 +55,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    
-
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !error.config?.skipAuthRedirect) {
 
 
       console.error('Unauthorized! Redirecting to login.');
