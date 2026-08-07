@@ -29,6 +29,9 @@ function WelcomeLoader() {
   <Typography>
     Almost there! The server is getting ready for action.
   </Typography>
+  <Typography color="text.secondary">
+    This can take upto a minute...
+  </Typography>
 </Box>
   );
 }
