@@ -1,13 +1,13 @@
 import React from 'react'
 import { useAuth } from '../context/AuthContext'
 import { Navigate, Outlet } from 'react-router-dom'
-
+import WelcomeLoader from './WelcomeLoader';
 function ProtectedRoute() {
     const {user, loading} = useAuth();
     
     // Wait for auth check to complete before rendering
     if (loading) {
-        return null; // or a loading spinner
+        return <WelcomeLoader/>; // or a loading spinner
     }
     
     if(!user){
