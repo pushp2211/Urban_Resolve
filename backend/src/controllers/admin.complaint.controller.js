@@ -221,7 +221,9 @@ export const getUserList = asyncHandler(async(req, res)=>{
     const { role, state, pinCode, district, email, page = 1, limit = 10 } = req.query;
 
     // Build dynamic filter
-    const userFilter = {};
+    const userFilter = {
+        isEmailVerified: true
+    };
 
     // Apply role filter (optional)
     if (role) {
@@ -301,7 +303,7 @@ export const getUser = asyncHandler(async (req, res) => {
   // Find user by email
   const user = await User.findOne({ email: userEmail }).select("-password -refreshToken");
 
-  if (!user) {
+  if (!user || user.isEmailVerified!==true) {
     throw new apiError(404, "No user found with this email");
   }
 
