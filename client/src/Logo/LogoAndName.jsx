@@ -18,7 +18,7 @@ function LogoAndName() {
         <Typography 
           sx={{
             fontWeight:"bold",
-            fontSize:"1rem",
+            fontSize:"1.2rem",
             paddingTop:1
           }}
         >

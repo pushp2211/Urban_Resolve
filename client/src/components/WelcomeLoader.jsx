@@ -2,6 +2,7 @@ import { CircularProgress, Box } from "@mui/material";
 import {Typography} from "@mui/material";
 import { PropagateLoader } from "react-spinners";
 import { useTheme } from '@mui/material/styles';
+import LogoAndName from "../Logo/LogoAndName";
 function WelcomeLoader() {
     const theme = useTheme();
   return (
@@ -15,6 +16,7 @@ function WelcomeLoader() {
     gap: 2,
   }}
 >
+  <LogoAndName/>
   <PropagateLoader 
     color={theme.palette.mode === "dark" ? "#ffffff" : "#000000"}
 
