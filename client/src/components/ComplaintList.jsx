@@ -13,6 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import FilterBar from './FilterBar';
 import { Container } from '@mui/material';
 import { useLoading } from '../context/LoadingContext';
+import { SNACK_SEVERITY } from '../../enum/snackSeverity';
+import Snack from './Snack';
 // {pinCode :"", locality : "", city : "", dateRange : "", status : "", page: 1, limit : 14}
 
 function ComplaintList({ filter = {} }) {
@@ -29,15 +31,19 @@ function ComplaintList({ filter = {} }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [complaints, setComplaints] = useState([]);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const observerRef = useRef(null);
   const location = useLocation();
 
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [openDetailedDialogue, setOpenDetailedDialogue] = useState(false);
-
+  const [customFilterApplied, setCustomFilterApplied] = useState(false);
   const { showLoading, hideLoading } = useLoading();
+
+  const [snackMessage, setSnackMessage] = useState('');
+  const [showSnack, setShowSnack] = useState(false);
+  const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO);
 
   const page = parseInt(searchParams.get('page')) || 1;
   const city = searchParams.get('city') || '';
@@ -48,6 +54,12 @@ function ComplaintList({ filter = {} }) {
   const limit = searchParams.get('limit') || 12;
   const urgency = searchParams.get('urgency') || '';
 
+  // const defaultFilters = [
+  //   { label: 'This Month', key: 'dateRange', value: 'this_month' },
+  //   { label: 'My City', key: 'city', value: user.address?.city },
+  //   { label: 'My Pincode', key: 'pinCode', value: user.address?.pinCode },
+  // ];
+
   useEffect(() => {
     // resetting the page number on reload
     setSearchParams((prevParams) => {
@@ -56,7 +68,7 @@ function ComplaintList({ filter = {} }) {
       newParams.set('page', '1');
       return newParams;
     });
-    }, []);
+  }, []);
 
   useEffect(() => {
     // console.log(searchParams.toString())
@@ -76,10 +88,19 @@ function ComplaintList({ filter = {} }) {
     // if (limit) query.set('limit', limit);
     // if(urgency) query.set('urgency', urgency);
     if (filter) {
+      // setCustomFilterApplied(false);
       Object.entries(filter).forEach(([key, value]) => {
         // Ensure the value is not null/undefined before adding it
         if (value) {
           query.set(key, value);
+
+          // setCustomFilterApplied(
+          //   () =>
+          //     !defaultFilters.some(
+          //       (defaultFilter) =>
+          //         defaultFilter.key === key && defaultFilter.value === value
+          //     )
+          // );
         }
       });
     }
@@ -88,14 +109,13 @@ function ComplaintList({ filter = {} }) {
 
     const fetchComplaints = async () => {
       try {
-        if(page!==1){
+        if (page !== 1) {
           setLoading(true);
         }
-        if(page===1){
+        if (page === 1) {
           showLoading();
         }
         setError('');
-        
 
         const response = await apiClient.get(`/service?${query.toString()}`);
         // console.log(response);
@@ -111,6 +131,13 @@ function ComplaintList({ filter = {} }) {
         } else {
           setHasNextPage(false);
         }
+
+        // if (page === 1) {
+        //   setSnackMessage(`Complaints Fetched Successfully`);
+
+        //   setShowSnack(true);
+        //   setSnackSeverity(SNACK_SEVERITY.INFO);
+        // }
       } catch (error) {
         console.log(error);
         // if (error.status === 401) {
@@ -118,7 +145,10 @@ function ComplaintList({ filter = {} }) {
         //   navigate('/');
         // }
         setError('Error while fetching complaints, Try again later');
-        console.log(error);
+        // console.log(error);
+        setSnackMessage(`Error while fetching complaints, Try again later`);
+        setShowSnack(true);
+        setSnackSeverity(SNACK_SEVERITY.ERROR);
       } finally {
         hideLoading();
         setLoading(false);
@@ -280,6 +310,12 @@ function ComplaintList({ filter = {} }) {
         open={openDetailedDialogue}
         onClose={() => setOpenDetailedDialogue(false)}
         onAssign={onAssign}
+      />
+      <Snack
+        message={snackMessage}
+        openStatus={showSnack}
+        severity={snackSeverity}
+        setOpenStatus={setShowSnack}
       />
     </>
   );

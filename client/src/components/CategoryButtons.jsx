@@ -11,18 +11,19 @@ import { useLoading } from '../context/LoadingContext';
 import { COMPLAINT_URGENCY } from '../../enum/ComplaintUrgency';
 import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 import Snack from './Snack';
+import GlobalLoading from './GlobalLoading';
 
 function CategoryButtons() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [genFilter, setGenFilter] = useState('');
-  const { showLoading, hideLoading } = useLoading();
+  const { globalLoading, showLoading, hideLoading } = useLoading();
 
   const [statusFilter, setStatusFilter] = useState('');
   const [urgencyFilter, setUrgencyFilter] = useState('');
   const [snackMessage, setSnackMessage] = useState('');
   const [showSnack, setShowSnack] = useState(false);
   const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO)
-
+  
 
   const handleChange = (e) => {
     setGenFilter(e.target.value);
@@ -74,10 +75,11 @@ function CategoryButtons() {
       }
 
       params.set('page', '1');
-
-      setSnackMessage('filter applied');
-      setShowSnack(true);
-      setSnackSeverity(SNACK_SEVERITY.INFO);
+      // while(!globalLoading) {};
+      // if(currentValue !== value)setSnackMessage(`${key.toUpperCase()} set to ${value}`);
+      // else setSnackMessage(`FILTER REMOVED`);
+      // setShowSnack(true);
+      // setSnackSeverity(SNACK_SEVERITY.INFO);
 
       // VERY IMPORTANT → return plain object to preserve all values
       return Object.fromEntries(params.entries());
