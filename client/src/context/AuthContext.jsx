@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
     
 
     const initializeAuth = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 5000)); // 5-second delay
+      // await new Promise((resolve) => setTimeout(resolve, 5000)); // 5-second delay
       try {
         const response = await apiClient.get('/profile', {
           skipAuthRedirect: true,
