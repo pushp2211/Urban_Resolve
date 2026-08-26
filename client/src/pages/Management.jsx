@@ -8,7 +8,7 @@ import GavelIcon from '@mui/icons-material/Gavel';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import apiClient from '../api/axios';
-import { useLoading } from '../context/LoadingContext';
+import { useLoading } from '../hooks/useLoading';
 import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 
 function Management() {

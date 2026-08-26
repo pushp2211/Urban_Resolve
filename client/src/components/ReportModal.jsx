@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useLoading } from '../context/LoadingContext';
+import { useLoading } from '../hooks/useLoading';
 import { Autocomplete } from '@mui/material';
 import { INDIAN_STATES } from '../../utils/indianStates';
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useLoading } from '../../context/LoadingContext';
+import { useLoading } from '../../hooks/useLoading';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import FilterListAltIcon from '@mui/icons-material/FilterListAlt';
 import AdminFilterModal from '../AdminFilterModal';

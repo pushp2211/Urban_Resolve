@@ -1,30 +1,31 @@
-import React, { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import ComplaintList from '../components/ComplaintList';
 import Box from '@mui/material/Box';
-import { useAuth } from '../context/AuthContext';
-// const [error, setError] = useState('');
-// const [complaints, setComplaints] = useState([]);
+import { useAuth } from '../hooks/useAuth';
 
 function Home() {
   const location = useLocation();
-  const queryParams = Object.fromEntries(new URLSearchParams(location.search));
-  // console.log(queryParams);
-  const {user} = useAuth();
-  queryParams['district'] = user.address?.district;
-  // const dateRange = queryParams.get('dateRange');
-  // const [loading, setLoading] = useState(false);
-  // console.log(location.pathname);
+  const { user } = useAuth();
+  const district = user?.address?.district;
+
+  const queryParams = useMemo(() => {
+    const params = Object.fromEntries(new URLSearchParams(location.search));
+    if (district) {
+      params['district'] = district;
+    }
+    return params;
+  }, [location.search, district]);
+
   return (
-      <Box
-        sx={{
-          width:'100%',
-          // marginY:'2rem'
-        }}
-      >
-        <ComplaintList filter={queryParams}/>
-      </Box>
-  )
+    <Box
+      sx={{
+        width: '100%',
+      }}
+    >
+      <ComplaintList filter={queryParams} />
+    </Box>
+  );
 }
 
-export default Home
+export default Home;

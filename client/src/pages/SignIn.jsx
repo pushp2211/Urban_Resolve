@@ -4,35 +4,35 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
-import apiClient from '../api/axios';
+import { Link, useNavigate } from 'react-router-dom';
 import { IconButton, InputAdornment } from '@mui/material';
-import {Visibility, VisibilityOff} from '@mui/icons-material'
-//for login
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../redux/slices/authSlice';
 import LogoAndName from '../Logo/LogoAndName';
 import Snack from '../components/Snack';
 import { SNACK_SEVERITY } from '../../enum/snackSeverity';
+
 function SignIn() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [show, setShow] = useState(false);
-  const { user, login } = useAuth();
-  const navigate = useNavigate();
 
-
-  const[snackMessage, setSnackMessage] = useState("");
+  const [snackMessage, setSnackMessage] = useState('');
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO);
-  
+
   useEffect(() => {
     if (user) {
       navigate('/dashboard');
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -44,43 +44,40 @@ function SignIn() {
     setError('');
 
     try {
-      const response = await apiClient.post('/login', { email, password });
-      const accessToken = response.data.data.accessToken;
-      if (accessToken) {
-        localStorage.setItem('accessToken', accessToken);
-      }
-
-      if (response.data?.data?.user) {
-        login(response.data.data.user);
+      const resultAction = await dispatch(loginUser({ email, password }));
+      if (loginUser.fulfilled.match(resultAction)) {
         navigate('/dashboard');
+      } else {
+        const errMsg = resultAction.payload || 'Login failed';
+        setError(errMsg);
+        setSnackMessage(errMsg);
+        setSnackSeverity(SNACK_SEVERITY.ERROR);
+        setSnackOpen(true);
       }
-    } catch (error) {
-      setError(error.response.data.message)
-      // console.error('login error', error);
-      setSnackMessage(error.response.data.message || "Error")
-      setSnackSeverity(SNACK_SEVERITY.ERROR)
-      setSnackOpen(true)
+    } catch (err) {
+      const errMsg = err?.message || 'Login error';
+      setError(errMsg);
+      setSnackMessage(errMsg);
+      setSnackSeverity(SNACK_SEVERITY.ERROR);
+      setSnackOpen(true);
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <Box
-      sx={
-        {
-          // backgroundColor:'white',
-          minHeight:'100svh',
-          display:"flex",
-          justifyContent:"center",
-          alignItems:"center",
-          flexDirection:"column",
-          gap:2
-        }
-      }
-      // className="min-h-screen flex justify-center items-center"
+      sx={{
+        minHeight: '100svh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        gap: 2,
+      }}
     >
-      <LogoAndName/>
-      
+      <LogoAndName />
+
       <Paper
         sx={{
           borderRadius: '0.8rem',
@@ -92,14 +89,13 @@ function SignIn() {
           width: {
             lg: '24rem',
             sm: '23rem',
-            xs:"22rem"
+            xs: '22rem',
           },
           marginX: 2,
-          paddingY:4,
+          paddingY: 4,
         }}
         component={'form'}
         elevation={3}
-        // className="p-5 w-full max-w-md bg-[#f5f5f7]"
         onSubmit={handleSubmit}
       >
         <Typography
@@ -107,16 +103,14 @@ function SignIn() {
             textAlign: 'center',
             fontWeight: 'bold',
             fontSize: '1.5rem',
-            display:"flex",
-            flexDirection:"column"
-            // marginBottom: '1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           Welcome Back
-          <Typography variant='caption'>
-            Login with your email
-          </Typography>
+          <Typography variant="caption">Login with your email</Typography>
         </Typography>
+
         <TextField
           required
           label="Email"
@@ -128,9 +122,8 @@ function SignIn() {
           sx={{
             width: 0.8,
           }}
-          type='email'
-          autoComplete='email'
-        
+          type="email"
+          autoComplete="email"
         />
 
         <TextField
@@ -141,33 +134,37 @@ function SignIn() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="•••••••••••••"
           variant="standard"
-          type={show ? "text" : "password"}
+          type={show ? 'text' : 'password'}
           sx={{
             width: 0.8,
           }}
           slotProps={{
-            input:{
+            input: {
               endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={(e) => {
-                  e.stopPropagation();
-                  setShow((prev) => !prev);
-                }} edge="end">
-                  {show ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            )
-            }
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShow((prev) => !prev);
+                    }}
+                    edge="end"
+                  >
+                    {show ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
           }}
-          autoComplete='current-password'
+          autoComplete="current-password"
         />
+
         <Box
           sx={{
-            alignSelf:"end",
-            marginX:"2.4rem"
+            alignSelf: 'end',
+            marginX: '2.4rem',
           }}
         >
-          <Link to='/forgot-password'  className="text-blue-400 hover:underline text-xs">
+          <Link to="/forgot-password" className="text-blue-400 hover:underline text-xs">
             Forgot Pasword
           </Link>
         </Box>
@@ -178,23 +175,22 @@ function SignIn() {
           type="submit"
           variant="contained"
           size="large"
-          sx={{
-
-          }}
         >
           Log In
         </Button>
-        {/* {error.length > 0 && (
+
+        {error.length > 0 && (
           <Typography
-            variant="overline"
+            variant="caption"
             sx={{
-              color: 'red',
-              textAlign:"center"
+              color: 'error.main',
+              textAlign: 'center',
+              px: 2,
             }}
           >
             {error}
           </Typography>
-        )} */}
+        )}
 
         <Typography
           variant="caption"
@@ -208,7 +204,14 @@ function SignIn() {
           </Link>
         </Typography>
       </Paper>
-      {snackOpen && <Snack message={snackMessage} openStatus={snackOpen} severity={snackSeverity} setOpenStatus={setSnackOpen} />}
+      {snackOpen && (
+        <Snack
+          message={snackMessage}
+          openStatus={snackOpen}
+          severity={snackSeverity}
+          setOpenStatus={setSnackOpen}
+        />
+      )}
     </Box>
   );
 }

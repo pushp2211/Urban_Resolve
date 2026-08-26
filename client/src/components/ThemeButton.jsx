@@ -4,7 +4,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import { Box, Typography } from '@mui/material';
 import {IconButton} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useThemeToggle } from '../context/ThemeContext';
+import { useThemeToggle } from '../hooks/useThemeToggle';
 function ThemeButton({label=false}) {
     const theme = useTheme();
     const {toggleTheme} = useThemeToggle();

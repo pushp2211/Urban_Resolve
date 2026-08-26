@@ -14,7 +14,7 @@ import ManageUsersFilters from '../components/admin/ManageUsersFilters';
 import UserCard from '../components/admin/UserCard';
 import UserDetailsModal from '../components/admin/UserDetailsModal';
 import apiClient from '../api/axios';
-import { useLoading } from '../context/LoadingContext';
+import { useLoading } from '../hooks/useLoading';
 
 function ManageUsers() {
   const navigate = useNavigate();

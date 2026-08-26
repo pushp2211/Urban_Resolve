@@ -10,7 +10,7 @@ import {
 
 
 import { Box } from '@mui/material';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { ROLES } from '../../enum/roles';
 export default function InfoPieChart({ data}) {
   const {user} = useAuth();

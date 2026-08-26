@@ -20,7 +20,7 @@ import { COMPLAINT_STATUS } from '../../../enum/ComplaintStatus';
 import { COMPLAINT_TYPE } from '../../../enum/ComplaintType';
 import { COMPLAINT_URGENCY } from '../../../enum/ComplaintUrgency';
 import { getComplaint } from '../../api/getComplaintDetail';
-import { useLoading } from '../../context/LoadingContext';
+import { useLoading } from '../../hooks/useLoading';
 import UserDetailsModal from './UserDetailsModal';
 import apiClient from '../../api/axios';
 

@@ -18,7 +18,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import apiClient from '../api/axios';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { fetchAddressDetails } from '../../utils/pincodeToAddress';
 import { useTheme, alpha } from '@mui/material/styles';
 import Snack from './Snack';

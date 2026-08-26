@@ -2,7 +2,7 @@ import React from 'react'
 import ResolutionRequestForm from '../components/ComplaintResolution/ResolutionRequestForm'
 import { useParams } from 'react-router-dom'
 import { useState } from 'react';
-import { useLoading } from '../context/LoadingContext';
+import { useLoading } from '../hooks/useLoading';
 import { Box } from '@mui/material';
 import ComplaintCard from '../components/ComplaintResolution/ComplaintCard';
 import Snack from '../components/Snack';

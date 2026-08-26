@@ -4,7 +4,7 @@ import HorizontalChart from './HorizontalChart';
 import { useState } from 'react';
 import apiClient from '../../api/axios';
 import { useEffect } from 'react';
-import { useLoading } from '../../context/LoadingContext';
+import { useLoading } from '../../hooks/useLoading';
 function UserStats() {
 
     const [usersData, setUsersData] = useState(null);
@@ -20,7 +20,6 @@ function UserStats() {
     useEffect(()=>{
         const fetchStats = async()=>{
             setError("");
-            showLoading();
             try {
                 const resp = await apiClient.get('/landing/user-stats');
                 // console.log(resp.data.data);
@@ -28,9 +27,7 @@ function UserStats() {
             } catch (error) {
                 console.log(error.message);
             }
-            finally{
-                hideLoading();
-            }
+            
         }
         fetchStats();
     }, [])

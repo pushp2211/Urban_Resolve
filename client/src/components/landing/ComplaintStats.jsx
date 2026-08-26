@@ -2,7 +2,7 @@ import React from 'react'
 import { Box } from '@mui/material'
 import HorizontalChart from './HorizontalChart';
 import { useState, useEffect } from 'react';
-import { useLoading } from '../../context/LoadingContext';
+import { useLoading } from '../../hooks/useLoading';
 import apiClient from '../../api/axios';
 function ComplaintStats() {
     const [complaintData, setComplaintData] = useState(null);
@@ -18,7 +18,6 @@ function ComplaintStats() {
     useEffect(()=>{
         const fetchStats = async()=>{
             setError("");
-            showLoading();
             try {
                 const resp = await apiClient.get('/landing/complaint-stats');
                 // console.log(resp.data.data);
@@ -26,9 +25,7 @@ function ComplaintStats() {
             } catch (error) {
                 console.log(error.message);
             }
-            finally{
-                hideLoading();
-            }
+            
         }
         fetchStats();
     }, [])

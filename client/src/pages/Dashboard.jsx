@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid';
 import ComplaintCard from '../components/ComplaintCard';
 import FilterBar from '../components/FilterBar';
 import { Outlet } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { Button } from '@mui/material';
 import NotificationButton from '../components/NotificationButton';
 import ReportModalButton from '../components/ReportModalButton';

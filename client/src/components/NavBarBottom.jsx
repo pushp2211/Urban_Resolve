@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Link as routerLink, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // <-- Import useAuth
-import apiClient from '../api/axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../redux/slices/authSlice';
+import { toggleTheme } from '../redux/slices/themeSlice';
+import { showLoading, hideLoading } from '../redux/slices/loadingSlice';
 // MUI Imports
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -15,11 +17,8 @@ import Tooltip from '@mui/material/Tooltip';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { ROLES } from '../../enum/roles';
 import CustomMenu from './CustomMenu';
-import { useThemeToggle } from '../context/ThemeContext';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
-import { useLoading } from '../context/LoadingContext';
-// Update pages to be an array of objects with paths
 
 const userPages = [
   { label: 'Home', path: '/dashboard' },
@@ -38,53 +37,47 @@ const adminPages = [
 ];
 
 function NavBarBottom() {
-  const {showLoading, hideLoading} = useLoading();
-  const { user, logout } = useAuth();
-  const {mode, toggleTheme} = useThemeToggle();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  // console.log(user);
-  useEffect(() => {
-    if (user.role === ROLES.ADMIN) {
-      setPages(adminPages);
-    }
-    if (user.role === ROLES.STAFF) {
-      setPages(staffPages);
-    }
-  }, [user]);
+  const { user } = useSelector((state) => state.auth);
+  const mode = useSelector((state) => state.theme?.mode || 'light');
 
   const [pages, setPages] = React.useState(userPages);
-
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
-  const handleThemeClick = ()=>{
-    toggleTheme();
-  }
+  useEffect(() => {
+    if (user?.role === ROLES.ADMIN) {
+      setPages(adminPages);
+    } else if (user?.role === ROLES.STAFF) {
+      setPages(staffPages);
+    } else {
+      setPages(userPages);
+    }
+  }, [user]);
 
-
+  const handleThemeClick = () => {
+    dispatch(toggleTheme());
+  };
 
   const handleLogout = async (event) => {
-    showLoading();
+    dispatch(showLoading());
     setLoading(true);
     setError('');
     try {
-      const response = await apiClient.post('/logout');
-
-      if (response.status === 200) {
-        logout();
-        navigate('/login');
-      }
-    } catch (error) {
+      await dispatch(logoutUser());
+      navigate('/login');
+    } catch (err) {
       alert('Encountered an error while log out, Please try again.');
-      setError(
-        error.response?.data?.message || 'failed logging out please try again'
-      );
-      console.error('logout error', error);
+      setError(err?.message || 'failed logging out please try again');
+      console.error('logout error', err);
     } finally {
-      hideLoading();
+      dispatch(hideLoading());
       setLoading(false);
     }
   };
+
+  if (!user) return null;
 
   return (
     <Box
@@ -92,12 +85,11 @@ function NavBarBottom() {
         position: 'fixed',
         bottom: 0,
         width: '100%',
-        // backgroundColor:'red',
         zIndex: 2,
         boxShadow: 0,
-        bgcolor: 'transparent', // Use transparent for the glass effect
+        bgcolor: 'transparent',
         backdropFilter: 'blur(24px)',
-        border: '1px solid rgba(255, 255, 255, 0.2)', // Complete border style
+        border: '1px solid rgba(255, 255, 255, 0.2)',
         mt: 2,
         display: { xs: 'fixed', md: 'none' },
         marginBottom: '0.5rem',
@@ -108,10 +100,9 @@ function NavBarBottom() {
         <Toolbar
           disableGutters
           sx={{
-            minHeight: '4rem', // <-- adjust height here (default 64)
+            minHeight: '4rem',
           }}
         >
-
           <Box
             sx={{
               display: 'flex',
@@ -123,7 +114,7 @@ function NavBarBottom() {
             {pages.map((page) => (
               <Button
                 key={page.label}
-                component={routerLink} // Make buttons act as router links
+                component={routerLink}
                 to={page.path}
                 sx={{
                   my: 0,
@@ -141,38 +132,23 @@ function NavBarBottom() {
                 {page.label}
               </Button>
             ))}
-            {/*<Button
-              sx={{ color: 'text.primary', marginX: '0rem' }}
-               onClick={()=>menuToggle} // <-- Add logout functionality
-            >
-               <LogoutIcon /> 
-              
-              <MenuIcon/>
-            </Button>*/} 
+
             <CustomMenu
-              buttonLabel='Menu'
-              
+              buttonLabel="Menu"
               items={[
                 {
-                  label: mode==="dark"? "Light Mode" : "Dark Mode",
-                  icon: mode === "dark"?<LightModeIcon/> : <DarkModeIcon/> ,
-                  onClick: handleThemeClick
+                  label: mode === 'dark' ? 'Light Mode' : 'Dark Mode',
+                  icon: mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />,
+                  onClick: handleThemeClick,
                 },
                 {
-                  label: "Logout",
-                  icon: <LogoutIcon/>,
-                  onClick: handleLogout
+                  label: 'Logout',
+                  icon: <LogoutIcon />,
+                  onClick: handleLogout,
                 },
-                // {
-                //   item:<Button>
-                //     <LogoutIcon/>
-                //     Log Out
-                //   </Button>
-                // }
-                // <ThemeButton/>
               ]}
             />
-            
+
             <Tooltip title="Profile">
               <IconButton
                 key="profile"
@@ -180,14 +156,10 @@ function NavBarBottom() {
                 to="/profile"
                 sx={{ p: 0 }}
               >
-                <Avatar alt={user.fullName} src={user.profilePicture} />
+                <Avatar alt={user?.fullName} src={user?.profilePicture} />
               </IconButton>
             </Tooltip>
           </Box>
-          {/* <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}> */}
-
-          {/* You will need to add the <Menu> component here for the settings dropdown */}
-          {/* </Box> */}
         </Toolbar>
       </Container>
     </Box>

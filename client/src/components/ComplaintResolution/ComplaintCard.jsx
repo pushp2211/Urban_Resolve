@@ -3,7 +3,7 @@ import React from 'react';
 import { getComplaint } from '../../api/getComplaintDetail';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { useLoading } from '../../context/LoadingContext';
+import { useLoading } from '../../hooks/useLoading';
 import { Box, Typography, Avatar, Chip } from '@mui/material';
 import { COMPLAINT_STATUS } from '../../../enum/ComplaintStatus';
 import { useTheme } from '@mui/material/styles';
@@ -109,14 +109,14 @@ function ComplaintCard({ id, sx, setCurComplaint }) {
             label={complaint?.status}
             variant="outlined"
             color={getStatusColor(complaint?.status)}
-            // size="small"
+          // size="small"
           />
         </Box>
       </Box>
       <Box>
-          <Typography variant='overline' color='warning'>
-            {complaint?.title}
-          </Typography>
+        <Typography variant='overline' color='warning'>
+          {complaint?.title}
+        </Typography>
       </Box>
 
       <Box
@@ -167,7 +167,7 @@ function ComplaintCard({ id, sx, setCurComplaint }) {
           gap: 1.5,
           flexWrap: 'wrap',
           alignItems: 'center',
-          justifyContent:"flex-end"
+          justifyContent: "flex-end"
         }}
       >
         <Chip
@@ -200,7 +200,7 @@ function ComplaintCard({ id, sx, setCurComplaint }) {
           </Box>
         )}
       </Box>
-      
+
       {complaint?.description && (
         <Box
           sx={{
@@ -223,9 +223,9 @@ function ComplaintCard({ id, sx, setCurComplaint }) {
       <Box
         sx={{
           backgroundColor:
-                theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
-              padding: 2,
-              borderRadius: 2,
+            theme.palette.mode === 'dark' ? '#3c4042' : '#f1f0fa',
+          padding: 2,
+          borderRadius: 2,
         }}
       >
         {!complaint?.resolutionReview &&
@@ -256,11 +256,11 @@ function ComplaintCard({ id, sx, setCurComplaint }) {
               </Typography>
               <Typography
                 sx={{
-                  display:'flex',
-                  flexDirection:"row",
-                  gap:1,
-                  alignItems:"center",
-                  justifyContent:"flex-start"
+                  display: 'flex',
+                  flexDirection: "row",
+                  gap: 1,
+                  alignItems: "center",
+                  justifyContent: "flex-start"
                 }}
               >
                 Note:
@@ -293,9 +293,9 @@ function ComplaintCard({ id, sx, setCurComplaint }) {
             >
               <Box>
                 {complaint?.resolutionReview?.approved === true ? (
-                  <Chip label="Approved" color="success" size="small"/>
+                  <Chip label="Approved" color="success" size="small" />
                 ) : (
-                  <Chip label="Rejected" color="error" size="small"/>
+                  <Chip label="Rejected" color="error" size="small" />
                 )}
               </Box>
               <Typography

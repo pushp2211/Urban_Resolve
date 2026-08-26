@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import apiClient from '../api/axios';
-import { useAuth } from '../context/AuthContext';
-import { useLoading } from '../context/LoadingContext';
+import { useAuth } from '../hooks/useAuth';
+import { useLoading } from '../hooks/useLoading';
 import {
   getNotifications,
   markNotificationAsRead,
@@ -57,7 +57,7 @@ function Notifications() {
       }
     };
     fetchNotifications();
-  }, [user]);
+  }, [user?._id]);
     const readNotifications = notifications.filter((n) => n.read_status);
     const unreadNotifications = notifications.filter((n) => !n.read_status);
 

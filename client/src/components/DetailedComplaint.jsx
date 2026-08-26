@@ -8,14 +8,14 @@ import {
   COMPLAINT_STATUS_ENUM,
 } from '../../enum/ComplaintStatus';
 import Avatar from '@mui/material/Avatar';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { ROLES } from '../../enum/roles';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import apiClient from '../api/axios';
 import StaffListDialog from './StaffListDialog.jsx';
-import { useLoading } from '../context/LoadingContext.jsx';
+import { useLoading } from '../hooks/useLoading';
 // import {theme }from '../theme.js';
 // import InputLabel from '@mui/material/InputLabel';
 // import MenuItem from '@mui/material/MenuItem';

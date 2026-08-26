@@ -23,7 +23,7 @@ import UserDetailsModal from '../components/admin/UserDetailsModal';
 import AdminComplaintCard from '../components/admin/AdminComplaintCard';
 import StaffCard from '../components/StaffCard';
 import { getComplaint } from '../api/getComplaintDetail';
-import { useLoading } from '../context/LoadingContext';
+import { useLoading } from '../hooks/useLoading';
 import Snack from '../components/Snack';
 import { triggerNotification } from '../../utils/notificationService';
 import { SNACK_SEVERITY } from '../../enum/snackSeverity';

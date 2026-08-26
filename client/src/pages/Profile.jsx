@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {Button} from '@mui/material';
 import { Avatar, Container } from '@mui/material';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import InfoPieChart from '../components/InfoPieChart';
 import apiClient from '../api/axios';
 // import {theme} from '../theme';
@@ -12,7 +12,7 @@ import { useTheme } from '@mui/material/styles';
 import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 import EditProfile from '../components/EditProfile';
 import { ROLES } from '../../enum/roles';
-import { useLoading } from '../context/LoadingContext';
+import { useLoading } from '../hooks/useLoading';
 import Snack from '../components/Snack';
 import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 function Profile() {
@@ -129,7 +129,7 @@ function Profile() {
       }
     };
     fetchInfo();
-  }, [user]);
+  }, [user?._id]);
 
   useEffect(() => {
     let chartData = [];

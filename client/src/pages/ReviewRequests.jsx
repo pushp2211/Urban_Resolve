@@ -14,7 +14,7 @@ import PendingReviewFilters from '../components/admin/PendingReviewFilters';
 import ReviewComplaintCardCompact from '../components/admin/ReviewComplaintCardCompact';
 import ReviewDetailsSidebar from '../components/admin/ReviewDetailsSidebar';
 import apiClient from '../api/axios';
-import { useLoading } from '../context/LoadingContext';
+import { useLoading } from '../hooks/useLoading';
 
 function ReviewRequests() {
   const navigate = useNavigate();

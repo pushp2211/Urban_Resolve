@@ -27,7 +27,7 @@ import ConfirmDialog from '../common/ConfirmDialog';
 import apiClient from '../../api/axios';
 import { triggerNotification } from '../../../utils/notificationService';
 import UserDetailsModal from './UserDetailsModal';
-import { useLoading } from '../../context/LoadingContext';
+import { useLoading } from '../../hooks/useLoading';
 function ReviewDetailsSidebar({ open, complaint, onClose, onReviewed }) {
   const theme = useTheme();
   const [showRejectDialog, setShowRejectDialog] = useState(false);

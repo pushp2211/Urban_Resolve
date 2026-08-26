@@ -4,7 +4,7 @@ import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import FilterListAltIcon from '@mui/icons-material/FilterListAlt';
 import AdminFilterModal from '../AdminFilterModal'
 import {useTheme} from '@mui/material';
-import { useLoading } from '../../context/LoadingContext';
+import { useLoading } from '../../hooks/useLoading';
 import apiClient from '../../api/axios';
 
 function UserStats({}) {

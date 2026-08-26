@@ -3,11 +3,10 @@ import Button from '@mui/material/Button';
 import React, { useCallback, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { COMPLAINT_STATUS } from '../../enum/ComplaintStatus';
 // pinCode, locality, city, dateRange, status
 
-import { useLoading } from '../context/LoadingContext';
 import { COMPLAINT_URGENCY } from '../../enum/ComplaintUrgency';
 import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 import Snack from './Snack';
@@ -16,7 +15,6 @@ import GlobalLoading from './GlobalLoading';
 function CategoryButtons() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [genFilter, setGenFilter] = useState('');
-  const { globalLoading, showLoading, hideLoading } = useLoading();
 
   const [statusFilter, setStatusFilter] = useState('');
   const [urgencyFilter, setUrgencyFilter] = useState('');

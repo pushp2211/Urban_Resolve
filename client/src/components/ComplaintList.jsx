@@ -4,41 +4,28 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import ComplaintCard from './ComplaintCard';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import apiClient from '../api/axios';
-import { useAuth } from '../context/AuthContext';
-import { ROLES } from '../../enum/roles';
 import ComplaintDetailedDialog from './ComplaintDetailedDialog';
-import { useNavigate } from 'react-router-dom';
 import FilterBar from './FilterBar';
 import { Container } from '@mui/material';
-import { useLoading } from '../context/LoadingContext';
+import { useLoading } from '../hooks/useLoading';
 import { SNACK_SEVERITY } from '../../enum/snackSeverity';
 import Snack from './Snack';
-// {pinCode :"", locality : "", city : "", dateRange : "", status : "", page: 1, limit : 14}
 
 function ComplaintList({ filter = {} }) {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const [parsedUser, setParsedUser] = useState(null);
-
-  useEffect(() => {
-    if (user) {
-      setParsedUser(user);
-    }
-  }, [user]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [complaints, setComplaints] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
+
   const observerRef = useRef(null);
-  const location = useLocation();
+
 
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [openDetailedDialogue, setOpenDetailedDialogue] = useState(false);
-  const [customFilterApplied, setCustomFilterApplied] = useState(false);
+
   const { showLoading, hideLoading } = useLoading();
 
   const [snackMessage, setSnackMessage] = useState('');
@@ -46,107 +33,54 @@ function ComplaintList({ filter = {} }) {
   const [snackSeverity, setSnackSeverity] = useState(SNACK_SEVERITY.INFO);
 
   const page = parseInt(searchParams.get('page')) || 1;
-  const city = searchParams.get('city') || '';
-  const locality = searchParams.get('locality') || '';
-  const pinCode = searchParams.get('pinCode') || '';
-  const status = searchParams.get('status') || '';
-  const dateRange = searchParams.get('dateRange') || '';
-  const limit = searchParams.get('limit') || 12;
-  const urgency = searchParams.get('urgency') || '';
-
-  // const defaultFilters = [
-  //   { label: 'This Month', key: 'dateRange', value: 'this_month' },
-  //   { label: 'My City', key: 'city', value: user.address?.city },
-  //   { label: 'My Pincode', key: 'pinCode', value: user.address?.pinCode },
-  // ];
+  const serializedFilter = JSON.stringify(filter || {});
 
   useEffect(() => {
-    // resetting the page number on reload
-    setSearchParams((prevParams) => {
-      const newParams = new URLSearchParams(prevParams);
-      // Set the page to 1
-      newParams.set('page', '1');
-      return newParams;
-    });
-  }, []);
-
-  useEffect(() => {
-    // console.log(searchParams.toString())
     const query = new URLSearchParams(searchParams);
+    query.set('page', String(page));
 
-    query.set('page', page);
-
-    // if (page == 1) {
-    //   showLoading();
-    //   setTimeout(() => {}, [1500]);
-    // }
-    // if (city) query.set('city', city);
-    // if (locality) query.set('locality', locality);
-    // if (pinCode) query.set('pinCode', pinCode);
-    // if (status) query.set('status', status);
-    // if (dateRange) query.set('dateRange', dateRange);
-    // if (limit) query.set('limit', limit);
-    // if(urgency) query.set('urgency', urgency);
-    if (filter) {
-      // setCustomFilterApplied(false);
+    if (filter && typeof filter === 'object') {
       Object.entries(filter).forEach(([key, value]) => {
-        // Ensure the value is not null/undefined before adding it
-        if (value) {
-          query.set(key, value);
-
-          // setCustomFilterApplied(
-          //   () =>
-          //     !defaultFilters.some(
-          //       (defaultFilter) =>
-          //         defaultFilter.key === key && defaultFilter.value === value
-          //     )
-          // );
+        if (value !== undefined && value !== null && value !== '') {
+          query.set(key, String(value));
         }
       });
     }
-    // console.log(query.toString())
-    // console.log(query.get('submittedBy'));
+
+
+
+    if (page === 1) {
+      showLoading();
+    } else {
+      setLoading(true);
+    }
+    setError('');
 
     const fetchComplaints = async () => {
       try {
-        if (page !== 1) {
-          setLoading(true);
-        }
-        if (page === 1) {
-          showLoading();
-        }
-        setError('');
-
         const response = await apiClient.get(`/service?${query.toString()}`);
-        // console.log(response);
-        const newComplaints = response.data.data.complaints || [];
+
+
+        const newComplaints = response.data?.data?.complaints || [];
+        const currentPage = Number(response.data?.data?.currentPage || page);
+        const totalPages = Number(response.data?.data?.totalPages || 1);
+
         if (page > 1) {
-          setComplaints((prev) => [...prev, ...newComplaints]);
+          setComplaints((prev) => {
+            const existingIds = new Set(prev.map((c) => c._id));
+            const freshItems = newComplaints.filter((c) => !existingIds.has(c._id));
+            return [...prev, ...freshItems];
+          });
         } else {
           setComplaints(newComplaints);
         }
 
-        if (response.data.data.currentPage < response.data.data.totalPages) {
-          setHasNextPage(true);
-        } else {
-          setHasNextPage(false);
-        }
+        setHasNextPage(currentPage < totalPages);
+      } catch (err) {
 
-        // if (page === 1) {
-        //   setSnackMessage(`Complaints Fetched Successfully`);
-
-        //   setShowSnack(true);
-        //   setSnackSeverity(SNACK_SEVERITY.INFO);
-        // }
-      } catch (error) {
-        console.log(error);
-        // if (error.status === 401) {
-        //   localStorage.clear();
-        //   navigate('/');
-        // }
+        console.error('Complaint fetch error:', err);
         setError('Error while fetching complaints, Try again later');
-        // console.log(error);
-        setSnackMessage(`Error while fetching complaints, Try again later`);
+        setSnackMessage('Error while fetching complaints, Try again later');
         setShowSnack(true);
         setSnackSeverity(SNACK_SEVERITY.ERROR);
       } finally {
@@ -154,37 +88,29 @@ function ComplaintList({ filter = {} }) {
         setLoading(false);
       }
     };
-    if (hasNextPage || page == 1) {
-      fetchComplaints();
-    }
-  }, [searchParams.toString(), filter]);
 
-  const handleNextPage = () => {
-    const newParams = {
-      page: page + 1,
-    };
-    if (city) newParams.city = city;
-    if (locality) newParams.locality = locality;
-    if (dateRange) newParams.dateRange = dateRange;
-    if (status) newParams.status = status;
-    if (pinCode) newParams.pinCode = pinCode;
-    if (limit) newParams.limit = limit;
-  };
+    fetchComplaints();
+  }, [searchParams.toString(), serializedFilter, page]);
+
   const lastComplaintElementRef = useCallback(
     (node) => {
       if (loading) return;
       if (observerRef.current) observerRef.current.disconnect();
-      observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
-          // FIX: Use setSearchParams to trigger the next page fetch
-          setSearchParams((prevParams) => {
-            const params = new URLSearchParams(prevParams);
-            const currentPage = parseInt(params.get('page')) || 1;
-            params.set('page', String(currentPage + 1));
-            return Object.fromEntries(params.entries());
-          });
-        }
-      });
+
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextPage && !loading) {
+            setSearchParams((prevParams) => {
+              const params = new URLSearchParams(prevParams);
+              const currentPage = parseInt(params.get('page')) || 1;
+              params.set('page', String(currentPage + 1));
+              return params;
+            });
+          }
+        },
+        { threshold: 0.5 }
+      );
+
       if (node) observerRef.current.observe(node);
     },
     [loading, hasNextPage, setSearchParams]
@@ -196,7 +122,6 @@ function ComplaintList({ filter = {} }) {
   };
 
   const onAssign = (updatedComplaint) => {
-    // console.log(updatedComplaint);
     setComplaints((prevComplaints) =>
       prevComplaints.map((complaint) =>
         complaint?._id === updatedComplaint?._id ? updatedComplaint : complaint
@@ -212,7 +137,6 @@ function ComplaintList({ filter = {} }) {
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          // justifyContent:'center',
           alignItems: 'center',
         }}
       >
@@ -226,49 +150,36 @@ function ComplaintList({ filter = {} }) {
         >
           <FilterBar />
         </Container>
-        {complaints.length === 0 && !loading && <Box>No complaints found.</Box>}
 
-        {
-          <Grid
-            container
-            spacing={3}
-            columns={4}
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            {complaints.map((complaint, index) => {
-              // Attach the ref to the last element to trigger infinite scroll
-              if (complaints.length === index + 1) {
-                return (
-                  <Grid
-                    key={complaint._id}
-                    ref={lastComplaintElementRef}
-                    onClick={() => {
-                      handleOnClick(complaint);
-                    }}
-                  >
-                    <ComplaintCard complaint={complaint} />
-                  </Grid>
-                );
-              } else {
-                return (
-                  <Grid
-                    key={complaint._id}
-                    onClick={() => {
-                      handleOnClick(complaint);
-                    }}
-                  >
-                    <ComplaintCard complaint={complaint} />
-                  </Grid>
-                );
-              }
-            })}
-          </Grid>
-        }
+        {complaints.length === 0 && !loading && (
+          <Box sx={{ my: 4, color: 'text.secondary', textAlign: 'center' }}>
+            No complaints found.
+          </Box>
+        )}
 
-        {/* The parent decides if we are loading the *next* page */}
+        <Grid
+          container
+          spacing={3}
+          columns={4}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          {complaints.map((complaint, index) => {
+            const isLast = complaints.length === index + 1;
+            return (
+              <Grid
+                key={complaint._id}
+                ref={isLast ? lastComplaintElementRef : undefined}
+                onClick={() => handleOnClick(complaint)}
+              >
+                <ComplaintCard complaint={complaint} />
+              </Grid>
+            );
+          })}
+        </Grid>
+
         {loading && (
           <Box
             sx={{
@@ -276,17 +187,14 @@ function ComplaintList({ filter = {} }) {
               justifyContent: 'center',
               my: 4,
               alignItems: 'center',
-              height: '100%',
             }}
           >
-            <CircularProgress />
+            <CircularProgress size={36} />
           </Box>
         )}
 
         {!loading && !hasNextPage && complaints.length > 0 && (
-          <Typography
-            sx={{ textAlign: 'center', my: 4, color: 'text.secondary' }}
-          >
+          <Typography sx={{ textAlign: 'center', my: 4, color: 'text.secondary' }}>
             You've reached the end of the list.
           </Typography>
         )}
@@ -298,13 +206,6 @@ function ComplaintList({ filter = {} }) {
         )}
       </Box>
 
-      {/* {parsedUser?.role ==="User" && <UserComplaintDetailedDialog complaint={selectedComplaint} open={openDetailedDialogue} 
-      onClose={()=>setOpenDetailedDialogue(false)}
-    />}
-    {parsedUser?.role === ROLES.ADMIN && }
-    {parsedUser?.role ===ROLES.STAFF && <StaffComplaintDetailedDialog complaint={selectedComplaint} open={openDetailedDialogue} 
-      onClose={()=>setOpenDetailedDialogue(false)}
-    />} */}
       <ComplaintDetailedDialog
         complaint={selectedComplaint}
         open={openDetailedDialogue}
