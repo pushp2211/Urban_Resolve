@@ -63,10 +63,10 @@ export const getCommonComplaintDashboard = asyncHandler(async (req, res) => {
     };
   }
   if (submittedBy) {
-    filter.submittedBy = new mongoose.Types.ObjectId(submittedBy);
+    filter.submittedBy = new mongoose.Types.ObjectId(String(submittedBy));
   }
   if (assignedTo) {
-    filter.assignedTo = new mongoose.Types.ObjectId(assignedTo);
+    filter.assignedTo = new mongoose.Types.ObjectId(String(assignedTo));
   }
   const skip = (parseInt(page) - 1) * parseInt(limit);
   // console.log('RAW QUERY:', req.query);

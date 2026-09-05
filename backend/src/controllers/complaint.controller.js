@@ -16,29 +16,49 @@ export const ToggleUpvote = asyncHandler(async (req, res) => {
         throw new apiError(400, "Complaint ID is required");
     }
 
-    const complaint = await Complaint.findById(complaintId);
-    if (!complaint) {
+    // --- Atomic upvote toggle ---
+    // First, attempt to ADD the userId (only if not already present).
+    // $addToSet is a no-op when the value already exists, so this is safe.
+    // We use the returned document to check whether the array actually grew.
+    const afterAdd = await Complaint.findOneAndUpdate(
+        {
+            _id: complaintId,
+            "upvotes.users": { $ne: userId },   // condition: user has NOT upvoted yet
+        },
+        { $addToSet: { "upvotes.users": userId } },
+        { new: true }
+    );
+
+    if (afterAdd) {
+        // The condition matched → user was NOT in the array → we just added them.
+        return res.status(200).json(
+            new apiResponse(200, {
+                total: afterAdd.upvotes.users.length,
+                isUpvoted: true,
+            }, "Upvote added successfully")
+        );
+    }
+
+    // The add-condition did NOT match → user was already in the array → remove them.
+    const afterRemove = await Complaint.findOneAndUpdate(
+        {
+            _id: complaintId,
+            "upvotes.users": userId,             // condition: user HAS upvoted
+        },
+        { $pull: { "upvotes.users": userId } },
+        { new: true }
+    );
+
+    if (!afterRemove) {
+        // Neither condition matched → complaint does not exist
         throw new apiError(404, "Complaint not found");
     }
 
-    const alreadyUpvoted = complaint.upvotes.users.some(
-        (u) => u.toString() === userId.toString()
-    );
-
-    if (!alreadyUpvoted) {
-        complaint.upvotes.users.push(userId);
-    } else {
-        complaint.upvotes.users.pull(userId);
-    }
-
-    await complaint.save();
-
-
     return res.status(200).json(
         new apiResponse(200, {
-            total: complaint.upvotes.users.length,
-            isUpvoted: !alreadyUpvoted
-        }, "Upvote toggled successfully")
+            total: afterRemove.upvotes.users.length,
+            isUpvoted: false,
+        }, "Upvote removed successfully")
     );
 });
 
