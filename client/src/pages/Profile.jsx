@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {Button} from '@mui/material';
-import { Avatar, Container } from '@mui/material';
+import { Avatar, Container, IconButton, Tooltip, CircularProgress, Button } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import { useAuth } from '../hooks/useAuth';
 import InfoPieChart from '../components/InfoPieChart';
 import apiClient from '../api/axios';
@@ -15,11 +15,15 @@ import { ROLES } from '../../enum/roles';
 import { useLoading } from '../hooks/useLoading';
 import Snack from '../components/Snack';
 import { SNACK_SEVERITY } from '../../enum/snackSeverity';
+import ImageCropModal from '../components/ImageCropModal';
 function Profile() {
   const theme = useTheme();
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [userComplaintDetails, setUserComplaintDetails] = useState({});
   const [loading, setLoading] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [selectedImageSrc, setSelectedImageSrc] = useState(null);
   const [error, setError] = useState('');
   const [data, setData] = useState([]);
   const [submittedData, setSubmittedData] = useState([]);
@@ -59,6 +63,71 @@ function Profile() {
   const setEditCloseController = ()=>{
     setEditOpen(false);
   }
+
+  const handleAvatarFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setSnackMessage('Please select an image file (JPEG, PNG, WebP, etc.)');
+      setSnackSeverity(SNACK_SEVERITY.ERROR);
+      setSnackOpen(true);
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      setSnackMessage('Image file size must be less than 15MB');
+      setSnackSeverity(SNACK_SEVERITY.ERROR);
+      setSnackOpen(true);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImageSrc(reader.result);
+      setCropModalOpen(true);
+    };
+    reader.onerror = () => {
+      setSnackMessage('Failed to load selected image');
+      setSnackSeverity(SNACK_SEVERITY.ERROR);
+      setSnackOpen(true);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const handleCroppedAvatarUpload = async (croppedFile) => {
+    if (!croppedFile) return;
+
+    const formData = new FormData();
+    formData.append('profilePicture', croppedFile);
+
+    setAvatarUploading(true);
+    try {
+      const response = await apiClient.patch('/update-profile-picture', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const updatedUser = response.data?.data;
+      if (updatedUser) {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      }
+      setSnackMessage('Profile picture updated successfully');
+      setSnackSeverity(SNACK_SEVERITY.SUCCESS);
+    } catch (err) {
+      console.error('Error updating profile picture:', err);
+      setSnackMessage(
+        err.response?.data?.message || 'Failed to update profile picture'
+      );
+      setSnackSeverity(SNACK_SEVERITY.ERROR);
+    } finally {
+      setAvatarUploading(false);
+      setSnackOpen(true);
+    }
+  };
 
   const STATUS_COLORS = {
     Resolved: '#005f00', // Green
@@ -213,15 +282,55 @@ function Profile() {
             flex: 1,
           }}
         >
-          <Avatar
-            alt={user.fullName}
-            src={user.profilePicture}
-            sx={{
-              width: { xs: 100, md: 110 },
-              height: { xs: 100, md: 110 },
-              border: `3px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
-            }}
-          />
+          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <Avatar
+              alt={user.fullName}
+              src={user.profilePicture}
+              sx={{
+                width: { xs: 100, md: 110 },
+                height: { xs: 100, md: 110 },
+                border: `3px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+                boxShadow: theme.shadows[2],
+              }}
+            />
+            <Tooltip title="Update Profile Picture" arrow>
+              <IconButton
+                component="label"
+                disabled={avatarUploading}
+                aria-label="Update profile picture"
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  width: 34,
+                  height: 34,
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText || '#ffffff',
+                  border: `2px solid ${theme.palette.background.paper}`,
+                  boxShadow: theme.shadows[3],
+                  cursor: avatarUploading ? 'not-allowed' : 'pointer',
+                  '&:hover': {
+                    backgroundColor: theme.palette.primary.dark,
+                    transform: 'scale(1.1)',
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                }}
+              >
+                {avatarUploading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <EditIcon sx={{ fontSize: 16 }} />
+                )}
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  disabled={avatarUploading}
+                  onChange={handleAvatarFileSelect}
+                />
+              </IconButton>
+            </Tooltip>
+          </Box>
           
           <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
             <Typography
@@ -600,6 +709,17 @@ function Profile() {
       </Box>
 
       <EditProfile open={editOpen} onClose={setEditCloseController} setSnackMessage={setSnackMessage} snackOpen={snackOpen} setSnackOpen={setSnackOpen} snackMessage={snackMessage} snackSeverity={snackSeverity} setSnackSeverity={setSnackSeverity} />
+      
+      <ImageCropModal
+        open={cropModalOpen}
+        imageSrc={selectedImageSrc}
+        onClose={() => {
+          setCropModalOpen(false);
+          setSelectedImageSrc(null);
+        }}
+        onCropComplete={handleCroppedAvatarUpload}
+      />
+
       {snackOpen && <Snack message={snackMessage} openStatus={snackOpen} severity={snackSeverity} setOpenStatus={setSnackOpen} />}
     </Container>
   );

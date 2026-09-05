@@ -1,9 +1,8 @@
 import { Router } from "express";
-import { registerUser, loginUser, logoutUser, getAllUsers } from "../controllers/user.controller.js";
+import { registerUser, loginUser, logoutUser, getAllUsers, userProfile, editProfile, updateProfilePicture } from "../controllers/user.controller.js";
 
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { userProfile,editProfile } from "../controllers/user.controller.js";
 const router = Router();
 
 router.route("/register").post(
@@ -30,5 +29,15 @@ router.route("/editProfile").put(
         }
     ]),
     editProfile
-)
+);
+router.route("/update-profile-picture").patch(
+    verifyJWT,
+    upload.fields([
+        {
+            name: "profilePicture",
+            maxCount: 1
+        }
+    ]),
+    updateProfilePicture
+);
 export default router;

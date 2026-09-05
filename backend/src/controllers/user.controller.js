@@ -2,7 +2,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { apiError } from '../utils/apiError.js';
 import { apiResponse } from '../utils/apiResponse.js';
 import { User } from '../models/user.model.js';
-import { getOptimizedUrl, uploadOnCloudinary } from '../utils/cloudinary.js';
+import { getOptimizedUrl, uploadOnCloudinary, deleteFromCloudinary } from '../utils/cloudinary.js';
 import { ROLES, ROLES_ENUM } from '../enum/roles.js';
 import { Complaint } from '../models/complaint.model.js';
 import { COMPLAINT_STATUS, COMPLAINT_STATUS_ENUM } from '../enum/ComplaintStatus.js';
@@ -377,12 +377,16 @@ const editProfile = asyncHandler(async (req, res) => {
 
   if (profilePictureLocalPath) {
     const profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
-    const optimizedUrl = getOptimizedUrl(profilePicture.url);
 
     if (!profilePicture) {
       throw new apiError(500, "Error uploading profile picture");
     }
 
+    if (user.profilePicture) {
+      await deleteFromCloudinary(user.profilePicture);
+    }
+
+    const optimizedUrl = getOptimizedUrl(profilePicture.url);
     user.profilePicture = optimizedUrl;
   }
 
@@ -394,6 +398,50 @@ const editProfile = asyncHandler(async (req, res) => {
 
   return res.status(200).json(
     new apiResponse(200, responseUser, "Profile updated successfully")
+  );
+});
+
+const updateProfilePicture = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+
+  if (!userId) {
+    throw new apiError(401, "Not authorized");
+  }
+
+  const profilePictureLocalPath =
+    req.files?.profilePicture?.[0]?.path || req.file?.path;
+
+  if (!profilePictureLocalPath) {
+    throw new apiError(400, "Profile picture file is required");
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new apiError(404, "User not found");
+  }
+
+  const profilePicture = await uploadOnCloudinary(profilePictureLocalPath);
+
+  if (!profilePicture) {
+    throw new apiError(500, "Error uploading profile picture to Cloudinary");
+  }
+
+  // Delete previous profile picture from Cloudinary if it exists
+  if (user.profilePicture) {
+    await deleteFromCloudinary(user.profilePicture);
+  }
+
+  const optimizedUrl = getOptimizedUrl(profilePicture.url);
+  user.profilePicture = optimizedUrl;
+
+  await user.save({ validateBeforeSave: false });
+
+  const responseUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  return res.status(200).json(
+    new apiResponse(200, responseUser, "Profile picture updated successfully")
   );
 });
 
@@ -449,4 +497,4 @@ const getAllUsers = asyncHandler(async (req, res) => {
   );
 });
 
-export { registerUser, loginUser, logoutUser, userProfile, editProfile, getAllUsers };
+export { registerUser, loginUser, logoutUser, userProfile, editProfile, updateProfilePicture, getAllUsers };
