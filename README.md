@@ -14,7 +14,6 @@
 <h3 align="center">Urban Resolve © 2025</h3>
   <p align="center">
     A comprehensive municipal complaint management platform for citizens and municipal authorities.
-
     <br />
     <br />
     <a href="https://urban-resolve-client.onrender.com/urban-resolve" ><strong style="text-decoration: underline; color: #0366d6;">View Demo »</strong></a>
