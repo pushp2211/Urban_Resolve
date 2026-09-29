@@ -418,19 +418,8 @@ Open your browser and navigate to:
 - **Frontend**: `http://localhost:5173`
 - **Backend API**: `http://localhost:8000/api/v1`
 
-**Default Test Credentials (if using seed data):**
-- **Admin**: admin@test.com / password123
-- **Staff**: staff@test.com / password123
-- **Citizen**: citizen@test.com / password123
-
 ---
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
----
 
 ## Usage
 
