@@ -1,54 +1,54 @@
- <a id="readme-top"></a>
+<a id="readme-top"></a>
 
 <div align="center">
 
-[![Contributors](https://img.shields.io/github/contributors/abhiishhekk/Complaint_Tracking_System.svg?style=for-the-badge)](https://github.com/abhiishhekk/Complaint_Tracking_System/graphs/contributors)&nbsp;[![Forks](https://img.shields.io/github/forks/abhiishhekk/Complaint_Tracking_System.svg?style=for-the-badge)](https://github.com/abhiishhekk/Complaint_Tracking_System/network/members)&nbsp;[![Stargazers](https://img.shields.io/github/stars/abhiishhekk/Complaint_Tracking_System.svg?style=for-the-badge)](https://github.com/abhiishhekk/Complaint_Tracking_System/stargazers)&nbsp;[![Issues](https://img.shields.io/github/issues/abhiishhekk/Complaint_Tracking_System.svg?style=for-the-badge)](https://github.com/abhiishhekk/Complaint_Tracking_System/issues)&nbsp;[![MIT License](https://img.shields.io/github/license/abhiishhekk/Complaint_Tracking_System.svg?style=for-the-badge)](https://github.com/abhiishhekk/Complaint_Tracking_System/blob/main/LICENSE.txt)&nbsp;
+[![Contributors](https://img.shields.io/github/contributors/pushp2211/Urban_Resolve.svg?style=for-the-badge)](https://github.com/pushp2211/Urban_Resolve/graphs/contributors)&nbsp;[![Forks](https://img.shields.io/github/forks/pushp2211/Urban_Resolve.svg?style=for-the-badge)](https://github.com/pushp2211/Urban_Resolve/network/members)&nbsp;[![Stargazers](https://img.shields.io/github/stars/pushp2211/Urban_Resolve.svg?style=for-the-badge)](https://github.com/pushp2211/Urban_Resolve/stargazers)&nbsp;[![Issues](https://img.shields.io/github/issues/pushp2211/Urban_Resolve.svg?style=for-the-badge)](https://github.com/pushp2211/Urban_Resolve/issues)&nbsp;[![MIT License](https://img.shields.io/github/license/pushp2211/Urban_Resolve.svg?style=for-the-badge)](https://github.com/pushp2211/Urban_Resolve/blob/main/LICENSE.txt)&nbsp;
 
 </div>
 <br />
 <div align="center">
-  <a href="https://github.com/abhiishhekk/Complaint_Tracking_System">
-    <img src="assets/logo.jpeg" alt="Logo" width="80" height="80">
-  </a>
+  <a href="https://github.com/pushp2211/Urban_Resolve">
+    <img src="assets/logo.jpeg" alt="Logo" width="80" height="80">
+  </a>
 
 <h3 align="center">Urban Resolve © 2025</h3>
-  <p align="center">
-    A comprehensive municipal complaint management platform for citizens and municipal authorities.
+  <p align="center">
+    A comprehensive municipal complaint management platform for citizens and municipal authorities.
 
-    <br />
-    <br />
-    <a href="https://urban-resolve-client.onrender.com/" ><strong style="text-decoration: underline; color: #0366d6;">View Demo »</strong></a>
-    <br />
-    <a href="https://github.com/abhiishhekk/Complaint_Tracking_System/issues" style="text-decoration: underline; color: #0366d6;">Report Bug</a>
-    ·
-    <a href="https://github.com/abhiishhekk/Complaint_Tracking_System/issues" style="text-decoration: underline; color: #0366d6;">Request Feature</a>
-  </p>
+    <br />
+    <br />
+    <a href="https://urban-resolve-client.onrender.com/urban-resolve" ><strong style="text-decoration: underline; color: #0366d6;">View Demo »</strong></a>
+    <br />
+    <a href="https://github.com/pushp2211/Urban_Resolve/issues" style="text-decoration: underline; color: #0366d6;">Report Bug</a>
+    ·
+    <a href="https://github.com/pushp2211/Urban_Resolve/issues" style="text-decoration: underline; color: #0366d6;">Request Feature</a>
+  </p>
 </div>
 
 
 <details class="toc">
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li><a href="#-screenshots--demo">Screenshots & Demo</a></li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ol>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li><a href="#-screenshots--demo">Screenshots & Demo</a></li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ol>
 </details>
 
 ---
@@ -311,8 +311,8 @@ Ensure you have the following installed:
 
 #### 1. Clone the Repository
 ```sh
-git clone https://github.com/abhiishhekk/Complaint_Tracking_System.git
-cd Complaint_Tracking_System
+git clone https://github.com/pushp2211/Urban_Resolve.git
+cd Urban_Resolve
 ```
 
 #### 2. Backend Setup
@@ -583,7 +583,7 @@ Contributions make the open-source community an incredible place to learn, innov
 
 1. **Fork the Project**
    ```sh
-   git clone https://github.com/your-username/Complaint_Tracking_System.git
+   git clone https://github.com/your-username/Urban_Resolve.git
    ```
 
 2. **Create a Feature Branch**
@@ -658,13 +658,13 @@ The MIT License allows you to:
 
 ## 📧 Contact
 
-**Project Maintainer:** Abhishek Kumar
+**Project Maintainer:** Pushpraj Singh
 
-**Email:** application.controllerroute@gmail.com
+**Email:** pushpraj0171@gmail.com
 
-**Project Link:** [https://github.com/abhiishhekk/Complaint_Tracking_System](https://github.com/abhiishhekk/Complaint_Tracking_System)
+**Project Link:** [https://github.com/pushp2211/Urban_Resolve](https://github.com/pushp2211/Urban_Resolve)
 
-**Live Demo:** [https://urban-resolve-client.onrender.com/](https://urban-resolve-client.onrender.com/)
+**Live Demo:** [https://urban-resolve-client.onrender.com/urban-resolve](https://urban-resolve-client.onrender.com/urban-resolve)
 
 ### Connect With Us
 
@@ -696,10 +696,10 @@ Special thanks to:
 
 ## 📊 Project Stats
 
-![GitHub repo size](https://img.shields.io/github/repo-size/abhiishhekk/Complaint_Tracking_System?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/abhiishhekk/Complaint_Tracking_System?style=for-the-badge)
-![GitHub top language](https://img.shields.io/github/languages/top/abhiishhekk/Complaint_Tracking_System?style=for-the-badge)
-![GitHub last commit](https://img.shields.io/github/last-commit/abhiishhekk/Complaint_Tracking_System?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/pushp2211/Urban_Resolve?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/pushp2211/Urban_Resolve?style=for-the-badge)
+![GitHub top language](https://img.shields.io/github/languages/top/pushp2211/Urban_Resolve?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/pushp2211/Urban_Resolve?style=for-the-badge)
 
 ---
 
